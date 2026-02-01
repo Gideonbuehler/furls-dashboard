@@ -8,7 +8,13 @@ services:
     env: node
     region: oregon
     plan: free
-    buildCommand: npm install && cd client && npm install && npm run build && cd ..
+    buildCommand: |
+      npm install
+      cd client
+      npm install
+      npm run build
+      ls -la dist
+      cd ..
     startCommand: npm start
     envVars:
       - key: NODE_ENV
