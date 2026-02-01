@@ -1,10 +1,8 @@
 import axios from 'axios';
 
-// Use environment variable or fallback to production URL
-const API_URL = import.meta.env.VITE_API_URL || 
-  (window.location.hostname === 'localhost' 
-    ? 'http://localhost:3002/api' 
-    : `${window.location.origin}/api`);
+// In production, use relative URLs (served from same origin)
+// In development, Vite proxy will forward /api to localhost:3002
+const API_URL = '/api';
 
 // Create axios instance with default config
 const api = axios.create({
