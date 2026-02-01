@@ -1,54 +1,57 @@
-const express = require('express');
-const { dbAsync } = require('../database');
-const { authenticateToken, optionalAuth } = require('../auth');
+const express = require("express");
+const { dbAsync } = require("../database");
+const { authenticateToken, optionalAuth } = require("../auth");
 
 const router = express.Router();
 
 // Save current session stats to database (authenticated)
-router.post('/save', authenticateToken, async (req, res) => {
+router.post("/save", authenticateToken, async (req, res) => {
   const statsData = req.body;
 
   try {
-    const result = await dbAsync.run(`
+    const result = await dbAsync.run(
+      `
       INSERT INTO sessions (
         user_id, timestamp, shots, goals, average_speed, speed_samples,
         boost_collected, boost_used, game_time, possession_time,
         team_possession_time, opponent_possession_time,
         shot_heatmap, goal_heatmap
       ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `, [
-      req.user.userId,
-      statsData.timestamp || new Date().toISOString(),
-      statsData.shots || 0,
-      statsData.goals || 0,
-      statsData.averageSpeed || 0,
-      statsData.speedSamples || 0,
-      statsData.boostCollected || 0,
-      statsData.boostUsed || 0,
-      statsData.gameTime || 0,
-      statsData.possessionTime || 0,
-      statsData.teamPossessionTime || 0,
-      statsData.opponentPossessionTime || 0,
-      JSON.stringify(statsData.shotHeatmap || []),
-      JSON.stringify(statsData.goalHeatmap || [])
-    ]);
+    `,
+      [
+        req.user.userId,
+        statsData.timestamp || new Date().toISOString(),
+        statsData.shots || 0,
+        statsData.goals || 0,
+        statsData.averageSpeed || 0,
+        statsData.speedSamples || 0,
+        statsData.boostCollected || 0,
+        statsData.boostUsed || 0,
+        statsData.gameTime || 0,
+        statsData.possessionTime || 0,
+        statsData.teamPossessionTime || 0,
+        statsData.opponentPossessionTime || 0,
+        JSON.stringify(statsData.shotHeatmap || []),
+        JSON.stringify(statsData.goalHeatmap || []),
+      ]    );
 
-    res.status(201).json({ 
-      message: 'Session saved successfully',
-      sessionId: result.id 
+    res.status(201).json({
+      message: "Session saved successfully",
+      sessionId: result.lastID,
     });
   } catch (error) {
-    console.error('Save session error:', error);
-    res.status(500).json({ error: 'Failed to save session' });
+    console.error("Save session error:", error);
+    res.status(500).json({ error: "Failed to save session" });
   }
 });
 
 // Get user's session history
-router.get('/history', authenticateToken, async (req, res) => {
+router.get("/history", authenticateToken, async (req, res) => {
   const { limit = 50, offset = 0 } = req.query;
 
   try {
-    const sessions = await dbAsync.all(`
+    const sessions = await dbAsync.all(
+      `
       SELECT 
         id, timestamp, shots, goals, average_speed, speed_samples,
         boost_collected, boost_used, game_time, possession_time,
@@ -58,19 +61,22 @@ router.get('/history', authenticateToken, async (req, res) => {
       WHERE user_id = ?
       ORDER BY timestamp DESC
       LIMIT ? OFFSET ?
-    `, [req.user.userId, parseInt(limit), parseInt(offset)]);
+    `,
+      [req.user.userId, parseInt(limit), parseInt(offset)]
+    );
 
     res.json(sessions);
   } catch (error) {
-    console.error('Get history error:', error);
-    res.status(500).json({ error: 'Failed to get history' });
+    console.error("Get history error:", error);
+    res.status(500).json({ error: "Failed to get history" });
   }
 });
 
 // Get user's all-time stats
-router.get('/alltime', authenticateToken, async (req, res) => {
+router.get("/alltime", authenticateToken, async (req, res) => {
   try {
-    const stats = await dbAsync.get(`
+    const stats = await dbAsync.get(
+      `
       SELECT 
         COUNT(*) as total_sessions,
         SUM(shots) as total_shots,
@@ -82,78 +88,89 @@ router.get('/alltime', authenticateToken, async (req, res) => {
         SUM(boost_used) as total_boost_used
       FROM sessions
       WHERE user_id = ?
-    `, [req.user.userId]);
+    `,
+      [req.user.userId]
+    );
 
-    res.json(stats || {
-      total_sessions: 0,
-      total_shots: 0,
-      total_goals: 0,
-      avg_accuracy: 0,
-      avg_speed: 0,
-      total_play_time: 0,
-      total_boost_collected: 0,
-      total_boost_used: 0
-    });
+    res.json(
+      stats || {
+        total_sessions: 0,
+        total_shots: 0,
+        total_goals: 0,
+        avg_accuracy: 0,
+        avg_speed: 0,
+        total_play_time: 0,
+        total_boost_collected: 0,
+        total_boost_used: 0,
+      }
+    );
   } catch (error) {
-    console.error('Get all-time stats error:', error);
-    res.status(500).json({ error: 'Failed to get all-time stats' });
+    console.error("Get all-time stats error:", error);
+    res.status(500).json({ error: "Failed to get all-time stats" });
   }
 });
 
 // Get specific session with heatmaps
-router.get('/session/:id', authenticateToken, async (req, res) => {
+router.get("/session/:id", authenticateToken, async (req, res) => {
   const { id } = req.params;
 
   try {
-    const session = await dbAsync.get(`
+    const session = await dbAsync.get(
+      `
       SELECT * FROM sessions WHERE id = ? AND user_id = ?
-    `, [id, req.user.userId]);
+    `,
+      [id, req.user.userId]
+    );
 
     if (!session) {
-      return res.status(404).json({ error: 'Session not found' });
+      return res.status(404).json({ error: "Session not found" });
     }
 
     // Parse JSON heatmap data
-    session.shotHeatmap = JSON.parse(session.shot_heatmap || '[]');
-    session.goalHeatmap = JSON.parse(session.goal_heatmap || '[]');
+    session.shotHeatmap = JSON.parse(session.shot_heatmap || "[]");
+    session.goalHeatmap = JSON.parse(session.goal_heatmap || "[]");
     delete session.shot_heatmap;
     delete session.goal_heatmap;
 
     res.json(session);
   } catch (error) {
-    console.error('Get session error:', error);
-    res.status(500).json({ error: 'Failed to get session' });
+    console.error("Get session error:", error);
+    res.status(500).json({ error: "Failed to get session" });
   }
 });
 
 // Get friend's stats (if privacy allows)
-router.get('/friend/:friendId', authenticateToken, async (req, res) => {
+router.get("/friend/:friendId", authenticateToken, async (req, res) => {
   const { friendId } = req.params;
 
   try {
     // Check if they are friends
-    const friendship = await dbAsync.get(`
+    const friendship = await dbAsync.get(
+      `
       SELECT id FROM friendships
       WHERE ((user_id = ? AND friend_id = ?) OR (user_id = ? AND friend_id = ?))
       AND status = 'accepted'
-    `, [req.user.userId, friendId, friendId, req.user.userId]);
+    `,
+      [req.user.userId, friendId, friendId, req.user.userId]
+    );
 
     if (!friendship) {
-      return res.status(403).json({ error: 'Not friends with this user' });
+      return res.status(403).json({ error: "Not friends with this user" });
     }
 
     // Check friend's privacy settings
     const settings = await dbAsync.get(
-      'SELECT privacy_stats FROM user_settings WHERE user_id = ?',
+      "SELECT privacy_stats FROM user_settings WHERE user_id = ?",
       [friendId]
     );
 
-    if (settings && settings.privacy_stats === 'private') {
-      return res.status(403).json({ error: 'User stats are private' });
+    if (settings && settings.privacy_stats === "private") {
+      return res.status(403).json({ error: "User stats are private" });
     }
 
     // Get friend's stats
-    const stats = await dbAsync.get(`
+    const stats = await dbAsync.get(
+      `
       SELECT 
         COUNT(*) as total_sessions,
         SUM(shots) as total_shots,
@@ -163,37 +180,42 @@ router.get('/friend/:friendId', authenticateToken, async (req, res) => {
         SUM(game_time) as total_play_time
       FROM sessions
       WHERE user_id = ?
-    `, [friendId]);
+    `,
+      [friendId]
+    );
 
     // Get friend's recent sessions
-    const recentSessions = await dbAsync.all(`
+    const recentSessions = await dbAsync.all(
+      `
       SELECT 
         id, timestamp, shots, goals, average_speed, game_time
       FROM sessions
       WHERE user_id = ?
       ORDER BY timestamp DESC
       LIMIT 10
-    `, [friendId]);
+    `,
+      [friendId]
+    );
 
     res.json({
       stats: stats || {},
-      recentSessions
+      recentSessions,
     });
   } catch (error) {
-    console.error('Get friend stats error:', error);
-    res.status(500).json({ error: 'Failed to get friend stats' });
+    console.error("Get friend stats error:", error);
+    res.status(500).json({ error: "Failed to get friend stats" });
   }
 });
 
 // Get leaderboard (friends only or global)
-router.get('/leaderboard', authenticateToken, async (req, res) => {
-  const { type = 'friends', stat = 'accuracy' } = req.query;
+router.get("/leaderboard", authenticateToken, async (req, res) => {
+  const { type = "friends", stat = "accuracy" } = req.query;
 
   try {
     let query;
     let params = [];
 
-    if (type === 'friends') {
+    if (type === "friends") {
       // Get stats for user and their friends
       query = `
         SELECT 
@@ -216,7 +238,13 @@ router.get('/leaderboard', authenticateToken, async (req, res) => {
         GROUP BY u.id
         HAVING COUNT(s.id) > 0
       `;
-      params = [req.user.userId, req.user.userId, req.user.userId, req.user.userId, req.user.userId];
+      params = [
+        req.user.userId,
+        req.user.userId,
+        req.user.userId,
+        req.user.userId,
+        req.user.userId,
+      ];
     } else {
       // Global leaderboard (users with public stats)
       query = `
@@ -237,18 +265,23 @@ router.get('/leaderboard', authenticateToken, async (req, res) => {
     }
 
     // Add ordering based on stat type
-    const orderBy = stat === 'accuracy' ? 'avg_accuracy' : 
-                    stat === 'goals' ? 'total_goals' : 
-                    stat === 'shots' ? 'total_shots' : 'avg_accuracy';
-    
+    const orderBy =
+      stat === "accuracy"
+        ? "avg_accuracy"
+        : stat === "goals"
+        ? "total_goals"
+        : stat === "shots"
+        ? "total_shots"
+        : "avg_accuracy";
+
     query += ` ORDER BY ${orderBy} DESC LIMIT 50`;
 
     const leaderboard = await dbAsync.all(query, params);
 
     res.json(leaderboard);
   } catch (error) {
-    console.error('Get leaderboard error:', error);
-    res.status(500).json({ error: 'Failed to get leaderboard' });
+    console.error("Get leaderboard error:", error);
+    res.status(500).json({ error: "Failed to get leaderboard" });
   }
 });
 
