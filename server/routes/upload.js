@@ -6,8 +6,10 @@ const crypto = require("crypto");
 // Middleware to verify API key from plugin
 const authenticateApiKey = async (req, res, next) => {
   const apiKey = req.headers.authorization?.replace("Bearer ", "");
+  const clientIp = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
 
   if (!apiKey) {
+    console.log(`[AUTH FAILED] No API key provided from IP: ${clientIp}`);
     return res.status(401).json({ error: "API key required" });
   }
 
@@ -18,13 +20,15 @@ const authenticateApiKey = async (req, res, next) => {
     );
 
     if (!user) {
+      console.log(`[AUTH FAILED] Invalid API key from IP: ${clientIp}, Key prefix: ${apiKey.substring(0, 8)}...`);
       return res.status(401).json({ error: "Invalid API key" });
     }
 
+    console.log(`[AUTH SUCCESS] User: ${user.username} (ID: ${user.id}) from IP: ${clientIp}`);
     req.user = user;
     next();
   } catch (err) {
-    console.error("API key authentication error:", err);
+    console.error(`[AUTH ERROR] Exception for IP: ${clientIp}`, err);
     return res.status(401).json({ error: "Invalid API key" });
   }
 };
@@ -33,10 +37,19 @@ const authenticateApiKey = async (req, res, next) => {
 router.post("/upload", authenticateApiKey, async (req, res) => {
   const stats = req.body;
   const userId = req.user.id;
+  const username = req.user.username;
+
+  console.log(`[UPLOAD START] User: ${username}, Shots: ${stats.shots}, Goals: ${stats.goals}, GameTime: ${stats.gameTime}s`);
 
   try {
+    // Validate required fields
+    if (stats.shots === undefined || stats.goals === undefined) {
+      console.log(`[UPLOAD FAILED] Missing required fields from ${username}`);
+      return res.status(400).json({ error: "Missing required fields: shots and goals" });
+    }
+
     // Save session
-    await dbAsync.run(
+    const result = await dbAsync.run(
       `INSERT INTO sessions (
         user_id, timestamp, shots, goals, average_speed,
         speed_samples, boost_collected, boost_used, game_time,
@@ -45,7 +58,7 @@ router.post("/upload", authenticateApiKey, async (req, res) => {
       ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         userId,
-        stats.timestamp,
+        stats.timestamp || new Date().toISOString(),
         stats.shots || 0,
         stats.goals || 0,
         stats.averageSpeed || 0,
@@ -73,11 +86,15 @@ router.post("/upload", authenticateApiKey, async (req, res) => {
     );
 
     console.log(
-      `[UPLOAD SUCCESS] User ${req.user.username} - ${stats.shots} shots, ${stats.goals} goals`
+      `[UPLOAD SUCCESS] User: ${username} (ID: ${userId}) - Session #${result.lastID} - ${stats.shots} shots, ${stats.goals} goals`
     );
-    res.json({ success: true, message: "Stats uploaded successfully" });
+    res.json({ 
+      success: true, 
+      message: "Stats uploaded successfully",
+      sessionId: result.lastID 
+    });
   } catch (err) {
-    console.error("[UPLOAD ERROR]", err);
+    console.error(`[UPLOAD ERROR] User: ${username} (ID: ${userId})`, err);
     res.status(500).json({ error: "Failed to save stats" });
   }
 });
@@ -117,6 +134,18 @@ router.get("/plugin-status", authenticateApiKey, async (req, res) => {
     console.error("Error checking plugin status:", err);
     res.status(500).json({ error: "Failed to check plugin status" });
   }
+});
+
+// Test API key authentication (for troubleshooting)
+router.get("/test-auth", authenticateApiKey, async (req, res) => {
+  console.log(`[AUTH TEST] User: ${req.user.username} (ID: ${req.user.id}) - API key is valid!`);
+  res.json({
+    success: true,
+    message: "API key is valid!",
+    username: req.user.username,
+    userId: req.user.id,
+    timestamp: new Date().toISOString()
+  });
 });
 
 module.exports = router;
