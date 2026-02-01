@@ -47,7 +47,6 @@ export const authAPI = {
     localStorage.setItem("token", token);
     localStorage.setItem("user", JSON.stringify(user));
   },
-
   // Helper to get current user
   getCurrentUser: () => {
     const user = localStorage.getItem("user");
@@ -64,6 +63,12 @@ export const authAPI = {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
   },
+
+  // Update profile
+  updateProfile: (profileData) => api.put("/auth/profile", profileData),
+
+  // Update privacy settings
+  updatePrivacy: (privacyData) => api.put("/auth/privacy", privacyData),
 };
 
 // Friends API
@@ -88,6 +93,7 @@ export const statsAPI = {
   getLeaderboard: (type = "friends", stat = "accuracy") =>
     api.get(`/user/stats/leaderboard?type=${type}&stat=${stat}`),
   getPluginStatus: () => api.get("/stats/plugin-status"), // Check if plugin is connected
+  getHeatmap: () => api.get("/user/stats/heatmap"), // Get aggregated heatmap data
 };
 
 // Legacy local stats API (for backward compatibility)

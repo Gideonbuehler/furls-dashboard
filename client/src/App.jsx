@@ -83,6 +83,7 @@ function App() {
       // Load user's database stats
       const userHistoryRes = await statsAPI.getHistory(50, 0);
       const userAllTimeRes = await statsAPI.getAllTimeStats();
+      const userHeatmapRes = await statsAPI.getHeatmap();
 
       // Use database stats for history and all-time
       if (userHistoryRes?.data) {
@@ -108,6 +109,11 @@ function App() {
 
       if (userAllTimeRes?.data) {
         setAllTimeStats(userAllTimeRes.data);
+      }
+
+      // Load aggregated heatmap data
+      if (userHeatmapRes?.data) {
+        setHeatmapData(userHeatmapRes.data);
       }
 
       setLoading(false);

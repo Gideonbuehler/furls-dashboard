@@ -1,6 +1,12 @@
 import "./StatsOverview.css";
 
 function StatsOverview({ currentStats, allTimeStats }) {
+  // Safe number formatter - ensures value is a number before calling toFixed
+  const safeToFixed = (value, decimals = 1) => {
+    const num = Number(value);
+    return isNaN(num) ? "0" : num.toFixed(decimals);
+  };
+
   const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60);
     const secs = Math.floor(seconds % 60);
@@ -34,17 +40,15 @@ function StatsOverview({ currentStats, allTimeStats }) {
                 <span>Accuracy:</span>
                 <strong className="highlight">{getCurrentAccuracy()}%</strong>
               </div>
-            </div>
-
-            <div className="stat-group">
+            </div>            <div className="stat-group">
               <h3>⚡ Speed & Movement</h3>
               <div className="stat-item">
                 <span>Average Speed:</span>
-                <strong>{currentStats.averageSpeed?.toFixed(2) || 0}</strong>
+                <strong>{safeToFixed(currentStats?.averageSpeed, 2)}</strong>
               </div>
               <div className="stat-item">
                 <span>Speed Samples:</span>
-                <strong>{currentStats.speedSamples || 0}</strong>
+                <strong>{currentStats?.speedSamples || 0}</strong>
               </div>
             </div>
 
@@ -52,20 +56,20 @@ function StatsOverview({ currentStats, allTimeStats }) {
               <h3>💨 Boost Management</h3>
               <div className="stat-item">
                 <span>Boost Collected:</span>
-                <strong>{currentStats.boostCollected?.toFixed(1) || 0}</strong>
+                <strong>{safeToFixed(currentStats?.boostCollected)}</strong>
               </div>
               <div className="stat-item">
                 <span>Boost Used:</span>
-                <strong>{currentStats.boostUsed?.toFixed(1) || 0}</strong>
+                <strong>{safeToFixed(currentStats?.boostUsed)}</strong>
               </div>
               <div className="stat-item">
                 <span>Efficiency:</span>
                 <strong>
-                  {currentStats.boostCollected > 0
-                    ? (
+                  {currentStats?.boostCollected > 0
+                    ? safeToFixed(
                         (currentStats.boostUsed / currentStats.boostCollected) *
                         100
-                      ).toFixed(1)
+                      )
                     : 0}
                   %
                 </strong>
@@ -76,22 +80,22 @@ function StatsOverview({ currentStats, allTimeStats }) {
               <h3>⏱️ Time Stats</h3>
               <div className="stat-item">
                 <span>Total Game Time:</span>
-                <strong>{formatTime(currentStats.gameTime || 0)}</strong>
+                <strong>{formatTime(currentStats?.gameTime || 0)}</strong>
               </div>
               <div className="stat-item">
                 <span>Your Possession:</span>
-                <strong>{currentStats.possessionTime?.toFixed(1) || 0}s</strong>
+                <strong>{safeToFixed(currentStats?.possessionTime)}s</strong>
               </div>
               <div className="stat-item">
                 <span>Team Possession:</span>
                 <strong>
-                  {currentStats.teamPossessionTime?.toFixed(1) || 0}s
+                  {safeToFixed(currentStats?.teamPossessionTime)}s
                 </strong>
               </div>
               <div className="stat-item">
                 <span>Opponent Possession:</span>
                 <strong>
-                  {currentStats.opponentPossessionTime?.toFixed(1) || 0}s
+                  {safeToFixed(currentStats?.opponentPossessionTime)}s
                 </strong>
               </div>
             </div>
@@ -127,26 +131,24 @@ function StatsOverview({ currentStats, allTimeStats }) {
                 <strong>
                   {allTimeStats.totalGoals || allTimeStats.total_goals || 0}
                 </strong>
-              </div>
-              <div className="stat-item">
+              </div>              <div className="stat-item">
                 <span>Overall Accuracy:</span>
                 <strong className="highlight">
-                  {(
-                    allTimeStats.avgAccuracy ||
-                    allTimeStats.avg_accuracy ||
+                  {safeToFixed(
+                    allTimeStats?.avgAccuracy ||
+                    allTimeStats?.avg_accuracy ||
                     0
-                  ).toFixed(1)}
-                  %
+                  )}%
                 </strong>
-              </div>
-              <div className="stat-item">
+              </div>              <div className="stat-item">
                 <span>Average Speed:</span>
                 <strong>
-                  {(
-                    allTimeStats.avgSpeed ||
-                    allTimeStats.avg_speed ||
-                    0
-                  ).toFixed(2)}
+                  {safeToFixed(
+                    allTimeStats?.avgSpeed ||
+                    allTimeStats?.avg_speed ||
+                    0,
+                    2
+                  )}
                 </strong>
               </div>
               <div className="stat-item">
@@ -162,36 +164,35 @@ function StatsOverview({ currentStats, allTimeStats }) {
             </div>
 
             <div className="stat-group">
-              <h3>📊 Performance Metrics</h3>
-              <div className="stat-item">
+              <h3>📊 Performance Metrics</h3>              <div className="stat-item">
                 <span>Avg Shots per Session:</span>
                 <strong>
-                  {(allTimeStats.totalSessions ||
-                    allTimeStats.total_sessions ||
+                  {(allTimeStats?.totalSessions ||
+                    allTimeStats?.total_sessions ||
                     0) > 0
-                    ? (
-                        (allTimeStats.totalShots ||
-                          allTimeStats.total_shots ||
+                    ? safeToFixed(
+                        (allTimeStats?.totalShots ||
+                          allTimeStats?.total_shots ||
                           0) /
-                        (allTimeStats.totalSessions ||
-                          allTimeStats.total_sessions)
-                      ).toFixed(1)
+                        (allTimeStats?.totalSessions ||
+                          allTimeStats?.total_sessions)
+                      )
                     : 0}
                 </strong>
               </div>
               <div className="stat-item">
                 <span>Avg Goals per Session:</span>
                 <strong>
-                  {(allTimeStats.totalSessions ||
-                    allTimeStats.total_sessions ||
+                  {(allTimeStats?.totalSessions ||
+                    allTimeStats?.total_sessions ||
                     0) > 0
-                    ? (
-                        (allTimeStats.totalGoals ||
-                          allTimeStats.total_goals ||
+                    ? safeToFixed(
+                        (allTimeStats?.totalGoals ||
+                          allTimeStats?.total_goals ||
                           0) /
-                        (allTimeStats.totalSessions ||
-                          allTimeStats.total_sessions)
-                      ).toFixed(1)
+                        (allTimeStats?.totalSessions ||
+                          allTimeStats?.total_sessions)
+                      )
                     : 0}
                 </strong>
               </div>

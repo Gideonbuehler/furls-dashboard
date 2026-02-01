@@ -13,6 +13,12 @@ import {
 import "./Dashboard.css";
 
 function Dashboard({ currentStats, allTimeStats, sessionHistory }) {
+  // Safe number formatter - ensures value is a number before calling toFixed
+  const safeToFixed = (value, decimals = 1) => {
+    const num = Number(value);
+    return isNaN(num) ? "0" : num.toFixed(decimals);
+  };
+
   const getCurrentAccuracy = () => {
     if (!currentStats || !currentStats.shots) return 0;
     return currentStats.shots > 0
@@ -99,11 +105,10 @@ function Dashboard({ currentStats, allTimeStats, sessionHistory }) {
             <div className="summary-card">
               <div className="summary-label">Total Goals</div>
               <div className="summary-value">{allTimeStats.totalGoals}</div>
-            </div>
-            <div className="summary-card">
+            </div>            <div className="summary-card">
               <div className="summary-label">Average Accuracy</div>
               <div className="summary-value">
-                {allTimeStats.avgAccuracy?.toFixed(1)}%
+                {safeToFixed(allTimeStats?.avgAccuracy || allTimeStats?.avg_accuracy)}%
               </div>
             </div>
             <div className="summary-card">

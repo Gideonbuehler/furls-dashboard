@@ -277,12 +277,72 @@ router.get("/leaderboard", authenticateToken, async (req, res) => {
 
     query += ` ORDER BY ${orderBy} DESC LIMIT 50`;
 
-    const leaderboard = await dbAsync.all(query, params);
-
-    res.json(leaderboard);
+    const leaderboard = await dbAsync.all(query, params);    res.json(leaderboard);
   } catch (error) {
     console.error("Get leaderboard error:", error);
     res.status(500).json({ error: "Failed to get leaderboard" });
+  }
+});
+
+// Get aggregated heatmap data (combines all sessions)
+router.get("/heatmap", authenticateToken, async (req, res) => {
+  try {
+    const sessions = await dbAsync.all(
+      `
+      SELECT shot_heatmap, goal_heatmap 
+      FROM sessions 
+      WHERE user_id = ? 
+      ORDER BY created_at DESC 
+      LIMIT 50
+    `,
+      [req.user.userId]
+    );
+
+    if (!sessions || sessions.length === 0) {
+      return res.json({
+        shots: Array(10).fill(null).map(() => Array(10).fill(0)),
+        goals: Array(10).fill(null).map(() => Array(10).fill(0)),
+      });
+    }
+
+    // Initialize aggregated heatmaps (10x10 grid)
+    const aggregatedShots = Array(10).fill(null).map(() => Array(10).fill(0));
+    const aggregatedGoals = Array(10).fill(null).map(() => Array(10).fill(0));
+
+    // Aggregate all sessions
+    sessions.forEach(session => {
+      try {
+        const shotHeatmap = JSON.parse(session.shot_heatmap || "[]");
+        const goalHeatmap = JSON.parse(session.goal_heatmap || "[]");
+
+        // Add to aggregated data
+        shotHeatmap.forEach((row, y) => {
+          row.forEach((value, x) => {
+            if (y < 10 && x < 10) {
+              aggregatedShots[y][x] += value || 0;
+            }
+          });
+        });
+
+        goalHeatmap.forEach((row, y) => {
+          row.forEach((value, x) => {
+            if (y < 10 && x < 10) {
+              aggregatedGoals[y][x] += value || 0;
+            }
+          });
+        });
+      } catch (parseError) {
+        console.error("Error parsing heatmap data:", parseError);
+      }
+    });
+
+    res.json({
+      shots: aggregatedShots,
+      goals: aggregatedGoals,
+    });
+  } catch (error) {
+    console.error("Get heatmap error:", error);
+    res.status(500).json({ error: "Failed to get heatmap" });
   }
 });
 

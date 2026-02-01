@@ -55,8 +55,7 @@ async function initializeTables() {
   if (useSqlite) {
     // SQLite table initialization (synchronous callbacks)
     console.log("Initializing SQLite tables...");
-    
-    // Users table
+      // Users table
     db.run(`
       CREATE TABLE IF NOT EXISTS users (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -66,6 +65,7 @@ async function initializeTables() {
         api_key TEXT UNIQUE,
         display_name TEXT,
         avatar_url TEXT,
+        bio TEXT,
         profile_visibility TEXT DEFAULT 'public',
         total_sessions INTEGER DEFAULT 0,
         total_shots INTEGER DEFAULT 0,
@@ -140,9 +140,7 @@ async function initializeTables() {
     // PostgreSQL table initialization (async)
     const client = await pool.connect();
     try {
-      console.log("Initializing PostgreSQL tables...");
-
-      // Users table
+      console.log("Initializing PostgreSQL tables...");      // Users table
       await client.query(`
         CREATE TABLE IF NOT EXISTS users (
           id SERIAL PRIMARY KEY,
@@ -152,6 +150,7 @@ async function initializeTables() {
           api_key TEXT UNIQUE,
           display_name TEXT,
           avatar_url TEXT,
+          bio TEXT,
           profile_visibility TEXT DEFAULT 'public',
           total_sessions INTEGER DEFAULT 0,
           total_shots INTEGER DEFAULT 0,

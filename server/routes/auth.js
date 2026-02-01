@@ -207,4 +207,102 @@ router.post("/regenerate-api-key", authenticateToken, async (req, res) => {
   }
 });
 
+// Update profile
+router.put(
+  "/profile",
+  authenticateToken,
+  [
+    body("displayName").optional().trim().isLength({ max: 50 }),
+    body("bio").optional().trim().isLength({ max: 500 }),
+    body("avatarUrl").optional().trim().isURL().isLength({ max: 500 }),
+  ],
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    const { displayName, bio, avatarUrl } = req.body;
+
+    try {
+      // Build dynamic update query
+      const updates = [];
+      const values = [];
+
+      if (displayName !== undefined) {
+        updates.push("display_name = ?");
+        values.push(displayName);
+      }
+      if (bio !== undefined) {
+        updates.push("bio = ?");
+        values.push(bio);
+      }
+      if (avatarUrl !== undefined) {
+        updates.push("avatar_url = ?");
+        values.push(avatarUrl);
+      }
+
+      if (updates.length === 0) {
+        return res.status(400).json({ error: "No fields to update" });
+      }
+
+      updates.push("updated_at = CURRENT_TIMESTAMP");
+      values.push(req.user.userId);
+
+      await dbAsync.run(
+        `UPDATE users SET ${updates.join(", ")} WHERE id = ?`,
+        values
+      );
+
+      // Get updated user
+      const user = await dbAsync.get(
+        "SELECT id, username, email, display_name, bio, avatar_url, profile_visibility FROM users WHERE id = ?",
+        [req.user.userId]
+      );
+
+      res.json({
+        message: "Profile updated successfully",
+        user: {
+          id: user.id,
+          username: user.username,
+          email: user.email,
+          displayName: user.display_name,
+          bio: user.bio,
+          avatarUrl: user.avatar_url,
+          profileVisibility: user.profile_visibility,
+        },
+      });
+    } catch (error) {
+      console.error("Update profile error:", error);
+      res.status(500).json({ error: "Failed to update profile" });
+    }
+  }
+);
+
+// Update privacy settings
+router.put("/privacy", authenticateToken, async (req, res) => {
+  const { profileVisibility } = req.body;
+
+  if (!["public", "friends", "private"].includes(profileVisibility)) {
+    return res.status(400).json({
+      error: "Invalid visibility setting. Must be 'public', 'friends', or 'private'",
+    });
+  }
+
+  try {
+    await dbAsync.run(
+      "UPDATE users SET profile_visibility = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?",
+      [profileVisibility, req.user.userId]
+    );
+
+    res.json({
+      message: "Privacy settings updated successfully",
+      profileVisibility,
+    });
+  } catch (error) {
+    console.error("Update privacy error:", error);
+    res.status(500).json({ error: "Failed to update privacy settings" });
+  }
+});
+
 module.exports = router;

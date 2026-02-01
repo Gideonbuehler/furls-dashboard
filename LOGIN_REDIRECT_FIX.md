@@ -1,5 +1,37 @@
 # Login Redirect Loop Fix
 
+## Critical Bug Found and Fixed! ⚠️
+
+### Issue: `/auth/me` Endpoint Returns 500 Error
+
+**The real problem:** The `/auth/me` endpoint had a bug that caused it to return 500 instead of validating tokens.
+
+**Location:** `server/routes/auth.js` Line 146
+
+**Bug:**
+```javascript
+const { JWT_SECRET } = require("./auth");  // ❌ Wrong path!
+```
+
+**Fix:**
+```javascript
+const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key-change-this-in-production";
+```
+
+**Why it happened:**
+- Tried to require from `./auth` (current directory)
+- Auth module is actually at `../auth` (parent directory)
+- Caused "Cannot find module" error
+- Server returned 500 instead of handling gracefully
+
+**Impact:**
+- ✅ Token verification now works
+- ✅ No more 500 errors
+- ✅ Dashboard loads properly after login
+- ✅ No redirect loops
+
+---
+
 ## Issues Fixed
 
 ### 1. Dashboard Loads Then Immediately Redirects to Login
