@@ -9,12 +9,16 @@ services:
     region: oregon
     plan: free
     buildCommand: |
+      echo "Installing root dependencies..."
       npm install
-      cd client
-      npm install
+      echo "Installing client dependencies..."
+      cd client && npm install
+      echo "Building React app..."
       npm run build
-      ls -la dist
+      echo "Checking build output..."
+      ls -la dist || echo "ERROR: dist folder not found!"
       cd ..
+      echo "Build complete!"
     startCommand: npm start
     envVars:
       - key: NODE_ENV
