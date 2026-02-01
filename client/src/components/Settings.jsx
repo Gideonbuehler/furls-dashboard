@@ -119,26 +119,70 @@ function Settings() {
             >
               {regenerating ? "🔄 Regenerating..." : "🔄 Regenerate Key"}
             </button>
-          </div>
-
-          <div className="setup-instructions">
+          </div>          <div className="setup-instructions">
             <h4>📝 Plugin Setup Instructions</h4>
-            <ol>
-              <li>Open BakkesMod console (F6 in Rocket League)</li>
-              <li>Copy your API key above</li>
-              <li>
-                Run these commands:
-                <div className="code-block">
-                  <code>furls_enable_upload 1</code>
-                  <br />
-                  <code>furls_api_key YOUR_API_KEY_HERE</code>
-                  <br />
-                  <code>furls_server_url https://furls-api.onrender.com</code>
+            <div className="instruction-steps">
+              <div className="step">
+                <div className="step-number">1</div>
+                <div className="step-content">
+                  <h5>Open BakkesMod Console</h5>
+                  <p>Press <kbd>F6</kbd> while in Rocket League to open the BakkesMod console</p>
                 </div>
-              </li>
-              <li>
-                Your stats will now automatically upload after each match!
-              </li>            </ol>
+              </div>
+
+              <div className="step">
+                <div className="step-number">2</div>
+                <div className="step-content">
+                  <h5>Copy Your API Key</h5>
+                  <p>Click the "📋 Copy" button above to copy your API key</p>
+                </div>
+              </div>
+
+              <div className="step">
+                <div className="step-number">3</div>
+                <div className="step-content">
+                  <h5>Configure the Plugin</h5>
+                  <p>Run these commands in the BakkesMod console:</p>
+                  <div className="code-block">
+                    <code>furls_enable_upload 1</code>
+                    <code>furls_api_key {apiKey || "YOUR_API_KEY_HERE"}</code>
+                    <code>furls_server_url https://furls-dashboard.onrender.com</code>
+                    <code>furls_dashboard_url https://furls-dashboard.onrender.com</code>
+                  </div>
+                  <p className="code-note">💡 The plugin will use these URLs to upload your stats and display the dashboard link</p>
+                </div>
+              </div>
+
+              <div className="step">
+                <div className="step-number">4</div>
+                <div className="step-content">
+                  <h5>Verify Connection</h5>
+                  <p>Play a freeplay session in Rocket League. Your stats will automatically upload when you exit the match!</p>
+                  <p className="success-note">✅ Check the "Plugin Status" indicator in the dashboard header</p>
+                </div>
+              </div>
+
+              <div className="step">
+                <div className="step-number">5</div>
+                <div className="step-content">
+                  <h5>Access Dashboard from Plugin</h5>
+                  <p>In BakkesMod console, type:</p>
+                  <div className="code-block">
+                    <code>furls_open_dashboard</code>
+                  </div>
+                  <p className="code-note">🚀 This will open your personal dashboard in your default browser!</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="help-box">
+              <h5>❓ Need Help?</h5>
+              <ul>
+                <li><strong>Plugin not uploading?</strong> Make sure you've enabled upload with <code>furls_enable_upload 1</code></li>
+                <li><strong>Wrong dashboard?</strong> Run <code>furls_dashboard_url https://furls-dashboard.onrender.com</code> to set the correct URL</li>
+                <li><strong>API key error?</strong> Regenerate your key above and update it in the plugin</li>
+              </ul>
+            </div>
           </div>
         </div>
         <div className="settings-section">

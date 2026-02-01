@@ -150,6 +150,151 @@
   margin: 0.25rem 0;
 }
 
+/* Improved Plugin Setup Instructions */
+.instruction-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin: 1.5rem 0;
+}
+
+.step {
+  display: flex;
+  gap: 1.25rem;
+  padding: 1.5rem;
+  background: rgba(30, 30, 30, 0.6);
+  border: 2px solid rgba(139, 92, 246, 0.2);
+  border-radius: 16px;
+  transition: all 0.3s ease;
+}
+
+.step:hover {
+  border-color: #bb86fc;
+  transform: translateX(8px);
+  box-shadow: 0 8px 24px rgba(139, 92, 246, 0.3);
+}
+
+.step-number {
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #bb86fc, #7b1fa2);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  font-weight: 800;
+  box-shadow: 0 4px 16px rgba(139, 92, 246, 0.5);
+}
+
+.step-content {
+  flex: 1;
+}
+
+.step-content h5 {
+  margin: 0 0 0.5rem 0;
+  color: #bb86fc;
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.step-content p {
+  margin: 0.5rem 0;
+  color: rgba(255, 255, 255, 0.8);
+  line-height: 1.6;
+}
+
+.step-content kbd {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(139, 92, 246, 0.4);
+  border-radius: 6px;
+  font-family: 'Courier New', monospace;
+  font-size: 0.9rem;
+  color: #bb86fc;
+  font-weight: 600;
+}
+
+.step-content .code-block {
+  margin: 1rem 0;
+  padding: 1.25rem;
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.step-content .code-block code {
+  display: block;
+  font-family: 'Courier New', monospace;
+  font-size: 0.95rem;
+  color: #00d4ff;
+  padding: 0.5rem;
+  background: rgba(0, 212, 255, 0.05);
+  border-radius: 6px;
+  border-left: 3px solid #00d4ff;
+}
+
+.code-note {
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.6);
+  font-style: italic;
+  margin-top: 0.75rem;
+}
+
+.success-note {
+  color: #4caf50;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+/* Help Box */
+.help-box {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background: linear-gradient(135deg, rgba(255, 193, 7, 0.1), rgba(255, 152, 0, 0.1));
+  border: 2px solid rgba(255, 193, 7, 0.4);
+  border-radius: 16px;
+}
+
+.help-box h5 {
+  margin: 0 0 1rem 0;
+  color: #ffc107;
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.help-box ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.help-box li {
+  padding: 0.75rem 0;
+  color: rgba(255, 255, 255, 0.8);
+  line-height: 1.6;
+  border-bottom: 1px solid rgba(255, 193, 7, 0.2);
+}
+
+.help-box li:last-child {
+  border-bottom: none;
+}
+
+.help-box code {
+  padding: 0.25rem 0.5rem;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 4px;
+  font-family: 'Courier New', monospace;
+  font-size: 0.875rem;
+  color: #ffc107;
+}
+
 /* Privacy Controls */
 .privacy-controls {
   display: flex;
@@ -422,5 +567,24 @@
 
   .info-grid {
     grid-template-columns: 1fr;
+  }
+}
+
+/* Responsive for instructions */
+@media (max-width: 768px) {
+  .step {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .step:hover {
+    transform: translateX(0);
+    transform: translateY(-4px);
+  }
+
+  .step-number {
+    width: 40px;
+    height: 40px;
+    font-size: 1.25rem;
   }
 }
