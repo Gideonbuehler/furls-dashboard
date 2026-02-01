@@ -8,7 +8,7 @@ services:
     env: node
     region: oregon
     plan: free
-    buildCommand: npm install
+    buildCommand: npm install && cd client && npm install && npm run build && cd ..
     startCommand: npm start
     envVars:
       - key: NODE_ENV
@@ -17,4 +17,4 @@ services:
         generateValue: true
       - key: PORT
         value: 10000
-    healthCheckPath: /api/stats/health
+    healthCheckPath: /api/health

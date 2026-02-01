@@ -139,8 +139,22 @@ app.get('/api/health', (req, res) => {
   });
 });
 
+// Serve React frontend in production
+if (process.env.NODE_ENV === 'production') {
+  const clientBuildPath = path.join(__dirname, '../client/dist');
+  app.use(express.static(clientBuildPath));
+  
+  // All other routes serve the React app
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(clientBuildPath, 'index.html'));
+  });
+}
+
 app.listen(PORT, () => {
   console.log(`FURLS Dashboard API running on http://localhost:${PORT}`);
   console.log(`Watching data folder: ${DATA_FOLDER}`);
   console.log(`Stats file: ${STATS_FILE}`);
+  if (process.env.NODE_ENV === 'production') {
+    console.log(`Serving React frontend from: ${path.join(__dirname, '../client/dist')}`);
+  }
 });
