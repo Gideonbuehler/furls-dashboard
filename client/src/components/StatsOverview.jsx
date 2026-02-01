@@ -102,108 +102,104 @@ function StatsOverview({ currentStats, allTimeStats }) {
           <div className="no-data">            <p>No current session data available</p>
           </div>
         )}
-      </section>
-      {allTimeStats && (
+      </section>      {allTimeStats && (
         <section className="stats-section">
           <h2>🏆 All-Time Statistics</h2>
-          <div className="stats-details">
-            <div className="stat-group">
-              <h3>📈 Career Overview</h3>
-              <div className="stat-item">
-                <span>Total Sessions:</span>
-                <strong>
-                  {allTimeStats.totalSessions ||
-                    allTimeStats.total_sessions ||
-                    0}
-                </strong>
+          <div className="all-time-grid">
+            <div className="summary-card">
+              <div className="summary-label">Total Sessions</div>
+              <div className="summary-value">
+                {allTimeStats.totalSessions ||
+                  allTimeStats.total_sessions ||
+                  0}
               </div>
-              <div className="stat-item">
-                <span>Total Shots:</span>
-                <strong>
-                  {allTimeStats.totalShots || allTimeStats.total_shots || 0}
-                </strong>
-              </div>              <div className="stat-item">
-                <span>Total Goals:</span>
-                <strong>
-                  {allTimeStats.totalGoals || allTimeStats.total_goals || 0}
-                </strong>
+            </div>
+            <div className="summary-card">
+              <div className="summary-label">Total Shots</div>
+              <div className="summary-value">
+                {allTimeStats.totalShots || allTimeStats.total_shots || 0}
               </div>
-              <div className="stat-item">
-                <span>Overall Accuracy:</span>                <strong className="highlight">
-                  {safeToFixed(
-                    allTimeStats?.avgAccuracy || allTimeStats?.avg_accuracy || 0
-                  )}
-                  %
-                </strong>
+            </div>
+            <div className="summary-card">
+              <div className="summary-label">Total Goals</div>
+              <div className="summary-value">
+                {allTimeStats.totalGoals || allTimeStats.total_goals || 0}
               </div>
-              <div className="stat-item">
-                <span>Average Speed:</span>
-                <strong>
-                  {safeToFixed(
-                    allTimeStats?.avgSpeed || allTimeStats?.avg_speed || 0,
-                    2
-                  )}
-                </strong>
+            </div>
+            <div className="summary-card">
+              <div className="summary-label">Average Accuracy</div>
+              <div className="summary-value">
+                {safeToFixed(
+                  allTimeStats?.avgAccuracy || allTimeStats?.avg_accuracy || 0
+                )}
+                %
               </div>
-              <div className="stat-item">
-                <span>Total Play Time:</span>
-                <strong>
-                  {formatTime(
-                    allTimeStats.totalPlayTime ||
-                      allTimeStats.total_play_time ||
-                      0
-                  )}
-                </strong>
+            </div>
+            <div className="summary-card">
+              <div className="summary-label">Average Speed</div>
+              <div className="summary-value">
+                {safeToFixed(
+                  allTimeStats?.avgSpeed || allTimeStats?.avg_speed || 0,
+                  2
+                )}
               </div>
-            </div>            <div className="stat-group">
-              <h3>📊 Performance Metrics</h3>
-              <div className="stat-item">
-                <span>Avg Shots per Session:</span>
-                <strong>
-                  {(allTimeStats?.totalSessions ||
-                    allTimeStats?.total_sessions ||
-                    0) > 0
-                    ? safeToFixed(
-                        (allTimeStats?.totalShots ||
-                          allTimeStats?.total_shots ||
-                          0) /
-                          (allTimeStats?.totalSessions ||
-                            allTimeStats?.total_sessions)
-                      )
-                    : 0}
-                </strong>
+            </div>
+            <div className="summary-card">
+              <div className="summary-label">Total Play Time</div>
+              <div className="summary-value">
+                {formatTime(
+                  allTimeStats.totalPlayTime ||
+                    allTimeStats.total_play_time ||
+                    0
+                )}
               </div>
-              <div className="stat-item">
-                <span>Avg Goals per Session:</span>
-                <strong>
-                  {(allTimeStats?.totalSessions ||
-                    allTimeStats?.total_sessions ||
-                    0) > 0
-                    ? safeToFixed(
-                        (allTimeStats?.totalGoals ||
-                          allTimeStats?.total_goals ||
-                          0) /
-                          (allTimeStats?.totalSessions ||
-                            allTimeStats?.total_sessions)
-                      )
-                    : 0}
-                </strong>
+            </div>
+            <div className="summary-card">
+              <div className="summary-label">Avg Shots/Session</div>
+              <div className="summary-value">
+                {(allTimeStats?.totalSessions ||
+                  allTimeStats?.total_sessions ||
+                  0) > 0
+                  ? safeToFixed(
+                      (allTimeStats?.totalShots ||
+                        allTimeStats?.total_shots ||
+                        0) /
+                        (allTimeStats?.totalSessions ||
+                          allTimeStats?.total_sessions)
+                    )
+                  : 0}
               </div>
-              <div className="stat-item">
-                <span>Avg Session Duration:</span>
-                <strong>
-                  {(allTimeStats.totalSessions ||
-                    allTimeStats.total_sessions ||
-                    0) > 0
-                    ? formatTime(
-                        (allTimeStats.totalPlayTime ||
-                          allTimeStats.total_play_time ||
-                          0) /
-                          (allTimeStats.totalSessions ||
-                            allTimeStats.total_sessions)
-                      )
-                    : "0:00"}
-                </strong>
+            </div>
+            <div className="summary-card">
+              <div className="summary-label">Avg Goals/Session</div>
+              <div className="summary-value">
+                {(allTimeStats?.totalSessions ||
+                  allTimeStats?.total_sessions ||
+                  0) > 0
+                  ? safeToFixed(
+                      (allTimeStats?.totalGoals ||
+                        allTimeStats?.total_goals ||
+                        0) /
+                        (allTimeStats?.totalSessions ||
+                          allTimeStats?.total_sessions)
+                    )
+                  : 0}
+              </div>
+            </div>
+            <div className="summary-card">
+              <div className="summary-label">Avg Session Duration</div>
+              <div className="summary-value">
+                {(allTimeStats.totalSessions ||
+                  allTimeStats.total_sessions ||
+                  0) > 0
+                  ? formatTime(
+                      (allTimeStats.totalPlayTime ||
+                        allTimeStats.total_play_time ||
+                        0) /
+                        (allTimeStats.totalSessions ||
+                          allTimeStats.total_sessions)
+                    )
+                  : "0:00"}
               </div>
             </div>
           </div>

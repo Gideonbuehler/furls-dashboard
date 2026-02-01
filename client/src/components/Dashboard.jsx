@@ -85,28 +85,33 @@ function Dashboard({ currentStats, allTimeStats, sessionHistory }) {
             Possession: {currentStats?.possessionTime?.toFixed(1) || 0}s
           </div>
         </div>
-      </div>
-      {allTimeStats && (
+      </div>      {allTimeStats && (
         <div className="all-time-stats">
           <h2 className="section-title">All-Time Statistics</h2>
           <div className="all-time-grid">
             <div className="summary-card">
               <div className="summary-label">Total Sessions</div>
-              <div className="summary-value">{allTimeStats.totalSessions}</div>
-            </div>            <div className="summary-card">
+              <div className="summary-value">
+                {allTimeStats.totalSessions || allTimeStats.total_sessions || 0}
+              </div>
+            </div>
+            <div className="summary-card">
               <div className="summary-label">Total Shots</div>
               <div className="summary-value">
-                {allTimeStats.totalShots}
+                {allTimeStats.totalShots || allTimeStats.total_shots || 0}
               </div>
-            </div>            <div className="summary-card">
+            </div>
+            <div className="summary-card">
               <div className="summary-label">Total Goals</div>
-              <div className="summary-value">{allTimeStats.totalGoals}</div>
+              <div className="summary-value">
+                {allTimeStats.totalGoals || allTimeStats.total_goals || 0}
+              </div>
             </div>
             <div className="summary-card">
               <div className="summary-label">Average Accuracy</div>
               <div className="summary-value">
                 {safeToFixed(
-                  allTimeStats?.avgAccuracy || allTimeStats?.avg_accuracy
+                  allTimeStats?.avgAccuracy || allTimeStats?.avg_accuracy || 0
                 )}
                 %
               </div>
@@ -114,15 +119,23 @@ function Dashboard({ currentStats, allTimeStats, sessionHistory }) {
             <div className="summary-card">
               <div className="summary-label">Average Speed</div>
               <div className="summary-value">
-                {allTimeStats.avgSpeed?.toFixed(0)}
+                {safeToFixed(
+                  allTimeStats?.avgSpeed || allTimeStats?.avg_speed || 0,
+                  0
+                )}
               </div>
             </div>
             <div className="summary-card">
               <div className="summary-label">Total Play Time</div>
               <div className="summary-value">
-                {formatTime(allTimeStats.totalPlayTime)}
+                {formatTime(
+                  allTimeStats.totalPlayTime ||
+                    allTimeStats.total_play_time ||
+                    0
+                )}
               </div>
-            </div>          </div>
+            </div>
+          </div>
         </div>
       )}
       {chartData.length > 0 && (
