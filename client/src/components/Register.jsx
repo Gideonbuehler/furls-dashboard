@@ -17,13 +17,11 @@ function Register({ onRegister }) {
     e.preventDefault();
     setError("");
 
-    // Validate passwords match
     if (formData.password !== formData.confirmPassword) {
       setError("Passwords do not match");
       return;
     }
 
-    // Validate username format
     if (!/^[a-zA-Z0-9_]+$/.test(formData.username)) {
       setError("Username can only contain letters, numbers, and underscores");
       return;
@@ -48,146 +46,114 @@ function Register({ onRegister }) {
       } else {
         setError(err.response?.data?.error || "Registration failed");
       }
+      // Don't clear fields on error
     } finally {
       setLoading(false);
     }
-  };  return (
+  };
+
+  return (
     <div className="auth-container">
-      <div className="auth-background">
-        <div className="gradient-orb orb-1"></div>
-        <div className="gradient-orb orb-2"></div>
-        <div className="gradient-orb orb-3"></div>
-      </div>
-      
       <div className="auth-card">
         <div className="auth-header">
-          <div className="logo-container">
-            <span className="logo-icon">🚗</span>
-            <h1 className="logo-text">FURLS</h1>
-          </div>
-          <p className="auth-subtitle">Create your account to get started</p>
+          <h1 className="logo-text">FURLS</h1>
+          <p className="auth-subtitle">Create your account</p>
         </div>
 
         <form onSubmit={handleSubmit} className="auth-form">
           <div className="form-group">
-            <label htmlFor="username">Username *</label>
-            <div className="input-wrapper">
-              <span className="input-icon">👤</span>
-              <input
-                id="username"
-                type="text"
-                value={formData.username}
-                onChange={(e) =>
-                  setFormData({ ...formData, username: e.target.value })
-                }
-                placeholder="username123"
-                required
-                minLength={3}
-                maxLength={30}
-                disabled={loading}
-              />
-            </div>
-            <small style={{ color: 'rgba(255, 255, 255, 0.5)', fontSize: '0.85rem', marginLeft: '0.25rem' }}>
-              Letters, numbers, and underscores only
-            </small>
+            <label htmlFor="username">Username</label>
+            <input
+              id="username"
+              type="text"
+              value={formData.username}
+              onChange={(e) =>
+                setFormData({ ...formData, username: e.target.value })
+              }
+              placeholder="Choose a username"
+              required
+              disabled={loading}
+              className="auth-input"
+            />
           </div>
 
           <div className="form-group">
-            <label htmlFor="email">Email *</label>
-            <div className="input-wrapper">
-              <span className="input-icon">✉️</span>
-              <input
-                id="email"
-                type="email"
-                value={formData.email}
-                onChange={(e) =>
-                  setFormData({ ...formData, email: e.target.value })
-                }
-                placeholder="you@example.com"
-                required
-                disabled={loading}
-              />
-            </div>
+            <label htmlFor="email">Email</label>
+            <input
+              id="email"
+              type="email"
+              value={formData.email}
+              onChange={(e) =>
+                setFormData({ ...formData, email: e.target.value })
+              }
+              placeholder="Enter your email"
+              required
+              disabled={loading}
+              className="auth-input"
+            />
           </div>
 
           <div className="form-group">
-            <label htmlFor="displayName">Display Name (Optional)</label>
-            <div className="input-wrapper">
-              <span className="input-icon">✨</span>
-              <input
-                id="displayName"
-                type="text"
-                value={formData.displayName}
-                onChange={(e) =>
-                  setFormData({ ...formData, displayName: e.target.value })
-                }
-                placeholder="Your display name"
-                maxLength={50}
-                disabled={loading}
-              />
-            </div>
+            <label htmlFor="displayName">Display Name (optional)</label>
+            <input
+              id="displayName"
+              type="text"
+              value={formData.displayName}
+              onChange={(e) =>
+                setFormData({ ...formData, displayName: e.target.value })
+              }
+              placeholder="How others will see you"
+              disabled={loading}
+              className="auth-input"
+            />
           </div>
 
           <div className="form-group">
-            <label htmlFor="password">Password *</label>
-            <div className="input-wrapper">
-              <span className="input-icon">🔒</span>
-              <input
-                id="password"
-                type="password"
-                value={formData.password}
-                onChange={(e) =>
-                  setFormData({ ...formData, password: e.target.value })
-                }
-                placeholder="At least 6 characters"
-                required
-                minLength={6}
-                disabled={loading}
-              />
-            </div>
+            <label htmlFor="password">Password</label>
+            <input
+              id="password"
+              type="password"
+              value={formData.password}
+              onChange={(e) =>
+                setFormData({ ...formData, password: e.target.value })
+              }
+              placeholder="Create a password (min 6 characters)"
+              required
+              disabled={loading}
+              minLength={6}
+              className="auth-input"
+            />
           </div>
 
           <div className="form-group">
-            <label htmlFor="confirmPassword">Confirm Password *</label>
-            <div className="input-wrapper">
-              <span className="input-icon">🔐</span>
-              <input
-                id="confirmPassword"
-                type="password"
-                value={formData.confirmPassword}
-                onChange={(e) =>
-                  setFormData({ ...formData, confirmPassword: e.target.value })
-                }
-                placeholder="Confirm your password"
-                required
-                disabled={loading}
-              />
-            </div>
+            <label htmlFor="confirmPassword">Confirm Password</label>
+            <input
+              id="confirmPassword"
+              type="password"
+              value={formData.confirmPassword}
+              onChange={(e) =>
+                setFormData({ ...formData, confirmPassword: e.target.value })
+              }
+              placeholder="Re-enter your password"
+              required
+              disabled={loading}
+              minLength={6}
+              className="auth-input"
+            />
           </div>
 
           {error && (
             <div className="error-message">
-              <span className="error-icon">⚠️</span>
               {error}
             </div>
           )}
 
           <button 
             type="submit" 
-            className={`btn-auth ${loading ? 'btn-loading' : ''}`}
+            className="btn-auth"
             disabled={loading}
           >
-            {loading ? (
-              <>
-                <span className="spinner"></span>
-                Creating Account...
-              </>
-            ) : (
-              <>
-                <span>Create Account</span>
-                <span className="btn-arrow">→</span>
-              </>
-            )}
+            {loading ? "Creating account..." : "Create Account"}
           </button>
         </form>
       </div>
