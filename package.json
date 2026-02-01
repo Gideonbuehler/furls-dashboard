@@ -2,12 +2,11 @@
   "name": "furls-dashboard",
   "version": "1.0.0",
   "description": "FURLS Training Statistics Dashboard",
-  "main": "server/index.js",
-  "scripts": {
+  "main": "server/index.js",  "scripts": {
     "dev": "concurrently \"npm run server\" \"npm run client\"",
     "server": "nodemon server/index.js",
     "client": "cd client && npm run dev",
-    "build": "cd client && npm run build",
+    "build": "cd client && npm install && npm run build && cd .. && echo Build complete!",
     "start": "node server/index.js",
     "test-data": "node server/test-data.js"
   },
