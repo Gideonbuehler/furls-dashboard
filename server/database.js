@@ -23,15 +23,22 @@ function runMigrations() {
       console.error("Error checking users table:", err);
       return;
     }
-    
-    const hasApiKey = columns.some(col => col.name === "api_key");
+      const hasApiKey = columns.some(col => col.name === "api_key");
     if (!hasApiKey) {
       console.log("Adding api_key column to users table...");
-      db.run("ALTER TABLE users ADD COLUMN api_key TEXT UNIQUE", (err) => {
+      db.run("ALTER TABLE users ADD COLUMN api_key TEXT", (err) => {
         if (err) {
           console.error("Error adding api_key column:", err);
         } else {
           console.log("✓ api_key column added successfully");
+          // Create unique index separately
+          db.run("CREATE UNIQUE INDEX IF NOT EXISTS idx_users_api_key ON users(api_key)", (err) => {
+            if (err) {
+              console.error("Error creating api_key index:", err);
+            } else {
+              console.log("✓ api_key unique index created");
+            }
+          });
         }
       });
     }
