@@ -17,8 +17,7 @@
     "dashboard"
   ],
   "author": "",
-  "license": "MIT",
-  "dependencies": {
+  "license": "MIT",  "dependencies": {
     "bcryptjs": "^3.0.3",
     "chokidar": "^3.5.3",
     "cors": "^2.8.5",
@@ -26,7 +25,7 @@
     "express": "^4.18.2",
     "express-validator": "^7.3.1",
     "jsonwebtoken": "^9.0.3",
-    "sqlite3": "^5.1.7",
+    "pg": "^8.11.3",
     "uuid": "^13.0.0"
   },
   "devDependencies": {

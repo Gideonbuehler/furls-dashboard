@@ -1,255 +1,199 @@
-const sqlite3 = require("sqlite3").verbose();
-const path = require("path");
+const { Pool } = require("pg");
 
-const DB_PATH = path.join(__dirname, "furls.db");
+// Database configuration
+// In production (Render), DATABASE_URL is automatically provided by Render PostgreSQL
+// In development, use a local PostgreSQL connection string
+const isProduction = process.env.NODE_ENV === "production";
 
-// Initialize database
-const db = new sqlite3.Database(DB_PATH, (err) => {
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: isProduction
+    ? {
+        rejectUnauthorized: false, // Required for Render.com PostgreSQL
+      }
+    : false,
+});
+
+// Test database connection
+pool.query("SELECT NOW()", (err, res) => {
   if (err) {
-    console.error("Database connection error:", err);
+    console.error("❌ Database connection error:", err);
   } else {
-    console.log("Connected to SQLite database");
+    console.log("✅ Connected to PostgreSQL database at:", res.rows[0].now);
     initializeTables();
-    runMigrations();
   }
 });
 
-function runMigrations() {
-  console.log("Running database migrations...");
+// Handle pool errors
+pool.on("error", (err) => {
+  console.error("Unexpected database error:", err);
+});
 
-  // Migration: Add api_key column if it doesn't exist
-  db.all("PRAGMA table_info(users)", (err, columns) => {
-    if (err) {
-      console.error("Error checking users table:", err);
-      return;
-    }
-    const hasApiKey = columns.some((col) => col.name === "api_key");
-    if (!hasApiKey) {
-      console.log("Adding api_key column to users table...");
-      db.run("ALTER TABLE users ADD COLUMN api_key TEXT", (err) => {
-        if (err) {
-          console.error("Error adding api_key column:", err);
-        } else {
-          console.log("✓ api_key column added successfully");
-          // Create unique index separately
-          db.run(
-            "CREATE UNIQUE INDEX IF NOT EXISTS idx_users_api_key ON users(api_key)",
-            (err) => {
-              if (err) {
-                console.error("Error creating api_key index:", err);
-              } else {
-                console.log("✓ api_key unique index created");
-              }
-            }
-          );
-        }
-      });
-    }
+async function initializeTables() {
+  const client = await pool.connect();
+  try {
+    console.log("Initializing database tables...");
 
-    const hasProfileVisibility = columns.some(
-      (col) => col.name === "profile_visibility"
+    // Users table
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS users (
+        id SERIAL PRIMARY KEY,
+        username TEXT UNIQUE NOT NULL,
+        email TEXT UNIQUE NOT NULL,
+        password TEXT NOT NULL,
+        api_key TEXT UNIQUE,
+        display_name TEXT,
+        avatar_url TEXT,
+        profile_visibility TEXT DEFAULT 'public',
+        total_sessions INTEGER DEFAULT 0,
+        total_shots INTEGER DEFAULT 0,
+        total_goals INTEGER DEFAULT 0,
+        last_active TIMESTAMP,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+    console.log("✓ Users table ready");
+
+    // Sessions table (training sessions)
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS sessions (
+        id SERIAL PRIMARY KEY,
+        user_id INTEGER NOT NULL,
+        timestamp TIMESTAMP NOT NULL,
+        shots INTEGER DEFAULT 0,
+        goals INTEGER DEFAULT 0,
+        average_speed REAL DEFAULT 0,
+        speed_samples INTEGER DEFAULT 0,
+        boost_collected REAL DEFAULT 0,
+        boost_used REAL DEFAULT 0,
+        game_time REAL DEFAULT 0,
+        possession_time REAL DEFAULT 0,
+        team_possession_time REAL DEFAULT 0,
+        opponent_possession_time REAL DEFAULT 0,
+        shot_heatmap TEXT,
+        goal_heatmap TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+      )
+    `);
+    console.log("✓ Sessions table ready");
+
+    // Friendships table
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS friendships (
+        id SERIAL PRIMARY KEY,
+        user_id INTEGER NOT NULL,
+        friend_id INTEGER NOT NULL,
+        status TEXT CHECK(status IN ('pending', 'accepted', 'rejected')) DEFAULT 'pending',
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+        FOREIGN KEY (friend_id) REFERENCES users(id) ON DELETE CASCADE,
+        UNIQUE(user_id, friend_id)
+      )
+    `);
+    console.log("✓ Friendships table ready");
+
+    // User settings table
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS user_settings (
+        id SERIAL PRIMARY KEY,
+        user_id INTEGER UNIQUE NOT NULL,
+        theme TEXT DEFAULT 'dark',
+        privacy_stats TEXT CHECK(privacy_stats IN ('public', 'friends', 'private')) DEFAULT 'friends',
+        privacy_profile TEXT CHECK(privacy_profile IN ('public', 'friends', 'private')) DEFAULT 'public',
+        notifications_enabled BOOLEAN DEFAULT TRUE,
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+      )
+    `);
+    console.log("✓ User settings table ready");
+
+    // Create indexes for better performance
+    await client.query(
+      `CREATE INDEX IF NOT EXISTS idx_sessions_user_id ON sessions(user_id)`
     );
-    if (!hasProfileVisibility) {
-      console.log("Adding profile_visibility column to users table...");
-      db.run(
-        "ALTER TABLE users ADD COLUMN profile_visibility TEXT DEFAULT 'public'",
-        (err) => {
-          if (err) {
-            console.error("Error adding profile_visibility column:", err);
-          } else {
-            console.log("✓ profile_visibility column added successfully");
-          }
-        }
-      );
-    }
-
-    const hasTotalSessions = columns.some(
-      (col) => col.name === "total_sessions"
+    await client.query(
+      `CREATE INDEX IF NOT EXISTS idx_sessions_timestamp ON sessions(timestamp)`
     );
-    if (!hasTotalSessions) {
-      console.log("Adding statistics columns to users table...");
-      db.run(
-        "ALTER TABLE users ADD COLUMN total_sessions INTEGER DEFAULT 0",
-        (err) => {
-          if (err) console.error("Error adding total_sessions:", err);
-        }
-      );
-      db.run(
-        "ALTER TABLE users ADD COLUMN total_shots INTEGER DEFAULT 0",
-        (err) => {
-          if (err) console.error("Error adding total_shots:", err);
-        }
-      );
-      db.run(
-        "ALTER TABLE users ADD COLUMN total_goals INTEGER DEFAULT 0",
-        (err) => {
-          if (err) console.error("Error adding total_goals:", err);
-        }
-      );
-      db.run("ALTER TABLE users ADD COLUMN last_active DATETIME", (err) => {
-        if (err) console.error("Error adding last_active:", err);
-        else console.log("✓ Statistics columns added successfully");
-      });
-    }
-  });
+    await client.query(
+      `CREATE INDEX IF NOT EXISTS idx_friendships_user_id ON friendships(user_id)`
+    );
+    await client.query(
+      `CREATE INDEX IF NOT EXISTS idx_friendships_friend_id ON friendships(friend_id)`
+    );
+    await client.query(
+      `CREATE INDEX IF NOT EXISTS idx_friendships_status ON friendships(status)`
+    );
+    await client.query(
+      `CREATE INDEX IF NOT EXISTS idx_users_api_key ON users(api_key) WHERE api_key IS NOT NULL`
+    );
+    console.log("✓ Indexes created");
 
-  console.log("✓ Database migrations complete");
+    console.log("✅ Database initialization complete!");
+  } catch (err) {
+    console.error("❌ Error initializing database:", err);
+  } finally {
+    client.release();
+  }
 }
 
-function initializeTables() {
-  // Users table
-  db.run(
-    `
-    CREATE TABLE IF NOT EXISTS users (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      username TEXT UNIQUE NOT NULL,
-      email TEXT UNIQUE NOT NULL,
-      password TEXT NOT NULL,
-      api_key TEXT UNIQUE,
-      display_name TEXT,
-      avatar_url TEXT,
-      profile_visibility TEXT DEFAULT 'public',
-      total_sessions INTEGER DEFAULT 0,
-      total_shots INTEGER DEFAULT 0,
-      total_goals INTEGER DEFAULT 0,
-      last_active DATETIME,
-      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
-    )
-  `,
-    (err) => {
-      if (err) console.error("Error creating users table:", err);
-    }
-  );
-
-  // Sessions table (training sessions)
-  db.run(
-    `
-    CREATE TABLE IF NOT EXISTS sessions (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      user_id INTEGER NOT NULL,
-      timestamp DATETIME NOT NULL,
-      shots INTEGER DEFAULT 0,
-      goals INTEGER DEFAULT 0,
-      average_speed REAL DEFAULT 0,
-      speed_samples INTEGER DEFAULT 0,
-      boost_collected REAL DEFAULT 0,
-      boost_used REAL DEFAULT 0,
-      game_time REAL DEFAULT 0,
-      possession_time REAL DEFAULT 0,
-      team_possession_time REAL DEFAULT 0,
-      opponent_possession_time REAL DEFAULT 0,
-      shot_heatmap TEXT,
-      goal_heatmap TEXT,
-      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-    )
-  `,
-    (err) => {
-      if (err) console.error("Error creating sessions table:", err);
-    }
-  );
-
-  // Friendships table
-  db.run(
-    `
-    CREATE TABLE IF NOT EXISTS friendships (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      user_id INTEGER NOT NULL,
-      friend_id INTEGER NOT NULL,
-      status TEXT CHECK(status IN ('pending', 'accepted', 'rejected')) DEFAULT 'pending',
-      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-      FOREIGN KEY (friend_id) REFERENCES users(id) ON DELETE CASCADE,
-      UNIQUE(user_id, friend_id)
-    )
-  `,
-    (err) => {
-      if (err) console.error("Error creating friendships table:", err);
-    }
-  );
-
-  // User settings table
-  db.run(
-    `
-    CREATE TABLE IF NOT EXISTS user_settings (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      user_id INTEGER UNIQUE NOT NULL,
-      theme TEXT DEFAULT 'dark',
-      privacy_stats TEXT CHECK(privacy_stats IN ('public', 'friends', 'private')) DEFAULT 'friends',
-      privacy_profile TEXT CHECK(privacy_profile IN ('public', 'friends', 'private')) DEFAULT 'public',
-      notifications_enabled BOOLEAN DEFAULT 1,
-      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-    )
-  `,
-    (err) => {
-      if (err) console.error("Error creating user_settings table:", err);
-    }
-  );
-
-  // Create indexes for better performance
-  db.run(
-    `CREATE INDEX IF NOT EXISTS idx_sessions_user_id ON sessions(user_id)`,
-    (err) => {
-      if (err) console.error("Error creating index:", err);
-    }
-  );
-  db.run(
-    `CREATE INDEX IF NOT EXISTS idx_sessions_timestamp ON sessions(timestamp)`,
-    (err) => {
-      if (err) console.error("Error creating index:", err);
-    }
-  );
-  db.run(
-    `CREATE INDEX IF NOT EXISTS idx_friendships_user_id ON friendships(user_id)`,
-    (err) => {
-      if (err) console.error("Error creating index:", err);
-    }
-  );
-  db.run(
-    `CREATE INDEX IF NOT EXISTS idx_friendships_friend_id ON friendships(friend_id)`,
-    (err) => {
-      if (err) console.error("Error creating index:", err);
-    }
-  );
-  db.run(
-    `CREATE INDEX IF NOT EXISTS idx_friendships_status ON friendships(status)`,
-    (err) => {
-      if (err) console.error("Error creating index:", err);
-      else console.log("Database tables initialized successfully");
-    }
-  );
+// Helper function to convert SQLite-style ? placeholders to PostgreSQL $1, $2, etc.
+function convertPlaceholders(sql) {
+  let index = 0;
+  return sql.replace(/\?/g, () => `$${++index}`);
 }
 
-// Helper functions for database operations
+// Helper functions for database operations (compatible with SQLite style)
 const dbAsync = {
-  run: (sql, params = []) => {
-    return new Promise((resolve, reject) => {
-      db.run(sql, params, function (err) {
-        if (err) reject(err);
-        else resolve({ id: this.lastID, changes: this.changes });
-      });
-    });
+  run: async (sql, params = []) => {
+    const client = await pool.connect();
+    try {
+      // Convert ? placeholders to $1, $2, etc.
+      let pgSql = convertPlaceholders(sql);
+      
+      // If it's an INSERT, add RETURNING id to get the inserted ID
+      if (pgSql.trim().toUpperCase().startsWith('INSERT')) {
+        // Only add RETURNING if it's not already there
+        if (!pgSql.toUpperCase().includes('RETURNING')) {
+          pgSql += ' RETURNING id';
+        }
+      }
+      
+      const result = await client.query(pgSql, params);
+      return {
+        id: result.rows[0]?.id || null,
+        changes: result.rowCount,
+      };
+    } finally {
+      client.release();
+    }
   },
 
-  get: (sql, params = []) => {
-    return new Promise((resolve, reject) => {
-      db.get(sql, params, (err, row) => {
-        if (err) reject(err);
-        else resolve(row);
-      });
-    });
+  get: async (sql, params = []) => {
+    const client = await pool.connect();
+    try {
+      // Convert ? placeholders to $1, $2, etc.
+      const pgSql = convertPlaceholders(sql);
+      const result = await client.query(pgSql, params);
+      return result.rows[0] || null;
+    } finally {
+      client.release();
+    }
   },
 
-  all: (sql, params = []) => {
-    return new Promise((resolve, reject) => {
-      db.all(sql, params, (err, rows) => {
-        if (err) reject(err);
-        else resolve(rows);
-      });
-    });
+  all: async (sql, params = []) => {
+    const client = await pool.connect();
+    try {
+      // Convert ? placeholders to $1, $2, etc.
+      const pgSql = convertPlaceholders(sql);
+      const result = await client.query(pgSql, params);
+      return result.rows;
+    } finally {
+      client.release();
+    }
   },
 };
 
-module.exports = { db, dbAsync };
+// Export pool for direct queries and dbAsync for compatibility
+module.exports = { db: pool, dbAsync, pool };
