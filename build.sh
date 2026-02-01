@@ -1,7 +1,6 @@
 # Render.com Build Script
 # This script runs during deployment
 
-echo "Installing dependencies..."
 #!/bin/bash
 set -e  # Exit on error
 
@@ -15,33 +14,36 @@ npm install
 echo "✓ Backend dependencies installed"
 
 echo ""
-echo "Step 2: Navigating to client folder..."
+echo "Step 2: Installing frontend dependencies..."
 cd client || exit 1
 echo "✓ In client folder: $(pwd)"
-
-echo ""
-echo "Step 3: Installing frontend dependencies..."
 npm install
 echo "✓ Frontend dependencies installed"
 
 echo ""
-echo "Step 4: Building React app..."
-npm run build
+echo "Step 3: Building React app..."
+# Use npx to ensure vite is found from node_modules
+npx vite build
 echo "✓ React app built"
 
+cd ..
+
+cd ..
+
 echo ""
-echo "Step 5: Verifying build output..."
-if [ -d "dist" ]; then
-    echo "✓ dist folder exists"
-    ls -la dist/
-    if [ -f "dist/index.html" ]; then
+echo "Step 4: Verifying build output..."
+if [ -d "client/dist" ]; then
+    echo "✓ client/dist folder exists"
+    ls -la client/dist/ | head -20
+    if [ -f "client/dist/index.html" ]; then
         echo "✓ index.html found!"
+        echo "✓ Build output verified successfully"
     else
         echo "✗ ERROR: index.html not found!"
         exit 1
     fi
 else
-    echo "✗ ERROR: dist folder not created!"
+    echo "✗ ERROR: client/dist folder not created!"
     exit 1
 fi
 
