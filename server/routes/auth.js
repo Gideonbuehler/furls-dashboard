@@ -42,7 +42,7 @@ router.post(
       const hashedPassword = await bcrypt.hash(password, 10);
 
       // Generate API key for plugin uploads
-      const apiKey = crypto.randomBytes(32).toString("hex");      // Create user
+      const apiKey = crypto.randomBytes(32).toString("hex"); // Create user
       const result = await dbAsync.run(
         "INSERT INTO users (username, email, password, display_name, api_key) VALUES (?, ?, ?, ?, ?)",
         [username, email, hashedPassword, displayName || username, apiKey]
@@ -65,7 +65,8 @@ router.post(
           displayName: displayName || username,
         },
         token,
-      });    } catch (error) {
+      });
+    } catch (error) {
       console.error("Registration error:", error);
       console.error("Error details:", {
         message: error.message,
@@ -74,7 +75,8 @@ router.post(
       });
       res.status(500).json({
         error: "Failed to register user",
-        details: process.env.NODE_ENV === "production" ? undefined : error.message,
+        details:
+          process.env.NODE_ENV === "production" ? undefined : error.message,
       });
     }
   }

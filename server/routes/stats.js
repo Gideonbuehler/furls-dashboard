@@ -33,7 +33,8 @@ router.post("/save", authenticateToken, async (req, res) => {
         statsData.opponentPossessionTime || 0,
         JSON.stringify(statsData.shotHeatmap || []),
         JSON.stringify(statsData.goalHeatmap || []),
-      ]    );
+      ]
+    );
 
     res.status(201).json({
       message: "Session saved successfully",

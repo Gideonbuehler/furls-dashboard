@@ -87,10 +87,10 @@ router.get("/leaderboard/:stat", async (req, res) => {
   `;
 
   try {
-    const players = await dbAsync.all(
-      query,
-      [parseInt(limit), parseInt(offset)]
-    );
+    const players = await dbAsync.all(query, [
+      parseInt(limit),
+      parseInt(offset),
+    ]);
 
     res.json(players || []);
   } catch (error) {

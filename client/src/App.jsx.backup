@@ -1,8 +1,5 @@
 import { useState, useEffect } from "react";
-import "./styles/theme.css";
-import "./styles/App.css";
-import "./styles/components.css";
-import "./styles/buttons-inputs.css";
+import "./App.css";
 import Login from "./components/Login";
 import Register from "./components/Register";
 import Dashboard from "./components/Dashboard";
@@ -91,64 +88,61 @@ function App() {
 
   if (showAuth) {
     return (
-      <div className="auth-container">
-        <div className="auth-card">
-          {authMode === "login" ? (
-            <>
-              <Login onLogin={handleLogin} />
-              <div className="auth-switch">
-                Don't have an account?{" "}
-                <button onClick={() => setAuthMode("register")}>Register</button>
-              </div>
-            </>
-          ) : (
-            <>
-              <Register onRegister={handleRegister} />
-              <div className="auth-switch">
-                Already have an account?{" "}
-                <button onClick={() => setAuthMode("login")}>Login</button>
-              </div>
-            </>
-          )}
-        </div>
+      <div className="app">
+        {authMode === "login" ? (
+          <>
+            <Login onLogin={handleLogin} />
+            <div className="auth-switch">
+              Don't have an account?{" "}
+              <button onClick={() => setAuthMode("register")}>Register</button>
+            </div>
+          </>
+        ) : (
+          <>
+            <Register onRegister={handleRegister} />
+            <div className="auth-switch">
+              Already have an account?{" "}
+              <button onClick={() => setAuthMode("login")}>Login</button>
+            </div>
+          </>
+        )}
       </div>
     );
-  }  const tabs = [
-    { id: "dashboard", name: "Dashboard", icon: "📊" },
-    { id: "heatmap", name: "Heatmap", icon: "🔥" },
-    { id: "history", name: "History", icon: "📈" },
-    { id: "stats", name: "Stats", icon: "📋" },
-    { id: "friends", name: "Friends", icon: "👥" },
-    { id: "leaderboard", name: "Leaderboard", icon: "🏆" },
-    { id: "search", name: "Search", icon: "🔍" },
-    { id: "settings", name: "Settings", icon: "⚙️" },
+  }
+
+  const tabs = [
+    { id: "dashboard", name: "📊 Dashboard", icon: "📊" },
+    { id: "heatmap", name: "🔥 Heatmap", icon: "🔥" },
+    { id: "history", name: "📈 History", icon: "📈" },
+    { id: "stats", name: "📋 Stats", icon: "📋" },
+    { id: "friends", name: "👥 Friends", icon: "👥" },
+    { id: "leaderboard", name: "🏆 Leaderboard", icon: "🏆" },
+    { id: "search", name: "🔍 Search Players", icon: "🔍" },
+    { id: "settings", name: "⚙️ Settings", icon: "⚙️" },
   ];
 
   return (
     <div className="app">
       <header className="app-header">
         <div className="header-content">
-          <h1>
-            <div className="logo-icon">🚗</div>
-            FURLS
-          </h1>
-          
-          <div className="user-info">
-            <div className="connection-status">
-              <span className={`status-indicator ${connected ? "connected" : "disconnected"}`}></span>
-              <span>{connected ? "Connected" : "Offline"}</span>
-            </div>
-            
-            <div className="user-avatar">
-              {(user?.displayName || user?.username || "U").charAt(0).toUpperCase()}
-            </div>
-            
-            <button className="logout-button" onClick={handleLogout}>
+          <h1>🚗 FURLS Training Dashboard</h1>
+          <div className="user-section">
+            <span className="welcome-text">
+              Welcome, {user?.displayName || user?.username}!
+            </span>
+            <button className="btn-logout" onClick={handleLogout}>
               Logout
             </button>
           </div>
         </div>
-
+        <div className="connection-status">
+          <span
+            className={`status-indicator ${
+              connected ? "connected" : "disconnected"
+            }`}
+          ></span>
+          <span>{connected ? "Connected to BakkesMod" : "Disconnected"}</span>
+        </div>
         <nav className="tab-navigation">
           {tabs.map((tab) => (
             <button
@@ -167,15 +161,15 @@ function App() {
         {loading ? (
           <div className="loading">
             <div className="spinner"></div>
-            <p className="loading-text">Loading training data...</p>
+            <p>Loading training data...</p>
           </div>
         ) : !connected ? (
           <div className="error-message">
-            <div className="error-icon">⚠️</div>
-            <h2>Not Connected</h2>
+            <h2>⚠️ Not Connected</h2>
             <p>Make sure the FURLS plugin is running and exporting data.</p>
-            <p style={{ fontSize: "0.875rem", color: "var(--text-disabled)" }}>
-              Watching: <code>%APPDATA%\bakkesmod\bakkesmod\data</code>
+            <p>
+              The server should be watching:{" "}
+              <code>%APPDATA%\bakkesmod\bakkesmod\data</code>
             </p>
           </div>
         ) : (

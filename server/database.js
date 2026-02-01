@@ -16,14 +16,14 @@ const db = new sqlite3.Database(DB_PATH, (err) => {
 
 function runMigrations() {
   console.log("Running database migrations...");
-  
+
   // Migration: Add api_key column if it doesn't exist
   db.all("PRAGMA table_info(users)", (err, columns) => {
     if (err) {
       console.error("Error checking users table:", err);
       return;
     }
-      const hasApiKey = columns.some(col => col.name === "api_key");
+    const hasApiKey = columns.some((col) => col.name === "api_key");
     if (!hasApiKey) {
       console.log("Adding api_key column to users table...");
       db.run("ALTER TABLE users ADD COLUMN api_key TEXT", (err) => {
@@ -32,48 +32,67 @@ function runMigrations() {
         } else {
           console.log("✓ api_key column added successfully");
           // Create unique index separately
-          db.run("CREATE UNIQUE INDEX IF NOT EXISTS idx_users_api_key ON users(api_key)", (err) => {
-            if (err) {
-              console.error("Error creating api_key index:", err);
-            } else {
-              console.log("✓ api_key unique index created");
+          db.run(
+            "CREATE UNIQUE INDEX IF NOT EXISTS idx_users_api_key ON users(api_key)",
+            (err) => {
+              if (err) {
+                console.error("Error creating api_key index:", err);
+              } else {
+                console.log("✓ api_key unique index created");
+              }
             }
-          });
+          );
         }
       });
     }
-    
-    const hasProfileVisibility = columns.some(col => col.name === "profile_visibility");
+
+    const hasProfileVisibility = columns.some(
+      (col) => col.name === "profile_visibility"
+    );
     if (!hasProfileVisibility) {
       console.log("Adding profile_visibility column to users table...");
-      db.run("ALTER TABLE users ADD COLUMN profile_visibility TEXT DEFAULT 'public'", (err) => {
-        if (err) {
-          console.error("Error adding profile_visibility column:", err);
-        } else {
-          console.log("✓ profile_visibility column added successfully");
+      db.run(
+        "ALTER TABLE users ADD COLUMN profile_visibility TEXT DEFAULT 'public'",
+        (err) => {
+          if (err) {
+            console.error("Error adding profile_visibility column:", err);
+          } else {
+            console.log("✓ profile_visibility column added successfully");
+          }
         }
-      });
+      );
     }
-    
-    const hasTotalSessions = columns.some(col => col.name === "total_sessions");
+
+    const hasTotalSessions = columns.some(
+      (col) => col.name === "total_sessions"
+    );
     if (!hasTotalSessions) {
       console.log("Adding statistics columns to users table...");
-      db.run("ALTER TABLE users ADD COLUMN total_sessions INTEGER DEFAULT 0", (err) => {
-        if (err) console.error("Error adding total_sessions:", err);
-      });
-      db.run("ALTER TABLE users ADD COLUMN total_shots INTEGER DEFAULT 0", (err) => {
-        if (err) console.error("Error adding total_shots:", err);
-      });
-      db.run("ALTER TABLE users ADD COLUMN total_goals INTEGER DEFAULT 0", (err) => {
-        if (err) console.error("Error adding total_goals:", err);
-      });
+      db.run(
+        "ALTER TABLE users ADD COLUMN total_sessions INTEGER DEFAULT 0",
+        (err) => {
+          if (err) console.error("Error adding total_sessions:", err);
+        }
+      );
+      db.run(
+        "ALTER TABLE users ADD COLUMN total_shots INTEGER DEFAULT 0",
+        (err) => {
+          if (err) console.error("Error adding total_shots:", err);
+        }
+      );
+      db.run(
+        "ALTER TABLE users ADD COLUMN total_goals INTEGER DEFAULT 0",
+        (err) => {
+          if (err) console.error("Error adding total_goals:", err);
+        }
+      );
       db.run("ALTER TABLE users ADD COLUMN last_active DATETIME", (err) => {
         if (err) console.error("Error adding last_active:", err);
         else console.log("✓ Statistics columns added successfully");
       });
     }
   });
-  
+
   console.log("✓ Database migrations complete");
 }
 

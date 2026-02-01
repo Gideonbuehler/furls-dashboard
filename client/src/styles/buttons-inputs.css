@@ -1,0 +1,355 @@
+/* Material Design Button Component */
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-lg);
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: 0.875rem;
+  font-weight: 500;
+  font-family: var(--font-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: all var(--transition-base);
+  position: relative;
+  overflow: hidden;
+  user-select: none;
+}
+
+.button::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.button:active::before {
+  width: 300px;
+  height: 300px;
+}
+
+.button:disabled {
+  opacity: 0.38;
+  cursor: not-allowed;
+}
+
+/* Button Variants */
+.button-contained {
+  background: linear-gradient(135deg, var(--primary-600), var(--primary-500));
+  color: white;
+  box-shadow: var(--shadow-2);
+}
+
+.button-contained:hover:not(:disabled) {
+  background: linear-gradient(135deg, var(--primary-700), var(--primary-600));
+  box-shadow: var(--shadow-3), var(--glow-primary);
+  transform: translateY(-2px);
+}
+
+.button-contained:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: var(--shadow-1);
+}
+
+.button-outlined {
+  background: transparent;
+  color: var(--primary-400);
+  border: 2px solid var(--primary-500);
+}
+
+.button-outlined:hover:not(:disabled) {
+  background: rgba(33, 150, 243, 0.08);
+  border-color: var(--primary-400);
+}
+
+.button-text {
+  background: transparent;
+  color: var(--primary-400);
+  padding: var(--spacing-sm) var(--spacing-md);
+}
+
+.button-text:hover:not(:disabled) {
+  background: rgba(33, 150, 243, 0.08);
+}
+
+/* Button Sizes */
+.button-small {
+  padding: 6px 12px;
+  font-size: 0.75rem;
+}
+
+.button-large {
+  padding: 12px 24px;
+  font-size: 1rem;
+}
+
+/* Button Colors */
+.button-accent {
+  background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+  color: var(--bg-primary);
+  box-shadow: var(--glow-accent);
+}
+
+.button-accent:hover:not(:disabled) {
+  filter: brightness(1.1);
+  transform: translateY(-2px);
+}
+
+.button-success {
+  background: linear-gradient(135deg, var(--accent-secondary), #00c853);
+  color: var(--bg-primary);
+}
+
+.button-warning {
+  background: linear-gradient(135deg, var(--accent-warning), #ffa000);
+  color: var(--bg-primary);
+}
+
+.button-error {
+  background: linear-gradient(135deg, var(--accent-error), #d32f2f);
+  color: white;
+}
+
+/* Icon Button */
+.icon-button {
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--text-secondary);
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-base);
+  position: relative;
+  overflow: hidden;
+}
+
+.icon-button:hover {
+  background: var(--surface-2);
+  color: var(--text-primary);
+}
+
+.icon-button::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.icon-button:active::before {
+  width: 100px;
+  height: 100px;
+}
+
+/* Floating Action Button (FAB) */
+.fab {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary-600), var(--primary-500));
+  color: white;
+  border: none;
+  cursor: pointer;
+  box-shadow: var(--shadow-3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  transition: all var(--transition-base);
+  position: fixed;
+  bottom: var(--spacing-xl);
+  right: var(--spacing-xl);
+  z-index: 100;
+}
+
+.fab:hover {
+  box-shadow: var(--shadow-4), var(--glow-primary);
+  transform: scale(1.1) rotate(90deg);
+}
+
+.fab:active {
+  transform: scale(0.95);
+}
+
+/* Material Design Input Fields */
+.input-group {
+  margin-bottom: var(--spacing-lg);
+}
+
+.input-label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: var(--spacing-xs);
+  transition: color var(--transition-base);
+}
+
+.input {
+  width: 100%;
+  padding: var(--spacing-md);
+  background: var(--surface-1);
+  border: 2px solid var(--surface-3);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  font-size: 1rem;
+  font-family: var(--font-primary);
+  transition: all var(--transition-base);
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--primary-500);
+  background: var(--surface-2);
+  box-shadow: 0 0 0 4px rgba(33, 150, 243, 0.1);
+}
+
+.input:focus + .input-label,
+.input:not(:placeholder-shown) + .input-label {
+  color: var(--primary-400);
+}
+
+.input::placeholder {
+  color: var(--text-disabled);
+}
+
+.input:disabled {
+  opacity: 0.38;
+  cursor: not-allowed;
+}
+
+/* Material Design Select */
+.select {
+  width: 100%;
+  padding: var(--spacing-md);
+  background: var(--surface-1);
+  border: 2px solid var(--surface-3);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  font-size: 1rem;
+  font-family: var(--font-primary);
+  cursor: pointer;
+  transition: all var(--transition-base);
+}
+
+.select:focus {
+  outline: none;
+  border-color: var(--primary-500);
+  background: var(--surface-2);
+  box-shadow: 0 0 0 4px rgba(33, 150, 243, 0.1);
+}
+
+/* Switch Toggle */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 48px;
+  height: 24px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.switch-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--surface-3);
+  transition: var(--transition-base);
+  border-radius: var(--radius-full);
+}
+
+.switch-slider:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background-color: var(--grey-300);
+  transition: var(--transition-base);
+  border-radius: 50%;
+  box-shadow: var(--shadow-1);
+}
+
+.switch input:checked + .switch-slider {
+  background: linear-gradient(135deg, var(--primary-600), var(--primary-400));
+  box-shadow: var(--glow-primary);
+}
+
+.switch input:checked + .switch-slider:before {
+  transform: translateX(24px);
+  background-color: white;
+}
+
+.switch input:focus + .switch-slider {
+  box-shadow: 0 0 0 4px rgba(33, 150, 243, 0.2);
+}
+
+/* Checkbox */
+.checkbox-wrapper {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  cursor: pointer;
+  user-select: none;
+}
+
+.checkbox {
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--surface-4);
+  border-radius: var(--radius-sm);
+  background: var(--surface-1);
+  cursor: pointer;
+  position: relative;
+  transition: all var(--transition-base);
+}
+
+.checkbox:checked {
+  background: linear-gradient(135deg, var(--primary-600), var(--primary-400));
+  border-color: var(--primary-500);
+}
+
+.checkbox:checked::after {
+  content: '✓';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.checkbox:focus {
+  box-shadow: 0 0 0 4px rgba(33, 150, 243, 0.2);
+}
