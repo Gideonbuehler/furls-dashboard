@@ -92,7 +92,7 @@ export const statsAPI = {
   getFriendStats: (friendId) => api.get(`/user/stats/friend/${friendId}`),
   getLeaderboard: (type = "friends", stat = "accuracy") =>
     api.get(`/user/stats/leaderboard?type=${type}&stat=${stat}`),
-  getPluginStatus: () => api.get("/stats/plugin-status"), // Check if plugin is connected
+  getPluginStatus: () => api.get("/user/stats/plugin-status"), // Check if plugin is connected
   getHeatmap: () => api.get("/user/stats/heatmap"), // Get aggregated heatmap data
 };
 

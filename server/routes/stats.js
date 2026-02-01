@@ -111,6 +111,43 @@ router.get("/alltime", authenticateToken, async (req, res) => {
   }
 });
 
+// Check plugin connection status (JWT authenticated version for dashboard)
+router.get("/plugin-status", authenticateToken, async (req, res) => {
+  try {
+    const user = await dbAsync.get(
+      "SELECT last_active FROM users WHERE id = ?",
+      [req.user.userId]
+    );
+
+    if (!user || !user.last_active) {
+      return res.json({
+        connected: false,
+        lastUpload: null,
+        message: "No data uploaded yet from plugin",
+      });
+    }
+
+    const lastUpload = new Date(user.last_active);
+    const now = new Date();
+    const diffMinutes = (now - lastUpload) / (1000 * 60);
+
+    // Consider connected if upload within last 5 minutes
+    const connected = diffMinutes < 5;
+
+    res.json({
+      connected,
+      lastUpload: user.last_active,
+      minutesSinceUpload: Math.floor(diffMinutes),
+      message: connected
+        ? "Plugin connected and active"
+        : `Last upload was ${Math.floor(diffMinutes)} minutes ago`,
+    });
+  } catch (err) {
+    console.error("Error checking plugin status:", err);
+    res.status(500).json({ error: "Failed to check plugin status" });
+  }
+});
+
 // Get specific session with heatmaps
 router.get("/session/:id", authenticateToken, async (req, res) => {
   const { id } = req.params;

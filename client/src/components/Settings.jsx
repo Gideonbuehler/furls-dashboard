@@ -133,7 +133,6 @@ function Settings() {
                   </p>
                 </div>
               </div>
-
               <div className="step">
                 <div className="step-number">2</div>
                 <div className="step-content">
@@ -141,7 +140,6 @@ function Settings() {
                   <p>Click the "📋 Copy" button above to copy your API key</p>
                 </div>
               </div>
-
               <div className="step">
                 <div className="step-number">3</div>
                 <div className="step-content">
@@ -157,7 +155,8 @@ function Settings() {
                     display the dashboard link
                   </p>
                 </div>
-              </div>              <div className="step">
+              </div>{" "}
+              <div className="step">
                 <div className="step-number">4</div>
                 <div className="step-content">
                   <h5>Verify Connection</h5>
@@ -204,7 +203,7 @@ function Settings() {
             </div>
             <div className="info-item">
               <span className="info-label">Server:</span>
-              <span className="info-value">furls-api.onrender.com</span>
+              <span className="info-value">furls-dashboard.onrender.com</span>
             </div>
             <div className="info-item">
               <span className="info-label">Status:</span>
