@@ -48,11 +48,10 @@ function SessionHistory({ sessionHistory }) {
               <th>Shots</th>
               <th>Goals</th>
               <th>Accuracy</th>
-              <th>Avg Speed</th>
-              <th>Boost Used</th>
+              <th>Avg Speed</th>              <th>Boost Used</th>
               <th>Possession</th>
             </tr>
-          </thead>{" "}
+          </thead>
           <tbody>
             {sessionHistory
               .slice()
@@ -120,13 +119,12 @@ function SessionHistory({ sessionHistory }) {
             <span className="summary-value">
               {Math.max(...sessionHistory.map((s) => s.goals || 0))}
             </span>
-          </div>
-          <div className="summary-item">
+          </div>          <div className="summary-item">
             <span className="summary-label">Most Shots in Session:</span>
             <span className="summary-value">
               {Math.max(...sessionHistory.map((s) => s.shots || 0))}
             </span>
-          </div>{" "}
+          </div>
           <div className="summary-item">
             <span className="summary-label">Highest Avg Speed:</span>
             <span className="summary-value">

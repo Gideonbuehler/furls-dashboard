@@ -48,11 +48,10 @@ function Dashboard({ currentStats, allTimeStats, sessionHistory }) {
             <div className="stat-icon">🎯</div>
           </div>
           <div className="stat-label">Shot Accuracy</div>
-          <div className="stat-value">{getCurrentAccuracy()}%</div>
-          <div className="stat-detail">
+          <div className="stat-value">{getCurrentAccuracy()}%</div>          <div className="stat-detail">
             {currentStats?.goals || 0} / {currentStats?.shots || 0} shots
           </div>
-        </div>{" "}
+        </div>
         <div className="stat-card primary">
           <div className="stat-card-header">
             <div className="stat-icon">⚡</div>
@@ -82,12 +81,11 @@ function Dashboard({ currentStats, allTimeStats, sessionHistory }) {
           <div className="stat-label">Session Time</div>
           <div className="stat-value">
             {formatTime(currentStats?.gameTime || 0)}
-          </div>
-          <div className="stat-detail">
+          </div>          <div className="stat-detail">
             Possession: {currentStats?.possessionTime?.toFixed(1) || 0}s
           </div>
         </div>
-      </div>{" "}
+      </div>
       {allTimeStats && (
         <div className="all-time-stats">
           <h2 className="section-title">All-Time Statistics</h2>
@@ -95,17 +93,15 @@ function Dashboard({ currentStats, allTimeStats, sessionHistory }) {
             <div className="summary-card">
               <div className="summary-label">Total Sessions</div>
               <div className="summary-value">{allTimeStats.totalSessions}</div>
-            </div>
-            <div className="summary-card">
+            </div>            <div className="summary-card">
               <div className="summary-label">Total Shots</div>
               <div className="summary-value">
                 {allTimeStats.totalShots}
-              </div>{" "}
-            </div>
-            <div className="summary-card">
+              </div>
+            </div>            <div className="summary-card">
               <div className="summary-label">Total Goals</div>
               <div className="summary-value">{allTimeStats.totalGoals}</div>
-            </div>{" "}
+            </div>
             <div className="summary-card">
               <div className="summary-label">Average Accuracy</div>
               <div className="summary-value">
@@ -126,10 +122,9 @@ function Dashboard({ currentStats, allTimeStats, sessionHistory }) {
               <div className="summary-value">
                 {formatTime(allTimeStats.totalPlayTime)}
               </div>
-            </div>
-          </div>
+            </div>          </div>
         </div>
-      )}{" "}
+      )}
       {chartData.length > 0 && (
         <div className="charts-container">
           <div className="chart-card">

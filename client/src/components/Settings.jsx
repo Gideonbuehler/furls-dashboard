@@ -72,13 +72,12 @@ function Settings() {
   return (
     <div className="settings">
       <div className="settings-container">
-        <h2>⚙️ Settings</h2>
-        {error && (
+        <h2>⚙️ Settings</h2>        {error && (
           <div className="alert alert-error">
             <span className="alert-icon">⚠️</span>
             {error}
           </div>
-        )}{" "}
+        )}
         {success && (
           <div className="alert alert-success">
             <span className="alert-icon">✅</span>
@@ -139,10 +138,9 @@ function Settings() {
               </li>
               <li>
                 Your stats will now automatically upload after each match!
-              </li>
-            </ol>
+              </li>            </ol>
           </div>
-        </div>{" "}
+        </div>
         <div className="settings-section">
           <h3>ℹ️ About</h3>
           <div className="info-grid">

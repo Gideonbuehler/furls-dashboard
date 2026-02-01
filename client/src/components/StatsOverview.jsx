@@ -35,12 +35,11 @@ function StatsOverview({ currentStats, allTimeStats }) {
               <div className="stat-item">
                 <span>Goals Scored:</span>
                 <strong>{currentStats.goals || 0}</strong>
-              </div>
-              <div className="stat-item">
+              </div>              <div className="stat-item">
                 <span>Accuracy:</span>
                 <strong className="highlight">{getCurrentAccuracy()}%</strong>
               </div>
-            </div>{" "}
+            </div>
             <div className="stat-group">
               <h3>⚡ Speed & Movement</h3>
               <div className="stat-item">
@@ -100,11 +99,10 @@ function StatsOverview({ currentStats, allTimeStats }) {
             </div>
           </div>
         ) : (
-          <div className="no-data">
-            <p>No current session data available</p>
+          <div className="no-data">            <p>No current session data available</p>
           </div>
         )}
-      </section>{" "}
+      </section>
       {allTimeStats && (
         <section className="stats-section">
           <h2>🏆 All-Time Statistics</h2>
@@ -124,22 +122,20 @@ function StatsOverview({ currentStats, allTimeStats }) {
                 <strong>
                   {allTimeStats.totalShots || allTimeStats.total_shots || 0}
                 </strong>
-              </div>
-              <div className="stat-item">
+              </div>              <div className="stat-item">
                 <span>Total Goals:</span>
                 <strong>
                   {allTimeStats.totalGoals || allTimeStats.total_goals || 0}
                 </strong>
-              </div>{" "}
+              </div>
               <div className="stat-item">
-                <span>Overall Accuracy:</span>
-                <strong className="highlight">
+                <span>Overall Accuracy:</span>                <strong className="highlight">
                   {safeToFixed(
                     allTimeStats?.avgAccuracy || allTimeStats?.avg_accuracy || 0
                   )}
                   %
                 </strong>
-              </div>{" "}
+              </div>
               <div className="stat-item">
                 <span>Average Speed:</span>
                 <strong>
@@ -159,10 +155,8 @@ function StatsOverview({ currentStats, allTimeStats }) {
                   )}
                 </strong>
               </div>
-            </div>
-
-            <div className="stat-group">
-              <h3>📊 Performance Metrics</h3>{" "}
+            </div>            <div className="stat-group">
+              <h3>📊 Performance Metrics</h3>
               <div className="stat-item">
                 <span>Avg Shots per Session:</span>
                 <strong>
