@@ -143,7 +143,7 @@ router.get("/me", async (req, res) => {
 
   try {
     const jwt = require("jsonwebtoken");
-    const { JWT_SECRET } = require("./auth");
+    const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key-change-this-in-production";
     const decoded = jwt.verify(token, JWT_SECRET);
 
     const user = await dbAsync.get(
