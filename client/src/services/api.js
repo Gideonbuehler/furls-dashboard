@@ -90,6 +90,7 @@ export const statsAPI = {
   getFriendStats: (friendId) => api.get(`/user/stats/friend/${friendId}`),
   getLeaderboard: (type = "friends", stat = "accuracy") =>
     api.get(`/user/stats/leaderboard?type=${type}&stat=${stat}`),
+  getPluginStatus: () => api.get("/stats/plugin-status"), // Check if plugin is connected
 };
 
 // Legacy local stats API (for backward compatibility)

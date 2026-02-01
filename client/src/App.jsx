@@ -26,21 +26,38 @@ function App() {
   const [heatmapData, setHeatmapData] = useState(null);
   const [activeTab, setActiveTab] = useState("dashboard");
   const [loading, setLoading] = useState(true);
-  const [connected, setConnected] = useState(false);
+  const [pluginConnected, setPluginConnected] = useState(false);
 
   useEffect(() => {
     if (!showAuth) {
       // Initial load
       loadAllData();
+      checkPluginConnection();
 
       // Poll for updates every 2 seconds
       const interval = setInterval(() => {
         loadAllData();
+        checkPluginConnection();
       }, 2000);
 
       return () => clearInterval(interval);
     }
   }, [showAuth]);
+
+  const checkPluginConnection = async () => {
+    try {
+      if (!authAPI.isAuthenticated()) {
+        setPluginConnected(false);
+        return;
+      }
+
+      const response = await statsAPI.getPluginStatus();
+      setPluginConnected(response.data.connected);
+    } catch (error) {
+      // If user has no API key yet, this will fail - that's okay
+      setPluginConnected(false);
+    }
+  };
 
   const loadAllData = async () => {
     try {
@@ -57,6 +74,23 @@ function App() {
       // Use database stats for history and all-time
       if (userHistoryRes?.data) {
         setSessionHistory(userHistoryRes.data);
+        
+        // Set the most recent session as "current stats"
+        if (userHistoryRes.data.length > 0) {
+          const latestSession = userHistoryRes.data[0];
+          setCurrentStats({
+            shots: latestSession.shots || 0,
+            goals: latestSession.goals || 0,
+            averageSpeed: latestSession.average_speed || 0,
+            speedSamples: latestSession.speed_samples || 0,
+            boostCollected: latestSession.boost_collected || 0,
+            boostUsed: latestSession.boost_used || 0,
+            gameTime: latestSession.game_time || 0,
+            possessionTime: latestSession.possession_time || 0,
+            teamPossessionTime: latestSession.team_possession_time || 0,
+            opponentPossessionTime: latestSession.opponent_possession_time || 0,
+          });
+        }
       }
 
       if (userAllTimeRes?.data) {
@@ -64,11 +98,9 @@ function App() {
       }
 
       setLoading(false);
-      setConnected(true);
     } catch (error) {
       console.error("Error loading data:", error);
       setLoading(false);
-      setConnected(false);
     }
   };
 
@@ -98,7 +130,9 @@ function App() {
               <Login onLogin={handleLogin} />
               <div className="auth-switch">
                 Don't have an account?{" "}
-                <button onClick={() => setAuthMode("register")}>Register</button>
+                <button onClick={() => setAuthMode("register")}>
+                  Register
+                </button>
               </div>
             </>
           ) : (
@@ -113,7 +147,8 @@ function App() {
         </div>
       </div>
     );
-  }  const tabs = [
+  }
+  const tabs = [
     { id: "dashboard", name: "Dashboard", icon: "📊" },
     { id: "heatmap", name: "Heatmap", icon: "🔥" },
     { id: "history", name: "History", icon: "📈" },
@@ -132,17 +167,23 @@ function App() {
             <div className="logo-icon">🚗</div>
             FURLS
           </h1>
-          
+
           <div className="user-info">
             <div className="connection-status">
-              <span className={`status-indicator ${connected ? "connected" : "disconnected"}`}></span>
-              <span>{connected ? "Connected" : "Offline"}</span>
+              <span
+                className={`status-indicator ${
+                  pluginConnected ? "connected" : "disconnected"
+                }`}
+              ></span>
+              <span>{pluginConnected ? "Plugin Connected" : "Plugin Offline"}</span>
             </div>
-            
+
             <div className="user-avatar">
-              {(user?.displayName || user?.username || "U").charAt(0).toUpperCase()}
+              {(user?.displayName || user?.username || "U")
+                .charAt(0)
+                .toUpperCase()}
             </div>
-            
+
             <button className="logout-button" onClick={handleLogout}>
               Logout
             </button>

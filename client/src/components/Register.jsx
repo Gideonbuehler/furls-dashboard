@@ -142,17 +142,9 @@ function Register({ onRegister }) {
             />
           </div>
 
-          {error && (
-            <div className="error-message">
-              {error}
-            </div>
-          )}
+          {error && <div className="error-message">{error}</div>}
 
-          <button 
-            type="submit" 
-            className="btn-auth"
-            disabled={loading}
-          >
+          <button type="submit" className="btn-auth" disabled={loading}>
             {loading ? "Creating account..." : "Create Account"}
           </button>
         </form>

@@ -68,17 +68,9 @@ function Login({ onLogin }) {
             />
           </div>
 
-          {error && (
-            <div className="error-message">
-              {error}
-            </div>
-          )}
+          {error && <div className="error-message">{error}</div>}
 
-          <button 
-            type="submit" 
-            className="btn-auth"
-            disabled={loading}
-          >
+          <button type="submit" className="btn-auth" disabled={loading}>
             {loading ? "Logging in..." : "Login"}
           </button>
         </form>

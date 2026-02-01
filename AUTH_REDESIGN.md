@@ -1,6 +1,7 @@
 # Login/Register UI - Material Design Update
 
 ## Overview
+
 Updated the authentication screens (Login and Register) to match the new Material Design theme with enhanced visual effects and modern styling.
 
 ## Changes Made
@@ -8,17 +9,20 @@ Updated the authentication screens (Login and Register) to match the new Materia
 ### New Material Design Features
 
 #### 1. **Auth Card Styling**
+
 - **Elevated Surface**: Uses `--bg-elevated` with maximum shadow depth
 - **Gradient Top Border**: Animated shimmer effect with primary and accent colors
 - **Slide-Up Animation**: Cards animate in from bottom on load
 - **3D Depth**: Enhanced shadows and subtle border glow
 
 #### 2. **Background Effects**
+
 - **Animated Gradient Background**: Rotating radial gradient overlay
 - **Layered Depth**: Multiple z-index layers for visual hierarchy
 - **Fixed Attachment**: Background stays fixed during scroll
 
 #### 3. **Form Inputs**
+
 - **Material Design Text Fields**: Floating label effect
 - **Focus States**: Blue glow ring on focus with smooth transitions
 - **Hover Effects**: Subtle background color change
@@ -26,6 +30,7 @@ Updated the authentication screens (Login and Register) to match the new Materia
 - **Disabled State**: Semi-transparent with no-drop cursor
 
 #### 4. **Button Enhancements**
+
 - **Gradient Background**: Primary color gradient (blue shades)
 - **Ripple Effect**: Click creates expanding circle ripple
 - **Hover State**: Elevates with glow and scale
@@ -33,12 +38,14 @@ Updated the authentication screens (Login and Register) to match the new Materia
 - **Active State**: Presses down with reduced shadow
 
 #### 5. **Error Messages**
+
 - **Shake Animation**: Draws attention on appearance
 - **Warning Icon**: ⚠️ emoji prefix
 - **Red Theme**: Error color with translucent background
 - **Rounded Container**: Consistent border radius
 
 #### 6. **Auth Switch**
+
 - **Divider Line**: Separates from form with subtle border
 - **Hover Effect**: Background color change and lift
 - **Link Button**: No underline, smooth color transition
@@ -46,6 +53,7 @@ Updated the authentication screens (Login and Register) to match the new Materia
 ## Visual Enhancements
 
 ### Color Scheme
+
 - **Primary**: Material Blue (#2196F3)
 - **Accent**: Electric Cyan (#00E5FF)
 - **Background**: Dark elevated surface (#252525)
@@ -54,6 +62,7 @@ Updated the authentication screens (Login and Register) to match the new Materia
 - **Success**: Teal Green (#1DE9B6)
 
 ### Animations
+
 1. **Slide Up** (500ms): Card entrance
 2. **Shimmer** (3s loop): Top border gradient
 3. **Shake** (500ms): Error message
@@ -62,6 +71,7 @@ Updated the authentication screens (Login and Register) to match the new Materia
 6. **Rotate** (30s loop): Background gradient
 
 ### Spacing
+
 - Card padding: 48px (--spacing-3xl)
 - Input padding: 16px horizontal, 12px vertical
 - Form gap: 24px between fields
@@ -70,6 +80,7 @@ Updated the authentication screens (Login and Register) to match the new Materia
 ## Responsive Design
 
 ### Mobile Optimizations (< 640px)
+
 - Reduced card padding to 32px
 - Full-width card (100% max-width)
 - Smaller title font (1.5rem)
@@ -78,12 +89,14 @@ Updated the authentication screens (Login and Register) to match the new Materia
 ## Component Updates
 
 ### Login.jsx
+
 - Removed wrapper div (now in App.jsx)
 - Updated title with larger emoji
 - Changed title text to "Welcome to FURLS"
 - Reordered label/input for floating effect
 
 ### Register.jsx
+
 - Removed wrapper div (now in App.jsx)
 - Updated title with larger emoji
 - Changed title text to "Create Your Account"
@@ -91,6 +104,7 @@ Updated the authentication screens (Login and Register) to match the new Materia
 - Reordered label/input for floating effect
 
 ### Auth.css
+
 - Complete rewrite with Material Design principles
 - Added 15+ animations and transitions
 - Responsive breakpoints
@@ -99,12 +113,14 @@ Updated the authentication screens (Login and Register) to match the new Materia
 - Success message styles
 
 ## Browser Compatibility
+
 - ✅ Chrome/Edge 90+
 - ✅ Firefox 88+
 - ✅ Safari 14+
 - ✅ Mobile browsers (iOS Safari, Chrome Mobile)
 
 ## Accessibility
+
 - ✅ Keyboard navigation
 - ✅ Focus indicators
 - ✅ ARIA labels on inputs
@@ -113,12 +129,14 @@ Updated the authentication screens (Login and Register) to match the new Materia
 - ✅ High contrast text
 
 ## Performance
+
 - GPU-accelerated animations (transform, opacity)
 - CSS-only effects (no JavaScript)
 - Minimal repaints and reflows
 - Optimized transition timing functions
 
 ## Future Enhancements
+
 - [ ] Password strength meter
 - [ ] Social login buttons (Google, Discord)
 - [ ] "Remember me" checkbox
@@ -134,20 +152,23 @@ The auth components are automatically styled when imported. The auth container i
 
 ```jsx
 // In App.jsx
-{showAuth && (
-  <div className="auth-container">
-    <div className="auth-card">
-      {authMode === "login" ? (
-        <Login onLogin={handleLogin} />
-      ) : (
-        <Register onRegister={handleRegister} />
-      )}
+{
+  showAuth && (
+    <div className="auth-container">
+      <div className="auth-card">
+        {authMode === "login" ? (
+          <Login onLogin={handleLogin} />
+        ) : (
+          <Register onRegister={handleRegister} />
+        )}
+      </div>
     </div>
-  </div>
-)}
+  );
+}
 ```
 
 ## Screenshots Reference
+
 - Clean, centered card on gradient background
 - Blue top border with shimmer animation
 - Material Design text fields with floating labels

@@ -36,7 +36,6 @@ function Dashboard({ currentStats, allTimeStats, sessionHistory }) {
   return (
     <div className="dashboard">
       <h2 className="section-title">Current Session</h2>
-      
       <div className="stats-grid">
         <div className="stat-card accent">
           <div className="stat-card-header">
@@ -47,7 +46,8 @@ function Dashboard({ currentStats, allTimeStats, sessionHistory }) {
           <div className="stat-detail">
             {currentStats?.goals || 0} / {currentStats?.shots || 0} shots
           </div>
-        </div>        <div className="stat-card primary">
+        </div>{" "}
+        <div className="stat-card primary">
           <div className="stat-card-header">
             <div className="stat-icon">⚡</div>
           </div>
@@ -57,7 +57,6 @@ function Dashboard({ currentStats, allTimeStats, sessionHistory }) {
           </div>
           <div className="stat-detail">units/s</div>
         </div>
-        
         <div className="stat-card success">
           <div className="stat-card-header">
             <div className="stat-icon">💨</div>
@@ -70,7 +69,6 @@ function Dashboard({ currentStats, allTimeStats, sessionHistory }) {
             Collected: {currentStats?.boostCollected?.toFixed(0) || 0}
           </div>
         </div>
-        
         <div className="stat-card warning">
           <div className="stat-card-header">
             <div className="stat-icon">⏱️</div>
@@ -83,7 +81,8 @@ function Dashboard({ currentStats, allTimeStats, sessionHistory }) {
             Possession: {currentStats?.possessionTime?.toFixed(1) || 0}s
           </div>
         </div>
-      </div>      {allTimeStats && (
+      </div>{" "}
+      {allTimeStats && (
         <div className="all-time-stats">
           <h2 className="section-title">All-Time Statistics</h2>
           <div className="all-time-grid">
@@ -93,7 +92,10 @@ function Dashboard({ currentStats, allTimeStats, sessionHistory }) {
             </div>
             <div className="summary-card">
               <div className="summary-label">Total Shots</div>
-              <div className="summary-value">{allTimeStats.totalShots}</div>            </div>
+              <div className="summary-value">
+                {allTimeStats.totalShots}
+              </div>{" "}
+            </div>
             <div className="summary-card">
               <div className="summary-label">Total Goals</div>
               <div className="summary-value">{allTimeStats.totalGoals}</div>
@@ -118,13 +120,17 @@ function Dashboard({ currentStats, allTimeStats, sessionHistory }) {
             </div>
           </div>
         </div>
-      )}      {chartData.length > 0 && (
+      )}{" "}
+      {chartData.length > 0 && (
         <div className="charts-container">
           <div className="chart-card">
             <h3 className="chart-title">📈 Accuracy Progression</h3>
             <ResponsiveContainer width="100%" height={300}>
               <AreaChart data={chartData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="var(--surface-3)" />
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  stroke="var(--surface-3)"
+                />
                 <XAxis dataKey="session" stroke="var(--text-secondary)" />
                 <YAxis stroke="var(--text-secondary)" />
                 <Tooltip
@@ -151,7 +157,10 @@ function Dashboard({ currentStats, allTimeStats, sessionHistory }) {
             <h3 className="chart-title">⚽ Shots & Goals</h3>
             <ResponsiveContainer width="100%" height={300}>
               <LineChart data={chartData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="var(--surface-3)" />
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  stroke="var(--surface-3)"
+                />
                 <XAxis dataKey="session" stroke="var(--text-secondary)" />
                 <YAxis stroke="var(--text-secondary)" />
                 <Tooltip

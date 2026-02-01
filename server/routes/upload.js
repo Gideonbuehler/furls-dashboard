@@ -61,7 +61,7 @@ router.post("/upload", authenticateApiKey, async (req, res) => {
       ]
     );
 
-    // Update user totals
+    // Update user totals AND last_active timestamp (plugin connection indicator)
     await dbAsync.run(
       `UPDATE users 
        SET total_sessions = total_sessions + 1,
@@ -79,6 +79,43 @@ router.post("/upload", authenticateApiKey, async (req, res) => {
   } catch (err) {
     console.error("[UPLOAD ERROR]", err);
     res.status(500).json({ error: "Failed to save stats" });
+  }
+});
+
+// Check plugin connection status (when was the last upload)
+router.get("/plugin-status", authenticateApiKey, async (req, res) => {
+  try {
+    const user = await dbAsync.get(
+      "SELECT last_active FROM users WHERE id = ?",
+      [req.user.id]
+    );
+
+    if (!user || !user.last_active) {
+      return res.json({ 
+        connected: false, 
+        lastUpload: null,
+        message: "No data uploaded yet from plugin" 
+      });
+    }
+
+    const lastUpload = new Date(user.last_active);
+    const now = new Date();
+    const diffMinutes = (now - lastUpload) / (1000 * 60);
+
+    // Consider connected if upload within last 5 minutes
+    const connected = diffMinutes < 5;
+
+    res.json({
+      connected,
+      lastUpload: user.last_active,
+      minutesSinceUpload: Math.floor(diffMinutes),
+      message: connected 
+        ? "Plugin connected and active"
+        : `Last upload was ${Math.floor(diffMinutes)} minutes ago`
+    });
+  } catch (err) {
+    console.error("Error checking plugin status:", err);
+    res.status(500).json({ error: "Failed to check plugin status" });
   }
 });
 
