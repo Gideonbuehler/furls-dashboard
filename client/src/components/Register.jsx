@@ -52,86 +52,87 @@ function Register({ onRegister }) {
       setLoading(false);
     }
   };
-
   return (
-    <div className="auth-container">
-      <div className="auth-card">
-        <h2>🚗 Create FURLS Account</h2>
-        <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label>Username *</label>
-            <input
-              type="text"
-              value={formData.username}
-              onChange={(e) =>
-                setFormData({ ...formData, username: e.target.value })
-              }
-              required
-              minLength={3}
-              maxLength={30}
-              disabled={loading}
-              placeholder="username123"
-            />
-            <small>Letters, numbers, and underscores only</small>
-          </div>
-          <div className="form-group">
-            <label>Email *</label>
-            <input
-              type="email"
-              value={formData.email}
-              onChange={(e) =>
-                setFormData({ ...formData, email: e.target.value })
-              }
-              required
-              disabled={loading}
-              placeholder="you@example.com"
-            />
-          </div>
-          <div className="form-group">
-            <label>Display Name</label>
-            <input
-              type="text"
-              value={formData.displayName}
-              onChange={(e) =>
-                setFormData({ ...formData, displayName: e.target.value })
-              }
-              maxLength={50}
-              disabled={loading}
-              placeholder="Your Name (optional)"
-            />
-          </div>
-          <div className="form-group">
-            <label>Password *</label>
-            <input
-              type="password"
-              value={formData.password}
-              onChange={(e) =>
-                setFormData({ ...formData, password: e.target.value })
-              }
-              required
-              minLength={6}
-              disabled={loading}
-              placeholder="At least 6 characters"
-            />
-          </div>
-          <div className="form-group">
-            <label>Confirm Password *</label>
-            <input
-              type="password"
-              value={formData.confirmPassword}
-              onChange={(e) =>
-                setFormData({ ...formData, confirmPassword: e.target.value })
-              }
-              required
-              disabled={loading}
-            />
-          </div>
-          {error && <div className="error-message">{error}</div>}
-          <button type="submit" className="btn-primary" disabled={loading}>
-            {loading ? "Creating Account..." : "Register"}
-          </button>
-        </form>
-      </div>
+    <div className="auth-card">
+      <h2>
+        <span style={{ fontSize: '2rem' }}>🚗</span>
+        Create Your Account
+      </h2>
+      <form onSubmit={handleSubmit}>
+        <div className="form-group">
+          <input
+            type="text"
+            value={formData.username}
+            onChange={(e) =>
+              setFormData({ ...formData, username: e.target.value })
+            }
+            placeholder="username123"
+            required
+            minLength={3}
+            maxLength={30}
+            disabled={loading}
+          />
+          <label>Username *</label>
+          <small>Letters, numbers, and underscores only</small>
+        </div>
+        <div className="form-group">
+          <input
+            type="email"
+            value={formData.email}
+            onChange={(e) =>
+              setFormData({ ...formData, email: e.target.value })
+            }
+            placeholder="you@example.com"
+            required
+            disabled={loading}
+          />
+          <label>Email *</label>
+        </div>
+        <div className="form-group">
+          <input
+            type="text"
+            value={formData.displayName}
+            onChange={(e) =>
+              setFormData({ ...formData, displayName: e.target.value })
+            }
+            placeholder="Your Name (optional)"
+            maxLength={50}
+            disabled={loading}
+          />
+          <label>Display Name</label>
+        </div>
+        <div className="form-group">
+          <input
+            type="password"
+            value={formData.password}
+            onChange={(e) =>
+              setFormData({ ...formData, password: e.target.value })
+            }
+            placeholder="At least 6 characters"
+            required
+            minLength={6}
+            disabled={loading}
+          />
+          <label>Password *</label>
+        </div>
+        <div className="form-group">
+          <input
+            type="password"
+            value={formData.confirmPassword}
+            onChange={(e) =>
+              setFormData({ ...formData, confirmPassword: e.target.value })
+            }
+            placeholder="Confirm your password"
+            required
+            disabled={loading}
+          />
+          <label>Confirm Password *</label>
+        </div>
+        {error && <div className="error-message">{error}</div>}
+        <button type="submit" className="btn-primary" disabled={loading}>
+          {loading ? "Creating Account..." : "Create Account"}
+        </button>
+      </form>
     </div>
   );
 }

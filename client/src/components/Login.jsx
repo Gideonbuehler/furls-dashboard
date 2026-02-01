@@ -25,42 +25,44 @@ function Login({ onLogin }) {
       setLoading(false);
     }
   };
-
   return (
-    <div className="auth-container">
-      <div className="auth-card">
-        <h2>🚗 FURLS Login</h2>
-        <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label>Username or Email</label>
-            <input
-              type="text"
-              value={formData.username}
-              onChange={(e) =>
-                setFormData({ ...formData, username: e.target.value })
-              }
-              required
-              disabled={loading}
-            />
-          </div>
-          <div className="form-group">
-            <label>Password</label>
-            <input
-              type="password"
-              value={formData.password}
-              onChange={(e) =>
-                setFormData({ ...formData, password: e.target.value })
-              }
-              required
-              disabled={loading}
-            />
-          </div>
-          {error && <div className="error-message">{error}</div>}
-          <button type="submit" className="btn-primary" disabled={loading}>
-            {loading ? "Logging in..." : "Login"}
-          </button>
-        </form>
-      </div>
+    <div className="auth-card">
+      <h2>
+        <span style={{ fontSize: '2rem' }}>🚗</span>
+        Welcome to FURLS
+      </h2>
+      <form onSubmit={handleSubmit}>
+        <div className="form-group">
+          <input
+            type="text"
+            value={formData.username}
+            onChange={(e) =>
+              setFormData({ ...formData, username: e.target.value })
+            }
+            placeholder="Username or Email"
+            required
+            disabled={loading}
+          />
+          <label>Username or Email</label>
+        </div>
+        <div className="form-group">
+          <input
+            type="password"
+            value={formData.password}
+            onChange={(e) =>
+              setFormData({ ...formData, password: e.target.value })
+            }
+            placeholder="Password"
+            required
+            disabled={loading}
+          />
+          <label>Password</label>
+        </div>
+        {error && <div className="error-message">{error}</div>}
+        <button type="submit" className="btn-primary" disabled={loading}>
+          {loading ? "Logging in..." : "Login"}
+        </button>
+      </form>
     </div>
   );
 }
