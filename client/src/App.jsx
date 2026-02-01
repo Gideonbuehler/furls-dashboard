@@ -10,7 +10,7 @@ import Friends from "./components/Friends";
 import Leaderboard from "./components/Leaderboard";
 import Settings from "./components/Settings";
 import PlayerSearch from "./components/PlayerSearch";
-import { authAPI, localStatsAPI, statsAPI } from "./services/api";
+import { authAPI, statsAPI } from "./services/api";
 
 function App() {
   const [user, setUser] = useState(authAPI.getCurrentUser());
@@ -41,68 +41,31 @@ function App() {
 
   const loadAllData = async () => {
     try {
-      // Load local stats file (current session from BakkesMod)
-      const [
-        currentRes,
-        localHistoryRes,
-        localAllTimeRes,
-        heatmapRes,
-        healthRes,
-      ] = await Promise.all([
-        localStatsAPI.getCurrent().catch(() => null),
-        localStatsAPI.getHistory().catch(() => ({ data: [] })),
-        localStatsAPI.getAllTime().catch(() => null),
-        localStatsAPI.getHeatmap().catch(() => null),
-        localStatsAPI.getHealth().catch(() => null),
-      ]);
-
-      // Set current session (from BakkesMod file)
-      if (currentRes?.data) {
-        setCurrentStats(currentRes.data);
-
-        // Auto-save to user's account if authenticated and new session
-        if (authAPI.isAuthenticated() && currentRes.data.timestamp) {
-          statsAPI
-            .saveSession(currentRes.data)
-            .catch((err) => console.log("Could not save session:", err));
-        }
+      // Only load data if authenticated
+      if (!authAPI.isAuthenticated()) {
+        setLoading(false);
+        return;
       }
 
-      // Load user's database stats if authenticated
-      if (authAPI.isAuthenticated()) {
-        try {
-          // Get user's session history from database
-          const userHistoryRes = await statsAPI.getHistory(50, 0);
-          const userAllTimeRes = await statsAPI.getAllTimeStats();
+      // Load user's database stats
+      const userHistoryRes = await statsAPI.getHistory(50, 0);
+      const userAllTimeRes = await statsAPI.getAllTimeStats();
 
-          // Use database stats for history and all-time
-          if (userHistoryRes?.data) {
-            setSessionHistory(userHistoryRes.data);
-          }
-          if (userAllTimeRes?.data) {
-            setAllTimeStats(userAllTimeRes.data);
-          }
-        } catch (err) {
-          console.log("Could not load user stats, using local:", err);
-          // Fallback to local stats if database fails
-          if (localHistoryRes?.data) setSessionHistory(localHistoryRes.data);
-          if (localAllTimeRes?.data) setAllTimeStats(localAllTimeRes.data);
-        }
-      } else {
-        // Not authenticated - use local file stats
-        if (localHistoryRes?.data) setSessionHistory(localHistoryRes.data);
-        if (localAllTimeRes?.data) setAllTimeStats(localAllTimeRes.data);
+      // Use database stats for history and all-time
+      if (userHistoryRes?.data) {
+        setSessionHistory(userHistoryRes.data);
       }
 
-      // Heatmap always from local file
-      if (heatmapRes?.data) setHeatmapData(heatmapRes.data);
-      if (healthRes?.data) setConnected(healthRes.data.status === "ok");
+      if (userAllTimeRes?.data) {
+        setAllTimeStats(userAllTimeRes.data);
+      }
 
       setLoading(false);
+      setConnected(true);
     } catch (error) {
       console.error("Error loading data:", error);
-      setConnected(false);
       setLoading(false);
+      setConnected(false);
     }
   };
 

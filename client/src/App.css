@@ -1,18 +1,18 @@
 .app {
   min-height: 100vh;
-  background: linear-gradient(135deg, #0a0014 0%, #1a0a2e 100%);
+  background: linear-gradient(135deg, #1a1a1a 0%, #2d1b3d 50%, #1a1a1a 100%);
   color: #fff;
 }
 
 .app-header {
-  background: rgba(20, 10, 35, 0.95);
+  background: linear-gradient(180deg, rgba(30, 30, 30, 0.98) 0%, rgba(45, 27, 61, 0.95) 100%);
   backdrop-filter: blur(10px);
-  border-bottom: 2px solid #6a1b9a;
+  border-bottom: 2px solid #7b1fa2;
   padding: 1rem 2rem;
   position: sticky;
   top: 0;
   z-index: 100;
-  box-shadow: 0 4px 20px rgba(106, 27, 154, 0.3);
+  box-shadow: 0 4px 20px rgba(123, 31, 162, 0.3);
 }
 
 .header-content {
@@ -25,10 +25,17 @@
 .app-header h1 {
   margin: 0;
   font-size: 2rem;
-  background: linear-gradient(135deg, #9c27b0, #7b1fa2);
+  background: linear-gradient(135deg, #bb86fc, #7b1fa2, #bb86fc);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  background-size: 200% 100%;
+  animation: gradientShift 3s ease infinite;
+}
+
+@keyframes gradientShift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
 }
 
 .connection-status {
@@ -36,10 +43,10 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.5rem 1rem;
-  background: rgba(40, 20, 60, 0.8);
+  background: rgba(40, 40, 40, 0.9);
   border-radius: 20px;
   font-size: 0.9rem;
-  border: 1px solid #6a1b9a;
+  border: 1px solid rgba(187, 134, 252, 0.3);
 }
 
 .status-indicator {
@@ -76,9 +83,9 @@
 }
 
 .tab-button {
-  background: transparent;
-  border: 2px solid transparent;
-  color: #888;
+  background: rgba(40, 40, 40, 0.6);
+  border: 2px solid rgba(187, 134, 252, 0.2);
+  color: #aaa;
   padding: 0.75rem 1.5rem;
   border-radius: 10px;
   cursor: pointer;
@@ -91,16 +98,17 @@
 }
 
 .tab-button:hover {
-  background: rgba(156, 39, 176, 0.2);
+  background: rgba(123, 31, 162, 0.2);
   color: #fff;
-  border-color: #9c27b0;
+  border-color: #bb86fc;
+  transform: translateY(-2px);
 }
 
 .tab-button.active {
-  background: linear-gradient(135deg, #9c27b0, #7b1fa2);
+  background: linear-gradient(135deg, #7b1fa2, #bb86fc);
   color: #fff;
   border-color: transparent;
-  box-shadow: 0 4px 15px rgba(156, 39, 176, 0.4);
+  box-shadow: 0 4px 15px rgba(187, 134, 252, 0.4);
 }
 
 .tab-icon {
