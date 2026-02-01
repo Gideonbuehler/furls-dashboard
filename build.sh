@@ -17,7 +17,7 @@ echo ""
 echo "Step 2: Installing frontend dependencies..."
 cd client || exit 1
 echo "✓ In client folder: $(pwd)"
-npm install --include=dev
+npm install
 echo "✓ Frontend dependencies installed"
 
 echo ""
