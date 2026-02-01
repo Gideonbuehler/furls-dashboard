@@ -26,16 +26,12 @@ echo "Step 3: Building React app..."
 npx vite build
 echo "✓ React app built"
 
-cd ..
-
-cd ..
-
 echo ""
 echo "Step 4: Verifying build output..."
-if [ -d "client/dist" ]; then
-    echo "✓ client/dist folder exists"
-    ls -la client/dist/ | head -20
-    if [ -f "client/dist/index.html" ]; then
+if [ -d "dist" ]; then
+    echo "✓ dist folder exists"
+    ls -la dist/ | head -20
+    if [ -f "dist/index.html" ]; then
         echo "✓ index.html found!"
         echo "✓ Build output verified successfully"
     else
@@ -43,7 +39,7 @@ if [ -d "client/dist" ]; then
         exit 1
     fi
 else
-    echo "✗ ERROR: client/dist folder not created!"
+    echo "✗ ERROR: dist folder not created!"
     exit 1
 fi
 
