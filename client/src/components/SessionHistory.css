@@ -1,0 +1,149 @@
+.session-history {
+  animation: fadeIn 0.5s ease-in;
+}
+
+.session-history h2 {
+  margin: 0 0 0.5rem 0;
+}
+
+.history-info {
+  color: #888;
+  margin-bottom: 2rem;
+}
+
+.sessions-table-container {
+  background: rgba(20, 20, 20, 0.9);
+  border-radius: 15px;
+  border: 2px solid #333;
+  overflow-x: auto;
+  margin-bottom: 2rem;
+}
+
+.sessions-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+
+.sessions-table thead {
+  background: rgba(30, 30, 30, 0.95);
+}
+
+.sessions-table th {
+  padding: 1rem;
+  text-align: left;
+  color: #4CAF50;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  letter-spacing: 1px;
+  border-bottom: 2px solid #444;
+}
+
+.sessions-table td {
+  padding: 1rem;
+  border-bottom: 1px solid #333;
+}
+
+.session-row {
+  transition: all 0.2s ease;
+}
+
+.session-row:hover {
+  background: rgba(76, 175, 80, 0.1);
+}
+
+.accuracy {
+  padding: 0.25rem 0.75rem;
+  border-radius: 15px;
+  font-weight: bold;
+}
+
+.accuracy.good {
+  background: rgba(76, 175, 80, 0.3);
+  color: #4CAF50;
+}
+
+.accuracy.medium {
+  background: rgba(255, 152, 0, 0.3);
+  color: #FF9800;
+}
+
+.accuracy.low {
+  background: rgba(244, 67, 54, 0.3);
+  color: #f44336;
+}
+
+.history-summary {
+  background: rgba(30, 30, 30, 0.8);
+  padding: 2rem;
+  border-radius: 15px;
+  border: 2px solid #333;
+}
+
+.history-summary h3 {
+  margin: 0 0 1.5rem 0;
+  text-align: center;
+  color: #4CAF50;
+}
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+}
+
+.summary-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1rem;
+  background: rgba(20, 20, 20, 0.8);
+  border-radius: 10px;
+  border: 1px solid #444;
+  text-align: center;
+}
+
+.summary-label {
+  font-size: 0.85rem;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.summary-value {
+  font-size: 1.5rem;
+  font-weight: bold;
+  background: linear-gradient(135deg, #4CAF50, #2196F3);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.no-data {
+  text-align: center;
+  padding: 4rem 2rem;
+  background: rgba(30, 30, 30, 0.8);
+  border-radius: 15px;
+  border: 2px solid #333;
+}
+
+.no-data p {
+  color: #888;
+  margin: 0.5rem 0;
+}
+
+@media (max-width: 768px) {
+  .sessions-table {
+    font-size: 0.85rem;
+  }
+
+  .sessions-table th,
+  .sessions-table td {
+    padding: 0.75rem 0.5rem;
+  }
+
+  .summary-grid {
+    grid-template-columns: 1fr;
+  }
+}

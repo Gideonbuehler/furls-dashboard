@@ -1,0 +1,20 @@
+# Render.com Deployment Configuration
+# This tells Render how to build and run your application
+
+services:
+  # Backend API Server
+  - type: web
+    name: furls-api
+    env: node
+    region: oregon
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: JWT_SECRET
+        generateValue: true
+      - key: PORT
+        value: 10000
+    healthCheckPath: /api/stats/health

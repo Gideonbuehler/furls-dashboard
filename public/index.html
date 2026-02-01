@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FURLS Training Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+            color: #fff;
+            min-height: 100vh;
+        }
+
+        .app-header {
+            background: rgba(20, 20, 20, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 2px solid #333;
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        h1 {
+            font-size: 2rem;
+            background: linear-gradient(135deg, #4CAF50, #2196F3);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .connection-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: rgba(30, 30, 30, 0.8);
+            border-radius: 20px;
+        }
+
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        .status-indicator.connected {
+            background: #4CAF50;
+            box-shadow: 0 0 10px #4CAF50;
+        }
+
+        .status-indicator.disconnected {
+            background: #f44336;
+            box-shadow: 0 0 10px #f44336;
+            animation: none;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .tab-navigation {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .tab-button {
+            background: transparent;
+            border: 2px solid transparent;
+            color: #888;
+            padding: 0.75rem 1.5rem;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+        }
+
+        .tab-button:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: #fff;
+        }
+
+        .tab-button.active {
+            background: linear-gradient(135deg, #4CAF50, #2196F3);
+            color: #fff;
+        }
+
+        .app-content {
+            padding: 2rem;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: rgba(30, 30, 30, 0.8);
+            backdrop-filter: blur(10px);
+            border: 2px solid #333;
+            border-radius: 15px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+            display: flex;
+            gap: 1rem;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            border-color: #4CAF50;
+        }
+
+        .stat-card.highlight {
+            background: linear-gradient(135deg, rgba(76, 175, 80, 0.2), rgba(33, 150, 243, 0.2));
+            border-color: #4CAF50;
+        }
+
+        .stat-icon {
+            font-size: 2.5rem;
+        }
+
+        .stat-content h3 {
+            margin: 0 0 0.5rem 0;
+            font-size: 0.9rem;
+            color: #888;
+            text-transform: uppercase;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, #4CAF50, #2196F3);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stat-detail {
+            font-size: 0.85rem;
+            color: #aaa;
+        }
+
+        .loading {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 400px;
+            gap: 1rem;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-top-color: #4CAF50;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .error-message {
+            text-align: center;
+            padding: 3rem;
+            background: rgba(244, 67, 54, 0.1);
+            border: 2px solid #f44336;
+            border-radius: 15px;
+            max-width: 600px;
+            margin: 2rem auto;
+        }
+
+        .error-message h2 {
+            color: #f44336;
+            margin-bottom: 1rem;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .all-time-stats {
+            margin: 3rem 0;
+            padding: 2rem;
+            background: rgba(20, 20, 20, 0.8);
+            border-radius: 15px;
+            border: 2px solid #333;
+        }
+
+        .chart-container {
+            background: rgba(30, 30, 30, 0.8);
+            padding: 1.5rem;
+            border-radius: 15px;
+            border: 2px solid #333;
+            margin-top: 2rem;
+        }
+
+        canvas {
+            max-height: 300px;
+        }
+    </style>
+</head>
+<body>
+    <header class="app-header">
+        <div class="header-content">
+            <h1>🚗 FURLS Training Dashboard</h1>
+            <div class="connection-status">
+                <span class="status-indicator" id="statusIndicator"></span>
+                <span id="statusText">Connecting...</span>
+            </div>
+        </div>
+        <nav class="tab-navigation">
+            <button class="tab-button active" onclick="switchTab('dashboard')">📊 Dashboard</button>
+            <button class="tab-button" onclick="switchTab('stats')">📋 Stats</button>
+        </nav>
+    </header>
+
+    <main class="app-content">
+        <div id="loading" class="loading">
+            <div class="spinner"></div>
+            <p>Loading training data...</p>
+        </div>
+
+        <div id="error" class="error-message" style="display: none;">
+            <h2>⚠️ Not Connected</h2>
+            <p>Make sure the backend server is running.</p>
+            <p>Run: <code>npm run server</code> in the Dashboard folder</p>
+        </div>
+
+        <div id="dashboard" class="tab-content">
+            <div class="stats-grid" id="statsGrid"></div>
+            <div class="all-time-stats">
+                <h2>📊 All-Time Statistics</h2>
+                <div class="stats-grid" id="allTimeGrid"></div>
+            </div>
+            <div class="chart-container">
+                <h3 style="text-align: center; color: #4CAF50; margin-bottom: 1rem;">📈 Session History</h3>
+                <canvas id="historyChart"></canvas>
+            </div>
+        </div>
+
+        <div id="stats" class="tab-content">
+            <div id="detailedStats"></div>
+        </div>
+    </main>
+
+    <script>
+        const API_URL = 'http://localhost:3002/api';
+        let currentData = {};
+        let chart = null;
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(tabName).classList.add('active');
+        }
+
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${mins}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        function updateConnectionStatus(connected) {
+            const indicator = document.getElementById('statusIndicator');
+            const text = document.getElementById('statusText');
+            
+            if (connected) {
+                indicator.className = 'status-indicator connected';
+                text.textContent = 'Connected';
+            } else {
+                indicator.className = 'status-indicator disconnected';
+                text.textContent = 'Disconnected';
+            }
+        }
+
+        function renderStats(stats) {
+            const accuracy = stats.shots > 0 ? ((stats.goals / stats.shots) * 100).toFixed(1) : 0;
+            
+            const html = `
+                <div class="stat-card highlight">
+                    <div class="stat-icon">🎯</div>
+                    <div class="stat-content">
+                        <h3>Current Accuracy</h3>
+                        <div class="stat-value">${accuracy}%</div>
+                        <div class="stat-detail">${stats.goals || 0} / ${stats.shots || 0} shots</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">⚡</div>
+                    <div class="stat-content">
+                        <h3>Avg Speed</h3>
+                        <div class="stat-value">${Math.round(stats.averageSpeed || 0)}</div>
+                        <div class="stat-detail">units/s</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">💨</div>
+                    <div class="stat-content">
+                        <h3>Boost Used</h3>
+                        <div class="stat-value">${Math.round(stats.boostUsed || 0)}</div>
+                        <div class="stat-detail">Collected: ${Math.round(stats.boostCollected || 0)}</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">⏱️</div>
+                    <div class="stat-content">
+                        <h3>Session Time</h3>
+                        <div class="stat-value">${formatTime(stats.gameTime || 0)}</div>
+                        <div class="stat-detail">Possession: ${(stats.possessionTime || 0).toFixed(1)}s</div>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('statsGrid').innerHTML = html;
+        }
+
+        function renderAllTimeStats(allTime) {
+            const html = `
+                <div class="stat-card">
+                    <h4 style="margin-bottom: 0.5rem; color: #888;">Total Sessions</h4>
+                    <div class="stat-value">${allTime.totalSessions}</div>
+                </div>
+                <div class="stat-card">
+                    <h4 style="margin-bottom: 0.5rem; color: #888;">Total Shots</h4>
+                    <div class="stat-value">${allTime.totalShots}</div>
+                </div>
+                <div class="stat-card">
+                    <h4 style="margin-bottom: 0.5rem; color: #888;">Total Goals</h4>
+                    <div class="stat-value">${allTime.totalGoals}</div>
+                </div>
+                <div class="stat-card">
+                    <h4 style="margin-bottom: 0.5rem; color: #888;">Avg Accuracy</h4>
+                    <div class="stat-value">${allTime.avgAccuracy?.toFixed(1)}%</div>
+                </div>
+            `;
+            
+            document.getElementById('allTimeGrid').innerHTML = html;
+        }
+
+        function renderChart(history) {
+            const ctx = document.getElementById('historyChart').getContext('2d');
+            
+            if (chart) {
+                chart.destroy();
+            }
+
+            const last20 = history.slice(-20);
+            const data = {
+                labels: last20.map((_, i) => `Session ${i + 1}`),
+                datasets: [
+                    {
+                        label: 'Accuracy %',
+                        data: last20.map(s => s.shots > 0 ? ((s.goals / s.shots) * 100) : 0),
+                        borderColor: '#4CAF50',
+                        backgroundColor: 'rgba(76, 175, 80, 0.1)',
+                        tension: 0.4
+                    },
+                    {
+                        label: 'Goals',
+                        data: last20.map(s => s.goals || 0),
+                        borderColor: '#FF9800',
+                        backgroundColor: 'rgba(255, 152, 0, 0.1)',
+                        tension: 0.4
+                    }
+                ]
+            };
+
+            chart = new Chart(ctx, {
+                type: 'line',
+                data: data,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: {
+                            labels: { color: '#fff' }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            ticks: { color: '#888' },
+                            grid: { color: '#333' }
+                        },
+                        x: {
+                            ticks: { color: '#888' },
+                            grid: { color: '#333' }
+                        }
+                    }
+                }
+            });
+        }
+
+        async function loadData() {
+            try {
+                const [currentRes, historyRes, allTimeRes] = await Promise.all([
+                    axios.get(`${API_URL}/stats/current`).catch(() => null),
+                    axios.get(`${API_URL}/stats/history`).catch(() => ({ data: [] })),
+                    axios.get(`${API_URL}/stats/alltime`).catch(() => null)
+                ]);
+
+                if (currentRes?.data) {
+                    renderStats(currentRes.data);
+                    currentData.current = currentRes.data;
+                }
+
+                if (historyRes?.data && historyRes.data.length > 0) {
+                    renderChart(historyRes.data);
+                    currentData.history = historyRes.data;
+                }
+
+                if (allTimeRes?.data) {
+                    renderAllTimeStats(allTimeRes.data);
+                    currentData.allTime = allTimeRes.data;
+                }
+
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('error').style.display = 'none';
+                document.getElementById('dashboard').classList.add('active');
+                updateConnectionStatus(true);
+
+            } catch (error) {
+                console.error('Error loading data:', error);
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('error').style.display = 'block';
+                updateConnectionStatus(false);
+            }
+        }
+
+        // Load initial data
+        loadData();
+
+        // Refresh every 2 seconds
+        setInterval(loadData, 2000);
+    </script>
+</body>
+</html>
