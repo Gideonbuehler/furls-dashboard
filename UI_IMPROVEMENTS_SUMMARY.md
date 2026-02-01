@@ -7,6 +7,7 @@
 **File:** `client/src/components/ProfileModal.css`
 
 **Improvements:**
+
 - Modern glassmorphism design with gradient backgrounds
 - Smooth fade-in and slide-up animations
 - Enhanced modal overlay with blur effect (85% opacity + 8px blur)
@@ -19,6 +20,7 @@
 - Better alert styling with increased opacity and border width
 
 **Key Visual Features:**
+
 - Purple gradient theme (#bb86fc to #7b1fa2)
 - Smooth transitions and hover effects
 - Better spacing and padding throughout
@@ -31,6 +33,7 @@
 **File:** `client/src/components/Dashboard.css` (completely recreated)
 
 **New Features:**
+
 - Beautiful gradient card backgrounds
 - Animated top border on hover
 - Floating icon animation (3s ease-in-out loop)
@@ -44,6 +47,7 @@
 - Responsive design for mobile devices
 
 **Visual Effects:**
+
 - Card elevation with shadow on hover
 - Gradient text for stat values
 - Icon drop shadow and animation
@@ -54,30 +58,35 @@
 ### ⚙️ Plugin Setup Instructions Overhaul
 
 **Files:**
+
 - `client/src/components/Settings.jsx`
 - `client/src/components/Settings.css`
 
 **Major Changes:**
 
 1. **Step-by-Step Visual Guide:**
+
    - Numbered steps with gradient circles
    - Individual step cards with hover effects
    - Better visual hierarchy and spacing
    - Slide-in animation on hover
 
 2. **Enhanced Code Blocks:**
+
    - Improved code styling with syntax highlighting
    - Border-left accent for each command
    - Better background contrast
    - Dynamic API key insertion in examples
 
 3. **New Commands Added:**
+
    ```bash
    furls_dashboard_url https://furls-dashboard.onrender.com
    furls_open_dashboard
    ```
 
 4. **Improved Instructions:**
+
    - Added `<kbd>` tags for keyboard shortcuts (F6)
    - Clear 5-step process
    - Visual step numbers
@@ -89,6 +98,7 @@
    - Quick solutions for common issues
 
 **Instruction Steps:**
+
 1. Open BakkesMod Console (F6)
 2. Copy Your API Key
 3. Configure the Plugin (4 commands)
@@ -102,6 +112,7 @@
 **File:** `client/src/components/Heatmap.jsx`
 
 **Changes:**
+
 - Added console.log debug statement to track data flow
 - Added zero-data warning banner (yellow theme)
 - Better user feedback when no data is available
@@ -111,6 +122,7 @@
 ## Color Scheme
 
 ### Primary Colors:
+
 - **Purple:** `#bb86fc` / `#7b1fa2`
 - **Blue:** `#2196f3` / `#1976d2`
 - **Green:** `#4caf50` / `#388e3c`
@@ -118,6 +130,7 @@
 - **Cyan:** `#00d4ff`
 
 ### Background:
+
 - Dark gradients: `rgba(30, 30, 30, 0.95)` to `rgba(45, 27, 61, 0.9)`
 - Glass effect: Various alpha values for depth
 
@@ -126,6 +139,7 @@
 ## Responsive Design
 
 All components now include:
+
 - Mobile-first approach
 - Breakpoints at 768px and 480px
 - Grid adjustments for smaller screens
@@ -137,16 +151,19 @@ All components now include:
 ## Animation Details
 
 ### Profile Modal:
+
 - Fade-in: 0.2s ease-out
 - Slide-up: 0.3s ease-out
 - Close button rotation: 90deg on hover
 
 ### Dashboard Cards:
+
 - Float animation: 3s infinite
 - Hover lift: 0.4s cubic-bezier
 - Border animation: 0.4s ease
 
 ### Settings Steps:
+
 - Slide-right on hover: 8px translateX
 - Shadow growth: 0.3s ease
 - Mobile: translateY instead of translateX
@@ -156,17 +173,20 @@ All components now include:
 ## Next Steps for Deployment
 
 1. **Test Locally:**
+
    ```bash
    npm run dev
    ```
 
 2. **Verify Changes:**
+
    - Profile modal animations
    - Dashboard card hover effects
    - Plugin instructions layout
    - Mobile responsiveness
 
 3. **Deploy to Render:**
+
    - Already pushed to GitHub (commit: 383b814)
    - Render will auto-deploy
    - Monitor build logs

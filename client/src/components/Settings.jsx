@@ -157,9 +157,7 @@ function Settings() {
                     display the dashboard link
                   </p>
                 </div>
-              </div>
-
-              <div className="step">
+              </div>              <div className="step">
                 <div className="step-number">4</div>
                 <div className="step-content">
                   <h5>Verify Connection</h5>
@@ -172,8 +170,6 @@ function Settings() {
                     header
                   </p>
                 </div>
-              </div>
-
               </div>
             </div>
 

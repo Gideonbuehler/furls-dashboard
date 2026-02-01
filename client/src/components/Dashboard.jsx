@@ -48,7 +48,8 @@ function Dashboard({ currentStats, allTimeStats, sessionHistory }) {
             <div className="stat-icon">🎯</div>
           </div>
           <div className="stat-label">Shot Accuracy</div>
-          <div className="stat-value">{getCurrentAccuracy()}%</div>          <div className="stat-detail">
+          <div className="stat-value">{getCurrentAccuracy()}%</div>{" "}
+          <div className="stat-detail">
             {currentStats?.goals || 0} / {currentStats?.shots || 0} shots
           </div>
         </div>
@@ -81,11 +82,13 @@ function Dashboard({ currentStats, allTimeStats, sessionHistory }) {
           <div className="stat-label">Session Time</div>
           <div className="stat-value">
             {formatTime(currentStats?.gameTime || 0)}
-          </div>          <div className="stat-detail">
+          </div>{" "}
+          <div className="stat-detail">
             Possession: {currentStats?.possessionTime?.toFixed(1) || 0}s
           </div>
         </div>
-      </div>      {allTimeStats && (
+      </div>{" "}
+      {allTimeStats && (
         <div className="all-time-stats">
           <h2 className="section-title">All-Time Statistics</h2>
           <div className="all-time-grid">

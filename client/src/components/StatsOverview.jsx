@@ -35,7 +35,8 @@ function StatsOverview({ currentStats, allTimeStats }) {
               <div className="stat-item">
                 <span>Goals Scored:</span>
                 <strong>{currentStats.goals || 0}</strong>
-              </div>              <div className="stat-item">
+              </div>{" "}
+              <div className="stat-item">
                 <span>Accuracy:</span>
                 <strong className="highlight">{getCurrentAccuracy()}%</strong>
               </div>
@@ -99,19 +100,20 @@ function StatsOverview({ currentStats, allTimeStats }) {
             </div>
           </div>
         ) : (
-          <div className="no-data">            <p>No current session data available</p>
+          <div className="no-data">
+            {" "}
+            <p>No current session data available</p>
           </div>
         )}
-      </section>      {allTimeStats && (
+      </section>{" "}
+      {allTimeStats && (
         <section className="stats-section">
           <h2>🏆 All-Time Statistics</h2>
           <div className="all-time-grid">
             <div className="summary-card">
               <div className="summary-label">Total Sessions</div>
               <div className="summary-value">
-                {allTimeStats.totalSessions ||
-                  allTimeStats.total_sessions ||
-                  0}
+                {allTimeStats.totalSessions || allTimeStats.total_sessions || 0}
               </div>
             </div>
             <div className="summary-card">
