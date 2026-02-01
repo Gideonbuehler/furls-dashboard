@@ -9,22 +9,27 @@
 **Location:** `server/routes/auth.js` Line 146
 
 **Bug:**
+
 ```javascript
-const { JWT_SECRET } = require("./auth");  // ❌ Wrong path!
+const { JWT_SECRET } = require("./auth"); // ❌ Wrong path!
 ```
 
 **Fix:**
+
 ```javascript
-const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key-change-this-in-production";
+const JWT_SECRET =
+  process.env.JWT_SECRET || "your-secret-key-change-this-in-production";
 ```
 
 **Why it happened:**
+
 - Tried to require from `./auth` (current directory)
 - Auth module is actually at `../auth` (parent directory)
 - Caused "Cannot find module" error
 - Server returned 500 instead of handling gracefully
 
 **Impact:**
+
 - ✅ Token verification now works
 - ✅ No more 500 errors
 - ✅ Dashboard loads properly after login
@@ -35,9 +40,11 @@ const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key-change-this-in-pro
 ## Issues Fixed
 
 ### 1. Dashboard Loads Then Immediately Redirects to Login
+
 **Problem:** App would load the dashboard briefly, then redirect back to login
+
 - **Root Cause:** Token validation was happening in the response interceptor
-- **Impact:** 
+- **Impact:**
   - User logs in successfully
   - Dashboard starts to load
   - API calls return 401 (invalid token or different database)
@@ -45,11 +52,14 @@ const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key-change-this-in-pro
 - **Fix:** Removed automatic redirect from interceptor; verify token explicitly on app startup
 
 ### 2. Token Validation Strategy
+
 **Old Approach:** Interceptor caught ANY 401 error and redirected
+
 - Problem: Caught errors from plugin-status, stats endpoints, etc.
 - Result: Redirect loop
 
 **New Approach:** Validate token explicitly on app startup
+
 - Call `/auth/me` to verify token is valid
 - If valid: Load dashboard data
 - If invalid: Logout and show login page
@@ -58,6 +68,7 @@ const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key-change-this-in-pro
 ## Changes Made
 
 ### File: `client/src/App.jsx`
+
 ```javascript
 // NEW: Verify auth before loading data
 const verifyAuthAndLoadData = async () => {
@@ -78,7 +89,7 @@ useEffect(() => {
   if (!showAuth) {
     // Verify token is valid before loading data
     verifyAuthAndLoadData();
-    
+
     // Poll for updates every 2 seconds
     const interval = setInterval(() => {
       loadAllData();
@@ -90,12 +101,14 @@ useEffect(() => {
 }, [showAuth]);
 ```
 
-**Why:** 
+**Why:**
+
 - Explicitly checks if token is valid on app startup
 - If token invalid (e.g., from different database), logs out gracefully
 - No surprise redirects during normal operation
 
 ### File: `client/src/services/api.js`
+
 ```javascript
 // SIMPLIFIED: No automatic redirects
 api.interceptors.response.use(
@@ -108,7 +121,8 @@ api.interceptors.response.use(
 );
 ```
 
-**Why:** 
+**Why:**
+
 - No more automatic redirects on 401 errors
 - App controls when to logout (only on token verification failure)
 - Login errors show properly to user
@@ -121,11 +135,12 @@ api.interceptors.response.use(
 ✅ **Different database tokens handled** - Local token won't work on Render (logs out gracefully)  
 ✅ **Login errors display properly** - Users see "Invalid credentials" instead of redirect  
 ✅ **Plugin status errors ignored** - Won't trigger logout  
-✅ **Smooth user experience** - No flickering between pages  
+✅ **Smooth user experience** - No flickering between pages
 
 ## Testing the Fix
 
 ### Local Testing
+
 1. Start the dev server: `npm run dev`
 2. Login with your local credentials
 3. Dashboard should load and stay loaded
@@ -133,6 +148,7 @@ api.interceptors.response.use(
 5. Invalid tokens will show login page immediately
 
 ### Render.com Testing
+
 1. Deploy the changes
 2. Navigate to your Render app URL
 3. Register/login on Render (remember: different database!)
@@ -140,6 +156,7 @@ api.interceptors.response.use(
 5. No redirect loops
 
 ### Testing Token Validation
+
 1. Login successfully
 2. Open browser DevTools → Application → Local Storage
 3. Manually corrupt the token value
@@ -149,16 +166,19 @@ api.interceptors.response.use(
 ## Expected Behavior After Fix
 
 1. **Fresh Visit (No Token):**
+
    - Shows login page immediately
    - No API calls until login
 
 2. **With Valid Token:**
+
    - Verifies token with `/auth/me`
    - Loads dashboard
    - Starts polling for updates
    - No redirects
 
 3. **With Invalid Token:**
+
    - Verifies token with `/auth/me`
    - Fails validation
    - Logs out gracefully
@@ -174,6 +194,7 @@ api.interceptors.response.use(
 ## Common Scenarios
 
 ### Scenario 1: Local Token on Render
+
 ```
 1. User has token from localhost in browser
 2. User visits Render URL
@@ -184,6 +205,7 @@ api.interceptors.response.use(
 ```
 
 ### Scenario 2: Expired Token
+
 ```
 1. User has old token (>7 days)
 2. App tries to verify token
@@ -193,6 +215,7 @@ api.interceptors.response.use(
 ```
 
 ### Scenario 3: Wrong Credentials
+
 ```
 1. User enters wrong password
 2. Login returns 401
@@ -240,15 +263,18 @@ API calls made
 If you still see redirects:
 
 1. **Open Browser DevTools Console**
+
    - Look for "Token verification failed" message
    - Check what endpoint is failing
 
 2. **Check Local Storage**
+
    - DevTools → Application → Local Storage
    - Should see `token` and `user` keys
    - Try deleting them and logging in fresh
 
 3. **Check Network Tab**
+
    - Look for `/auth/me` call on startup
    - Check its response (should be 200 for valid token)
    - Look for 401/403 responses

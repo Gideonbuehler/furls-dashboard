@@ -17,6 +17,7 @@ The dashboard was loading session history and all-time stats, but **never settin
 ### Updated `App.jsx` - `loadAllData()` function:
 
 **Before:**
+
 ```javascript
 // Only loaded history and all-time
 setSessionHistory(userHistoryRes.data);
@@ -25,6 +26,7 @@ setAllTimeStats(userAllTimeRes.data);
 ```
 
 **After:**
+
 ```javascript
 setSessionHistory(userHistoryRes.data);
 
@@ -49,6 +51,7 @@ Now the dashboard displays the **most recent session** as your "Current Session"
 ## 🧪 How to Verify It's Working
 
 ### Step 1: Make Sure Plugin Is Configured
+
 ```
 API URL: https://furls-api.onrender.com
 API Key: (from Render Settings page)
@@ -56,24 +59,29 @@ Test Connection: ✅ Should succeed
 ```
 
 ### Step 2: Play a Training Session
+
 1. Open Rocket League
 2. Load a training pack
 3. Play for a bit (take some shots)
 4. Exit training
 
 ### Step 3: Check Dashboard
+
 1. Go to your Render dashboard: `https://furls-api.onrender.com`
 2. Refresh the page
 3. Look at the "Current Session" stats
 
 **Should show:**
+
 - ✅ Shot Accuracy (goals/shots percentage)
 - ✅ Average Speed
 - ✅ Boost Used/Collected
 - ✅ Session Time
 
 ### Step 4: Verify Plugin Connected
+
 Look at the top-right of the dashboard:
+
 - 🟢 "Plugin Connected" = Data is being sent (within last 5 minutes)
 - 🔴 "Plugin Offline" = No data in last 5 minutes
 
@@ -82,12 +90,14 @@ Look at the top-right of the dashboard:
 ## 🔄 How Data Updates Work
 
 ### When You Play:
+
 1. **Plugin sends data** → Render server receives it
 2. **Server saves to PostgreSQL** → Session stored in database
 3. **Dashboard polls every 2 seconds** → Fetches latest sessions
 4. **Most recent session shown** as "Current Session"
 
 ### Auto-Refresh:
+
 - Dashboard automatically refreshes every 2 seconds
 - No need to manually refresh the page
 - Latest stats appear automatically
@@ -97,6 +107,7 @@ Look at the top-right of the dashboard:
 ## 📊 What Gets Updated
 
 ### Current Session (Most Recent):
+
 - Shot Accuracy (goals/shots %)
 - Average Speed
 - Boost Collected/Used
@@ -104,17 +115,20 @@ Look at the top-right of the dashboard:
 - Possession Time
 
 ### Session History:
+
 - List of all your sessions
 - Charts showing accuracy over time
 - Speed trends
 
 ### All-Time Stats:
+
 - Total Sessions
 - Total Shots
 - Total Goals
 - Overall Accuracy
 
 ### Friends Leaderboard:
+
 - Compare with friends
 - See their recent stats
 
@@ -123,12 +137,15 @@ Look at the top-right of the dashboard:
 ## 🐛 Troubleshooting
 
 ### "Current Session" shows all zeros
+
 **Causes:**
+
 1. No data uploaded yet from plugin
 2. Plugin not configured correctly
 3. API key is wrong
 
 **Solutions:**
+
 1. Check plugin connection indicator (top-right)
 2. Verify API key in Settings matches plugin
 3. Test connection in plugin
@@ -137,12 +154,15 @@ Look at the top-right of the dashboard:
 ---
 
 ### Data doesn't update after playing
+
 **Causes:**
+
 1. Dashboard not auto-refreshing
 2. Plugin not uploading after each session
 3. Render server sleeping (free tier)
 
 **Solutions:**
+
 1. Refresh browser page manually
 2. Check plugin logs in BakkesMod console
 3. Wait 60 seconds for Render to wake up (first request)
@@ -150,14 +170,17 @@ Look at the top-right of the dashboard:
 ---
 
 ### Plugin shows "Connected" but stats are old
+
 **Cause:** Dashboard is showing your most recent **saved session**, not live data
 
-**Explanation:** 
+**Explanation:**
+
 - The plugin uploads data **after each training session**
 - Dashboard shows the **most recent completed session**
 - This is correct behavior!
 
 **To see new data:**
+
 1. Play a training session
 2. **Exit training** (plugin uploads at session end)
 3. Dashboard updates automatically within 2 seconds
@@ -165,12 +188,15 @@ Look at the top-right of the dashboard:
 ---
 
 ### "Plugin Offline" but I just played
+
 **Causes:**
+
 1. Plugin didn't upload (check plugin logs)
 2. Session ended more than 5 minutes ago
 3. Upload failed due to network issue
 
 **Solutions:**
+
 1. Check BakkesMod console for errors
 2. Test connection in plugin settings
 3. Try playing another quick training session
@@ -180,6 +206,7 @@ Look at the top-right of the dashboard:
 ## 🎯 Expected Behavior
 
 ### ✅ Correct Flow:
+
 1. Play training session in Rocket League
 2. Exit training (plugin uploads data)
 3. Wait 2-4 seconds
@@ -188,6 +215,7 @@ Look at the top-right of the dashboard:
 6. All-Time stats increase
 
 ### ✅ Dashboard Shows:
+
 - **Current Session** = Most recent session you played
 - **Session History** = List of all sessions (newest first)
 - **All-Time Stats** = Cumulative totals across all sessions
@@ -197,14 +225,17 @@ Look at the top-right of the dashboard:
 ## 📝 Notes
 
 ### "Current Session" = "Most Recent Session"
+
 The "Current Session" card doesn't show **live data while you're playing**. It shows your **most recently completed session**. This is by design!
 
 ### Why Not Live Data?
+
 - Plugin uploads data **after session ends** (not during)
 - This prevents incomplete/partial session data
 - Ensures accurate statistics
 
 ### To See Live Data:
+
 If you want live data while playing, you'd need a different setup where the plugin streams data continuously. The current design uploads complete sessions only.
 
 ---
@@ -227,6 +258,7 @@ After the fix, verify everything works:
 ## 🎉 It's Fixed!
 
 Your dashboard now properly shows:
+
 - ✅ Most recent session as "Current Session"
 - ✅ Auto-updates every 2 seconds
 - ✅ All-time stats accumulate correctly

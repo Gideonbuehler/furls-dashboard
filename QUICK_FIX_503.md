@@ -13,6 +13,7 @@ The 503 error is likely because your **BakkesMod plugin URL is wrong**.
 ### ✅ Correct Configuration:
 
 **API URL in plugin:**
+
 ```
 http://localhost:3002
 ```
@@ -29,13 +30,16 @@ http://localhost:3002
 ## 📋 Quick Setup Steps
 
 ### 1. Get Your API Key
+
 1. Open browser: http://localhost:5173
 2. Login to your account
 3. Go to **Settings** tab
 4. **Copy your API key**
 
 ### 2. Configure Plugin
+
 In BakkesMod FURLS plugin settings:
+
 - **API URL:** `http://localhost:3002`
 - **API Key:** (paste from Settings)
 - Click **"Test Connection"**
@@ -54,6 +58,7 @@ cd "c:\Users\gideo\source\repos\FURLS\Dashboard"
 ```
 
 This will:
+
 - ✅ Check if server is running
 - ✅ Test plugin endpoint
 - ✅ Validate your API key
@@ -75,11 +80,13 @@ This will:
 ## 💡 Most Likely Issue
 
 Your plugin is probably configured with:
+
 ```
 http://localhost:3002/api/stats/upload
 ```
 
 Change it to:
+
 ```
 http://localhost:3002
 ```
@@ -91,8 +98,9 @@ The plugin will automatically add the `/api/stats/upload` part!
 ## ✅ Verify It Works
 
 After fixing the URL:
+
 1. **Test Connection** in plugin → Should succeed
-2. **Play a training session** in Rocket League  
+2. **Play a training session** in Rocket League
 3. **Check dashboard** → Should show 🟢 "Plugin Connected"
 
 ---
@@ -100,6 +108,7 @@ After fixing the URL:
 ## 📞 Still Not Working?
 
 Run the test script and share the output:
+
 ```powershell
 .\test-plugin-connection.ps1
 ```

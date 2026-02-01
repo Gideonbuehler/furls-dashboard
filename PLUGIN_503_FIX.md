@@ -11,6 +11,7 @@ The **503 Service Unavailable** error means the FURLS Dashboard server isn't run
 ### Step 1: Make Sure the Server is Running
 
 #### Check if server is running:
+
 ```powershell
 # Open PowerShell and check if port 3002 is in use
 netstat -ano | findstr :3002
@@ -19,12 +20,14 @@ netstat -ano | findstr :3002
 If you see output, the server is running. If not, start it:
 
 #### Start the server:
+
 ```powershell
 cd "c:\Users\gideo\source\repos\FURLS\Dashboard"
 npm start
 ```
 
 You should see:
+
 ```
 ✅ Connected to SQLite database
 FURLS Dashboard API running on http://localhost:3002
@@ -39,11 +42,13 @@ FURLS Dashboard API running on http://localhost:3002
 Open a browser or use PowerShell to test the health endpoint:
 
 #### In Browser:
+
 ```
 http://localhost:3002/api/health
 ```
 
 Should return:
+
 ```json
 {
   "status": "ok",
@@ -54,6 +59,7 @@ Should return:
 ```
 
 #### In PowerShell:
+
 ```powershell
 curl http://localhost:3002/api/health
 ```
@@ -65,11 +71,13 @@ curl http://localhost:3002/api/health
 In your BakkesMod plugin settings, the API URL should be:
 
 **For Local Development:**
+
 ```
 http://localhost:3002
 ```
 
 **For Production (Render.com):**
+
 ```
 https://furls-dashboardonrender.com
 ```
@@ -97,6 +105,7 @@ The plugin will automatically append the correct path.
 ### Step 5: Test Plugin Connection
 
 In BakkesMod plugin settings:
+
 1. Set **API URL**: `http://localhost:3002`
 2. Paste your **API Key**
 3. Click **"Test Connection"**
@@ -108,22 +117,27 @@ Should see: ✅ **Connection successful!**
 ## 🔍 Common Issues & Solutions
 
 ### Issue 1: "Server not running"
+
 **Symptom:** 503 error, connection refused  
 **Solution:** Start the server with `npm start` and keep it running
 
 ### Issue 2: "Wrong port"
+
 **Symptom:** 503 error even when server is running  
 **Solution:** Check your `.env` file - should have `PORT=3002`
 
 ### Issue 3: "CORS error"
+
 **Symptom:** Plugin can reach server but gets blocked  
 **Solution:** Server already has CORS enabled - should work
 
 ### Issue 4: "Invalid API key"
+
 **Symptom:** 401 Unauthorized error (not 503)  
 **Solution:** Regenerate API key in Settings and update plugin
 
 ### Issue 5: "Can't reach localhost"
+
 **Symptom:** Plugin can't connect to localhost  
 **Solution:** Make sure Windows Firewall isn't blocking port 3002
 
@@ -165,6 +179,7 @@ Invoke-RestMethod -Uri "http://localhost:3002/api/stats/upload" -Method POST -He
 ```
 
 Should return:
+
 ```json
 {
   "success": true,
@@ -177,15 +192,18 @@ Should return:
 ## 🚀 Running Server Permanently
 
 ### Option 1: Keep Terminal Open
+
 Just leave the `npm start` terminal window open while playing
 
 ### Option 2: Run as Background Process (Windows)
+
 ```powershell
 # Start server in background
 Start-Process powershell -ArgumentList "cd 'c:\Users\gideo\source\repos\FURLS\Dashboard'; npm start" -WindowStyle Hidden
 ```
 
 ### Option 3: Use the Start Script
+
 Double-click `start-dashboard.bat` in the Dashboard folder
 
 ---
@@ -222,12 +240,15 @@ If you want to use your deployed version instead:
 ## ❓ Still Not Working?
 
 ### Check Server Logs
+
 Look for errors in the terminal where you ran `npm start`
 
 ### Check Plugin Logs
+
 BakkesMod console will show connection errors
 
 ### Test Endpoint Manually
+
 ```powershell
 # Test without API key (should get 401, not 503)
 curl http://localhost:3002/api/stats/plugin-status
@@ -243,6 +264,7 @@ If you get 401, server is running but needs API key.
 Create a shortcut to start everything at once:
 
 **`start-all.ps1`:**
+
 ```powershell
 # Start backend
 Start-Process powershell -ArgumentList "cd 'c:\Users\gideo\source\repos\FURLS\Dashboard'; npm start"

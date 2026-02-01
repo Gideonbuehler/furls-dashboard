@@ -12,9 +12,10 @@
 ## 🚀 Quick Setup for Render.com
 
 ### 1️⃣ Create Account on Render Site
+
 ```
 1. Open browser: https://furls-api.onrender.com
-2. Click "Register" 
+2. Click "Register"
 3. Create NEW account (username, email, password)
 4. Login
 ```
@@ -24,6 +25,7 @@
 ---
 
 ### 2️⃣ Get API Key from Render
+
 ```
 1. On the Render site, click "Settings" tab
 2. Copy your API Key
@@ -32,6 +34,7 @@
 ---
 
 ### 3️⃣ Configure BakkesMod Plugin
+
 ```
 API URL: https://furls-api.onrender.com
 API Key: (paste from step 2)
@@ -43,6 +46,7 @@ API Key: (paste from step 2)
 ---
 
 ### 4️⃣ Test Connection
+
 ```
 Click "Test Connection" in plugin
 ⏳ First time may take 60 seconds (Render waking up)
@@ -59,6 +63,7 @@ Click "Test Connection" in plugin
 - Subsequent requests: **Fast** ⚡
 
 **If test times out:**
+
 1. Wait 60 seconds
 2. Try again → Should work!
 
@@ -67,6 +72,7 @@ Click "Test Connection" in plugin
 ## 🔄 Local vs Render
 
 ### 🏠 For Local Development:
+
 ```
 URL: http://localhost:3002
 API Key: (from http://localhost:5173 Settings)
@@ -74,8 +80,9 @@ Fast, free, must run server
 ```
 
 ### ☁️ For Render Production:
+
 ```
-URL: https://furls-api.onrender.com  
+URL: https://furls-api.onrender.com
 API Key: (from render site Settings)
 Always available, first request slow
 ```
@@ -97,22 +104,27 @@ Always available, first request slow
 ## 🐛 Troubleshooting
 
 ### "503 Error"
+
 → Render is sleeping, wait 60 seconds and retry
 
-### "401 Unauthorized"  
+### "401 Unauthorized"
+
 → Wrong API key, get it from Render Settings
 
 ### "Connection timeout"
+
 → First request waking Render up, wait and try again
 
 ### Health Check
+
 Test in browser: `https://furls-api.onrender.com/api/health`  
 Should show: `{"status":"ok"}`
 
 ---
 
-**TL;DR:**  
-1. Register on https://furls-api.onrender.com  
-2. Get API key from Settings  
-3. Plugin URL = `https://furls-api.onrender.com`  
+**TL;DR:**
+
+1. Register on https://furls-api.onrender.com
+2. Get API key from Settings
+3. Plugin URL = `https://furls-api.onrender.com`
 4. First test may take 60s (waking up)

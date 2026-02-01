@@ -11,6 +11,7 @@ You're trying to connect the BakkesMod plugin to your **Render.com server**, not
 ### 1. Find Your Render URL
 
 Go to your Render Dashboard:
+
 - Your service name is probably: **`furls-api`**
 - Your URL will be something like: `https://furls-api.onrender.com`
 
@@ -19,12 +20,14 @@ Or check your `render.yaml` - it shows the service name.
 ### 2. Configure Plugin with Render URL
 
 **In BakkesMod FURLS Plugin:**
+
 ```
 API URL: https://your-app-name.onrender.com
 API Key: (from your Render dashboard Settings)
 ```
 
 ⚠️ **Important:**
+
 - Use `https://` (NOT `http://`)
 - NO `/api` at the end
 - Just the base Render URL
@@ -57,6 +60,7 @@ API Key: (from your Render dashboard Settings)
 ### Step 4: Configure Plugin
 
 **In BakkesMod:**
+
 ```
 API URL: https://furls-api.onrender.com (or your actual URL)
 API Key: (paste from Step 3)
@@ -73,15 +77,17 @@ Click **"Test Connection"** in plugin → Should work!
 If you don't know your Render URL:
 
 ### Option 1: Check render.yaml
+
 ```yaml
 services:
   - type: web
-    name: furls-api  # This is your service name
+    name: furls-api # This is your service name
 ```
 
 Your URL will be: `https://furls-api.onrender.com`
 
 ### Option 2: Check Render Dashboard
+
 1. Go to https://dashboard.render.com
 2. Click on your service
 3. URL is shown at the top
@@ -90,25 +96,27 @@ Your URL will be: `https://furls-api.onrender.com`
 
 ## ⚠️ Important Differences: Local vs Render
 
-| Aspect | Local (localhost) | Render (Production) |
-|--------|-------------------|---------------------|
-| Server URL | `http://localhost:3002` | `https://your-app.onrender.com` |
-| Protocol | HTTP | HTTPS |
-| Server Running | You start it manually | Always running |
-| Database | SQLite (local file) | PostgreSQL (cloud) |
-| Accounts | Your local users | Need new accounts |
-| API Key | From local Settings | From Render Settings |
+| Aspect         | Local (localhost)       | Render (Production)             |
+| -------------- | ----------------------- | ------------------------------- |
+| Server URL     | `http://localhost:3002` | `https://your-app.onrender.com` |
+| Protocol       | HTTP                    | HTTPS                           |
+| Server Running | You start it manually   | Always running                  |
+| Database       | SQLite (local file)     | PostgreSQL (cloud)              |
+| Accounts       | Your local users        | Need new accounts               |
+| API Key        | From local Settings     | From Render Settings            |
 
 ---
 
 ## 🆕 You Need a New Account on Render!
 
 **Your local account doesn't exist on Render because:**
+
 - Local uses SQLite database (on your computer)
 - Render uses PostgreSQL database (in the cloud)
 - They are completely separate!
 
 **Steps:**
+
 1. Go to your Render URL
 2. Register a NEW account
 3. Get API key from that account
@@ -119,12 +127,15 @@ Your URL will be: `https://furls-api.onrender.com`
 ## 🧪 Test Your Render Connection
 
 ### Test 1: Check if Render is responding
+
 Open browser:
+
 ```
 https://your-app.onrender.com/api/health
 ```
 
 Should show:
+
 ```json
 {
   "status": "ok"
@@ -152,6 +163,7 @@ Invoke-RestMethod -Uri "https://your-app.onrender.com/api/stats/upload" -Method 
 ```
 
 Should return:
+
 ```json
 {
   "success": true,
@@ -168,11 +180,13 @@ Should return:
 First request after sleep takes 30-60 seconds to wake up.
 
 **Symptoms:**
+
 - Plugin test times out
 - First upload fails
 - Subsequent uploads work fine
 
 **Solutions:**
+
 1. **Wait 60 seconds** after first request
 2. **Upgrade to paid tier** ($7/month for always-on)
 3. **Use localhost** for development (instant response)
@@ -182,6 +196,7 @@ First request after sleep takes 30-60 seconds to wake up.
 ## 💡 Recommended Setup
 
 ### For Development (Playing/Testing):
+
 ```
 API URL: http://localhost:3002
 - Fast response
@@ -190,6 +205,7 @@ API URL: http://localhost:3002
 ```
 
 ### For Production (Sharing with friends):
+
 ```
 API URL: https://your-app.onrender.com
 - Always available
@@ -214,19 +230,23 @@ API URL: https://your-app.onrender.com
 ## 📝 Common Mistakes
 
 ### ❌ Using localhost with Render
+
 ```
 API URL: http://localhost:3002  ← This won't reach Render!
 ```
 
 ### ❌ Using local API key with Render
+
 ```
 API Key: (from localhost Settings)  ← This doesn't exist on Render!
 ```
 
 ### ❌ Not creating Render account
+
 You need to register on the Render website, not just push code!
 
 ### ❌ Not waiting for Render to wake up
+
 First request may time out - wait 60 seconds and try again
 
 ---
@@ -237,7 +257,7 @@ First request may time out - wait 60 seconds and try again
 📍 For Render.com Production:
    URL: https://your-app.onrender.com
    API Key: (from Render website Settings page)
-   
+
 📍 For Local Development:
    URL: http://localhost:3002
    API Key: (from localhost:5173 Settings page)
@@ -250,12 +270,15 @@ First request may time out - wait 60 seconds and try again
 ## 🆘 Still Getting 503?
 
 ### Check 1: Is Render service running?
+
 Go to Render Dashboard → Check service status
 
 ### Check 2: Is it sleeping?
+
 Free tier sleeps - first request wakes it (takes 60s)
 
 ### Check 3: Test health endpoint
+
 ```
 https://your-app.onrender.com/api/health
 ```

@@ -277,7 +277,8 @@ router.get("/leaderboard", authenticateToken, async (req, res) => {
 
     query += ` ORDER BY ${orderBy} DESC LIMIT 50`;
 
-    const leaderboard = await dbAsync.all(query, params);    res.json(leaderboard);
+    const leaderboard = await dbAsync.all(query, params);
+    res.json(leaderboard);
   } catch (error) {
     console.error("Get leaderboard error:", error);
     res.status(500).json({ error: "Failed to get leaderboard" });
@@ -300,17 +301,25 @@ router.get("/heatmap", authenticateToken, async (req, res) => {
 
     if (!sessions || sessions.length === 0) {
       return res.json({
-        shots: Array(10).fill(null).map(() => Array(10).fill(0)),
-        goals: Array(10).fill(null).map(() => Array(10).fill(0)),
+        shots: Array(10)
+          .fill(null)
+          .map(() => Array(10).fill(0)),
+        goals: Array(10)
+          .fill(null)
+          .map(() => Array(10).fill(0)),
       });
     }
 
     // Initialize aggregated heatmaps (10x10 grid)
-    const aggregatedShots = Array(10).fill(null).map(() => Array(10).fill(0));
-    const aggregatedGoals = Array(10).fill(null).map(() => Array(10).fill(0));
+    const aggregatedShots = Array(10)
+      .fill(null)
+      .map(() => Array(10).fill(0));
+    const aggregatedGoals = Array(10)
+      .fill(null)
+      .map(() => Array(10).fill(0));
 
     // Aggregate all sessions
-    sessions.forEach(session => {
+    sessions.forEach((session) => {
       try {
         const shotHeatmap = JSON.parse(session.shot_heatmap || "[]");
         const goalHeatmap = JSON.parse(session.goal_heatmap || "[]");

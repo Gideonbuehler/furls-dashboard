@@ -13,10 +13,7 @@
 .stats-section h2 {
   margin: 0 0 2rem 0;
   text-align: center;
-  background: linear-gradient(135deg, #4CAF50, #2196F3);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: #4CAF50;
 }
 
 .stats-details {
@@ -62,10 +59,7 @@
 }
 
 .stat-item strong.highlight {
-  background: linear-gradient(135deg, #4CAF50, #2196F3);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: #4CAF50;
   font-size: 1.3rem;
 }
 

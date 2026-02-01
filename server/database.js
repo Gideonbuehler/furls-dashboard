@@ -2,10 +2,15 @@ const path = require("path");
 const fs = require("fs");
 
 // Determine which database to use
-const useSqlite = process.env.USE_SQLITE === "true" || !process.env.DATABASE_URL;
+const useSqlite =
+  process.env.USE_SQLITE === "true" || !process.env.DATABASE_URL;
 const isProduction = process.env.NODE_ENV === "production";
 
-console.log(`🗄️  Database Mode: ${useSqlite ? "SQLite (Local)" : "PostgreSQL (Production)"}`);
+console.log(
+  `🗄️  Database Mode: ${
+    useSqlite ? "SQLite (Local)" : "PostgreSQL (Production)"
+  }`
+);
 
 let pool, db;
 
@@ -13,7 +18,7 @@ if (useSqlite) {
   // SQLite for local development
   const sqlite3 = require("sqlite3").verbose();
   const DB_PATH = path.join(__dirname, "furls.db");
-  
+
   db = new sqlite3.Database(DB_PATH, (err) => {
     if (err) {
       console.error("❌ SQLite connection error:", err);
@@ -25,7 +30,7 @@ if (useSqlite) {
 } else {
   // PostgreSQL for production
   const { Pool } = require("pg");
-  
+
   pool = new Pool({
     connectionString: process.env.DATABASE_URL,
     ssl: isProduction
@@ -55,7 +60,7 @@ async function initializeTables() {
   if (useSqlite) {
     // SQLite table initialization (synchronous callbacks)
     console.log("Initializing SQLite tables...");
-      // Users table
+    // Users table
     db.run(`
       CREATE TABLE IF NOT EXISTS users (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -128,19 +133,29 @@ async function initializeTables() {
     `);
 
     // Create indexes
-    db.run(`CREATE INDEX IF NOT EXISTS idx_sessions_user_id ON sessions(user_id)`);
-    db.run(`CREATE INDEX IF NOT EXISTS idx_sessions_timestamp ON sessions(timestamp)`);
-    db.run(`CREATE INDEX IF NOT EXISTS idx_friendships_user_id ON friendships(user_id)`);
-    db.run(`CREATE INDEX IF NOT EXISTS idx_friendships_friend_id ON friendships(friend_id)`);
-    db.run(`CREATE INDEX IF NOT EXISTS idx_friendships_status ON friendships(status)`, (err) => {
-      if (!err) console.log("✅ SQLite database initialized successfully");
-    });
-    
+    db.run(
+      `CREATE INDEX IF NOT EXISTS idx_sessions_user_id ON sessions(user_id)`
+    );
+    db.run(
+      `CREATE INDEX IF NOT EXISTS idx_sessions_timestamp ON sessions(timestamp)`
+    );
+    db.run(
+      `CREATE INDEX IF NOT EXISTS idx_friendships_user_id ON friendships(user_id)`
+    );
+    db.run(
+      `CREATE INDEX IF NOT EXISTS idx_friendships_friend_id ON friendships(friend_id)`
+    );
+    db.run(
+      `CREATE INDEX IF NOT EXISTS idx_friendships_status ON friendships(status)`,
+      (err) => {
+        if (!err) console.log("✅ SQLite database initialized successfully");
+      }
+    );
   } else {
     // PostgreSQL table initialization (async)
     const client = await pool.connect();
     try {
-      console.log("Initializing PostgreSQL tables...");      // Users table
+      console.log("Initializing PostgreSQL tables..."); // Users table
       await client.query(`
         CREATE TABLE IF NOT EXISTS users (
           id SERIAL PRIMARY KEY,
@@ -268,14 +283,14 @@ const dbAsync = {
       const client = await pool.connect();
       try {
         let pgSql = convertPlaceholders(sql);
-        
+
         // If it's an INSERT, add RETURNING id to get the inserted ID
-        if (pgSql.trim().toUpperCase().startsWith('INSERT')) {
-          if (!pgSql.toUpperCase().includes('RETURNING')) {
-            pgSql += ' RETURNING id';
+        if (pgSql.trim().toUpperCase().startsWith("INSERT")) {
+          if (!pgSql.toUpperCase().includes("RETURNING")) {
+            pgSql += " RETURNING id";
           }
         }
-        
+
         const result = await client.query(pgSql, params);
         return {
           id: result.rows[0]?.id || null,
@@ -333,8 +348,8 @@ const dbAsync = {
 };
 
 // Export appropriate database object and dbAsync for compatibility
-module.exports = { 
-  db: useSqlite ? db : pool, 
-  dbAsync, 
-  pool: useSqlite ? null : pool 
+module.exports = {
+  db: useSqlite ? db : pool,
+  dbAsync,
+  pool: useSqlite ? null : pool,
 };

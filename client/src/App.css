@@ -25,17 +25,7 @@
 .app-header h1 {
   margin: 0;
   font-size: 2rem;
-  background: linear-gradient(135deg, #bb86fc, #7b1fa2, #bb86fc);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  background-size: 200% 100%;
-  animation: gradientShift 3s ease infinite;
-}
-
-@keyframes gradientShift {
-  0%, 100% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
+  color: #bb86fc;
 }
 
 .connection-status {

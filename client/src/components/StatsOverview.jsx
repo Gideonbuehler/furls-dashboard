@@ -40,7 +40,8 @@ function StatsOverview({ currentStats, allTimeStats }) {
                 <span>Accuracy:</span>
                 <strong className="highlight">{getCurrentAccuracy()}%</strong>
               </div>
-            </div>            <div className="stat-group">
+            </div>{" "}
+            <div className="stat-group">
               <h3>⚡ Speed & Movement</h3>
               <div className="stat-item">
                 <span>Average Speed:</span>
@@ -51,7 +52,6 @@ function StatsOverview({ currentStats, allTimeStats }) {
                 <strong>{currentStats?.speedSamples || 0}</strong>
               </div>
             </div>
-
             <div className="stat-group">
               <h3>💨 Boost Management</h3>
               <div className="stat-item">
@@ -68,14 +68,13 @@ function StatsOverview({ currentStats, allTimeStats }) {
                   {currentStats?.boostCollected > 0
                     ? safeToFixed(
                         (currentStats.boostUsed / currentStats.boostCollected) *
-                        100
+                          100
                       )
                     : 0}
                   %
                 </strong>
               </div>
             </div>
-
             <div className="stat-group">
               <h3>⏱️ Time Stats</h3>
               <div className="stat-item">
@@ -131,22 +130,21 @@ function StatsOverview({ currentStats, allTimeStats }) {
                 <strong>
                   {allTimeStats.totalGoals || allTimeStats.total_goals || 0}
                 </strong>
-              </div>              <div className="stat-item">
+              </div>{" "}
+              <div className="stat-item">
                 <span>Overall Accuracy:</span>
                 <strong className="highlight">
                   {safeToFixed(
-                    allTimeStats?.avgAccuracy ||
-                    allTimeStats?.avg_accuracy ||
-                    0
-                  )}%
+                    allTimeStats?.avgAccuracy || allTimeStats?.avg_accuracy || 0
+                  )}
+                  %
                 </strong>
-              </div>              <div className="stat-item">
+              </div>{" "}
+              <div className="stat-item">
                 <span>Average Speed:</span>
                 <strong>
                   {safeToFixed(
-                    allTimeStats?.avgSpeed ||
-                    allTimeStats?.avg_speed ||
-                    0,
+                    allTimeStats?.avgSpeed || allTimeStats?.avg_speed || 0,
                     2
                   )}
                 </strong>
@@ -164,7 +162,8 @@ function StatsOverview({ currentStats, allTimeStats }) {
             </div>
 
             <div className="stat-group">
-              <h3>📊 Performance Metrics</h3>              <div className="stat-item">
+              <h3>📊 Performance Metrics</h3>{" "}
+              <div className="stat-item">
                 <span>Avg Shots per Session:</span>
                 <strong>
                   {(allTimeStats?.totalSessions ||
@@ -174,8 +173,8 @@ function StatsOverview({ currentStats, allTimeStats }) {
                         (allTimeStats?.totalShots ||
                           allTimeStats?.total_shots ||
                           0) /
-                        (allTimeStats?.totalSessions ||
-                          allTimeStats?.total_sessions)
+                          (allTimeStats?.totalSessions ||
+                            allTimeStats?.total_sessions)
                       )
                     : 0}
                 </strong>
@@ -190,8 +189,8 @@ function StatsOverview({ currentStats, allTimeStats }) {
                         (allTimeStats?.totalGoals ||
                           allTimeStats?.total_goals ||
                           0) /
-                        (allTimeStats?.totalSessions ||
-                          allTimeStats?.total_sessions)
+                          (allTimeStats?.totalSessions ||
+                            allTimeStats?.total_sessions)
                       )
                     : 0}
                 </strong>

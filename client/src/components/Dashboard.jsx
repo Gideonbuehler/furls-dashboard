@@ -105,10 +105,14 @@ function Dashboard({ currentStats, allTimeStats, sessionHistory }) {
             <div className="summary-card">
               <div className="summary-label">Total Goals</div>
               <div className="summary-value">{allTimeStats.totalGoals}</div>
-            </div>            <div className="summary-card">
+            </div>{" "}
+            <div className="summary-card">
               <div className="summary-label">Average Accuracy</div>
               <div className="summary-value">
-                {safeToFixed(allTimeStats?.avgAccuracy || allTimeStats?.avg_accuracy)}%
+                {safeToFixed(
+                  allTimeStats?.avgAccuracy || allTimeStats?.avg_accuracy
+                )}
+                %
               </div>
             </div>
             <div className="summary-card">

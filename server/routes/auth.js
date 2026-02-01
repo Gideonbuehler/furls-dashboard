@@ -143,7 +143,8 @@ router.get("/me", async (req, res) => {
 
   try {
     const jwt = require("jsonwebtoken");
-    const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key-change-this-in-production";
+    const JWT_SECRET =
+      process.env.JWT_SECRET || "your-secret-key-change-this-in-production";
     const decoded = jwt.verify(token, JWT_SECRET);
 
     const user = await dbAsync.get(
@@ -285,7 +286,8 @@ router.put("/privacy", authenticateToken, async (req, res) => {
 
   if (!["public", "friends", "private"].includes(profileVisibility)) {
     return res.status(400).json({
-      error: "Invalid visibility setting. Must be 'public', 'friends', or 'private'",
+      error:
+        "Invalid visibility setting. Must be 'public', 'friends', or 'private'",
     });
   }
 

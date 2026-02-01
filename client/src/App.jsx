@@ -13,12 +13,14 @@ import Friends from "./components/Friends";
 import Leaderboard from "./components/Leaderboard";
 import Settings from "./components/Settings";
 import PlayerSearch from "./components/PlayerSearch";
+import ProfileModal from "./components/ProfileModal";
 import { authAPI, statsAPI } from "./services/api";
 
 function App() {
   const [user, setUser] = useState(authAPI.getCurrentUser());
   const [showAuth, setShowAuth] = useState(!authAPI.isAuthenticated());
   const [authMode, setAuthMode] = useState("login"); // 'login' or 'register'
+  const [showProfileModal, setShowProfileModal] = useState(false);
 
   const [currentStats, setCurrentStats] = useState(null);
   const [sessionHistory, setSessionHistory] = useState([]);
@@ -88,7 +90,7 @@ function App() {
       // Use database stats for history and all-time
       if (userHistoryRes?.data) {
         setSessionHistory(userHistoryRes.data);
-        
+
         // Set the most recent session as "current stats"
         if (userHistoryRes.data.length > 0) {
           const latestSession = userHistoryRes.data[0];
@@ -194,13 +196,27 @@ function App() {
                   pluginConnected ? "connected" : "disconnected"
                 }`}
               ></span>
-              <span>{pluginConnected ? "Plugin Connected" : "Plugin Offline"}</span>
+              <span>
+                {pluginConnected ? "Plugin Connected" : "Plugin Offline"}
+              </span>
             </div>
 
-            <div className="user-avatar">
-              {(user?.displayName || user?.username || "U")
-                .charAt(0)
-                .toUpperCase()}
+            <div
+              className="user-avatar clickable"
+              onClick={() => setShowProfileModal(true)}
+              title="Edit Profile"
+            >
+              {user?.avatarUrl ? (
+                <img
+                  src={user.avatarUrl}
+                  alt="Avatar"
+                  className="avatar-image"
+                />
+              ) : (
+                (user?.displayName || user?.username || "U")
+                  .charAt(0)
+                  .toUpperCase()
+              )}
             </div>
 
             <button className="logout-button" onClick={handleLogout}>
@@ -257,6 +273,13 @@ function App() {
           </>
         )}
       </main>
+
+      {/* Profile Modal */}
+      <ProfileModal
+        isOpen={showProfileModal}
+        onClose={() => setShowProfileModal(false)}
+        user={user}
+      />
     </div>
   );
 }

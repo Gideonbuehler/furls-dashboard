@@ -9,9 +9,11 @@
 ## Files Changed
 
 ### Server Changes:
+
 - ✅ `server/routes/auth.js` - Fixed JWT_SECRET require path
 
 ### Client Changes:
+
 - ✅ `client/src/App.jsx` - Added token verification on startup
 - ✅ `client/src/services/api.js` - Removed automatic redirects
 
@@ -57,6 +59,7 @@ git push origin main
 ## After Deploy
 
 ### 1. Wait for Render to Build (3-5 minutes)
+
 - Go to https://dashboard.render.com
 - Click on your service
 - Watch the "Events" tab for build completion
@@ -64,6 +67,7 @@ git push origin main
 ### 2. Test the Fix
 
 #### Clear Your Browser Cache First!
+
 ```
 1. Open DevTools (F12)
 2. Go to Application tab
@@ -72,12 +76,14 @@ git push origin main
 ```
 
 #### Test Login Flow:
+
 1. Go to your Render URL (e.g., `https://furls-dashboard.onrender.com`)
 2. Login with your Render account
 3. Dashboard should load and stay loaded
 4. No redirect loops!
 
 #### Check Browser Console:
+
 - Should see NO "500 error" messages
 - Should see "Token verification failed" ONLY if token is invalid
 - Dashboard should load data
@@ -85,9 +91,11 @@ git push origin main
 ### 3. Verify Token Validation Works
 
 **Test with Valid Token:**
+
 - Login → Dashboard loads → Stays loaded ✅
 
 **Test with Invalid Token:**
+
 - Open DevTools → Application → Local Storage
 - Change token to `"invalid"`
 - Refresh page
@@ -96,17 +104,20 @@ git push origin main
 ## Troubleshooting
 
 ### "Still seeing redirect loop"
+
 1. **Clear browser cache completely** (Ctrl+Shift+Delete)
 2. **Clear local storage** (DevTools → Application → Local Storage → Delete All)
 3. **Try incognito/private window**
 4. **Make sure Render deployed** (check Events tab)
 
 ### "Still getting 500 error"
+
 1. Check Render build completed successfully
 2. Check Render logs for errors: Dashboard → Logs tab
 3. Make sure you pushed the changes: `git log -1` should show your commit
 
 ### "Login works but no data loads"
+
 1. This is expected if you haven't played matches yet
 2. Check Settings tab for your API key
 3. Configure BakkesMod plugin with your Render URL + API key
@@ -143,11 +154,12 @@ git log origin/main -1
 ✅ Token validation happens on startup  
 ✅ Invalid tokens logout gracefully  
 ✅ No more 500 errors from `/auth/me`  
-✅ Plugin connection indicator works  
+✅ Plugin connection indicator works
 
 ## Need Help?
 
 Check these files for detailed info:
+
 - `AUTH_ME_500_FIX.md` - Details about the 500 error fix
 - `LOGIN_REDIRECT_FIX.md` - Full explanation of redirect loop fix
 - `RENDER_QUICK_SETUP.md` - Render deployment guide
@@ -155,6 +167,7 @@ Check these files for detailed info:
 ---
 
 **Next Steps After Deploy:**
+
 1. ✅ Test login on Render
 2. ✅ Configure BakkesMod plugin with Render URL
 3. ✅ Play some matches to see stats upload

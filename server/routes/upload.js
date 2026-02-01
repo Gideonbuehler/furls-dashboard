@@ -91,10 +91,10 @@ router.get("/plugin-status", authenticateApiKey, async (req, res) => {
     );
 
     if (!user || !user.last_active) {
-      return res.json({ 
-        connected: false, 
+      return res.json({
+        connected: false,
         lastUpload: null,
-        message: "No data uploaded yet from plugin" 
+        message: "No data uploaded yet from plugin",
       });
     }
 
@@ -109,9 +109,9 @@ router.get("/plugin-status", authenticateApiKey, async (req, res) => {
       connected,
       lastUpload: user.last_active,
       minutesSinceUpload: Math.floor(diffMinutes),
-      message: connected 
+      message: connected
         ? "Plugin connected and active"
-        : `Last upload was ${Math.floor(diffMinutes)} minutes ago`
+        : `Last upload was ${Math.floor(diffMinutes)} minutes ago`,
     });
   } catch (err) {
     console.error("Error checking plugin status:", err);
