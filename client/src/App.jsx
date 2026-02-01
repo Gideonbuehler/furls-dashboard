@@ -30,9 +30,8 @@ function App() {
 
   useEffect(() => {
     if (!showAuth) {
-      // Initial load
-      loadAllData();
-      checkPluginConnection();
+      // Verify token is valid before loading data
+      verifyAuthAndLoadData();
 
       // Poll for updates every 2 seconds
       const interval = setInterval(() => {
@@ -43,6 +42,20 @@ function App() {
       return () => clearInterval(interval);
     }
   }, [showAuth]);
+
+  const verifyAuthAndLoadData = async () => {
+    try {
+      // First verify the token is valid
+      await authAPI.getProfile();
+      // If successful, load all data
+      await loadAllData();
+      checkPluginConnection();
+    } catch (error) {
+      // If token verification fails, logout and show login
+      console.error("Token verification failed:", error);
+      handleLogout();
+    }
+  };
 
   const checkPluginConnection = async () => {
     try {

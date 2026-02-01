@@ -28,25 +28,8 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    // Only redirect to login for actual authentication failures
-    if (error.response?.status === 401 || error.response?.status === 403) {
-      const url = error.config?.url || "";
-      
-      // Don't redirect for plugin-status (user might not have API key yet)
-      // Only redirect for auth endpoints or if token is invalid
-      if (url.includes("/auth/login") || url.includes("/auth/register")) {
-        // Let login/register errors through without redirect
-        return Promise.reject(error);
-      }
-      
-      // For other endpoints, only redirect if we have a token (meaning it's actually invalid)
-      // If no token, the user is already logged out
-      if (localStorage.getItem("token")) {
-        localStorage.removeItem("token");
-        localStorage.removeItem("user");
-        window.location.href = "/";
-      }
-    }
+    // Don't auto-redirect - let the app handle it
+    // Just pass the error through
     return Promise.reject(error);
   }
 );
