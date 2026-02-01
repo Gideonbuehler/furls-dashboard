@@ -3,18 +3,21 @@
 ## 🚀 Starting the Dashboard
 
 ### Method 1: Double-click the Batch File (Easiest)
+
 1. Navigate to: `c:\Users\gideo\source\repos\FURLS\Dashboard\`
 2. Double-click: **`start-dashboard.bat`**
 3. Wait for browser to open automatically
 4. Two terminal windows will stay open (don't close them!)
 
 ### Method 2: PowerShell Script
+
 ```powershell
 cd c:\Users\gideo\source\repos\FURLS\Dashboard
 .\start-dashboard.ps1
 ```
 
 ### Method 3: Manual Start
+
 ```powershell
 # Terminal 1 - Backend
 cd c:\Users\gideo\source\repos\FURLS\Dashboard
@@ -30,6 +33,7 @@ cd c:\Users\gideo\source\repos\FURLS\Dashboard\client
 ## 🌐 Accessing the Dashboard
 
 Once started, open your browser to:
+
 - **Dashboard**: http://localhost:5173
 - **Backend API**: http://localhost:3002
 
@@ -38,12 +42,15 @@ Once started, open your browser to:
 ## 🛑 Stopping the Dashboard
 
 ### If using Batch File:
+
 - Close both terminal windows that opened
 
 ### If using PowerShell Script:
+
 - Press `Ctrl+C` in the PowerShell window
 
 ### If using Manual Method:
+
 - Press `Ctrl+C` in each terminal window
 
 ---
@@ -53,19 +60,24 @@ Once started, open your browser to:
 ### Issue: "Cannot access the dashboard"
 
 **Solution 1: Check if servers are running**
+
 ```powershell
 netstat -ano | findstr "3002 5173"
 ```
+
 You should see both ports listed.
 
 **Solution 2: Restart the servers**
+
 1. Stop any existing servers (Ctrl+C)
 2. Run the batch file: `start-dashboard.bat`
 
 **Solution 3: Check Node.js version**
+
 ```powershell
 node --version
 ```
+
 Should show v20+ or v22+ (you have v24.13.0 ✓)
 
 ---
@@ -75,6 +87,7 @@ Should show v20+ or v22+ (you have v24.13.0 ✓)
 This happens because npm is using an old Node version in its path.
 
 **Solution**: Use the batch file or run Vite directly:
+
 ```powershell
 cd c:\Users\gideo\source\repos\FURLS\Dashboard\client
 & "C:\Program Files\nodejs\node.exe" node_modules\vite\bin\vite.js
@@ -85,6 +98,7 @@ cd c:\Users\gideo\source\repos\FURLS\Dashboard\client
 ### Issue: "Port already in use"
 
 **Solution**: Kill the processes using the ports
+
 ```powershell
 # Find process using port 3002
 netstat -ano | findstr :3002
@@ -100,6 +114,7 @@ taskkill /PID <process_id> /F
 ### Issue: "Cannot find module" errors
 
 **Solution**: Reinstall dependencies
+
 ```powershell
 # Backend
 cd c:\Users\gideo\source\repos\FURLS\Dashboard
@@ -127,12 +142,14 @@ npm install
 ## 🎮 Using the Dashboard
 
 ### 1. First Login
+
 1. Open http://localhost:5173
-2. Click "Register" 
+2. Click "Register"
 3. Create username and password
 4. You'll be auto-logged in
 
 ### 2. Play Rocket League
+
 1. Start Rocket League
 2. Load the FURLS plugin (should auto-load)
 3. Go to Freeplay
@@ -140,6 +157,7 @@ npm install
 5. Score goals or finish the session
 
 ### 3. View Your Stats
+
 1. Dashboard auto-updates every 2 seconds
 2. Stats auto-save to your account
 3. View different tabs:
@@ -171,12 +189,15 @@ Database (furls.db)
 ## 🔧 Advanced Configuration
 
 ### Change Ports
+
 Edit `server/index.js` for backend:
+
 ```javascript
 const PORT = 3002; // Change this
 ```
 
 Edit `vite.config.js` for frontend:
+
 ```javascript
 server: {
   port: 5173, // Change this
@@ -184,9 +205,11 @@ server: {
 ```
 
 ### Change Data Folder Path
+
 Edit `server/index.js`:
+
 ```javascript
-const DATA_FOLDER = path.join(process.env.APPDATA, 'bakkesmod/bakkesmod/data');
+const DATA_FOLDER = path.join(process.env.APPDATA, "bakkesmod/bakkesmod/data");
 ```
 
 ---
@@ -221,4 +244,4 @@ node -e "const db=require('./server/database.js');db.all('SELECT * FROM users',c
 
 ---
 
-*For detailed information, see `DATA_FLOW_GUIDE.md` and `VERIFICATION_COMPLETE.md`*
+_For detailed information, see `DATA_FLOW_GUIDE.md` and `VERIFICATION_COMPLETE.md`_

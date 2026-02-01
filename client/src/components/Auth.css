@@ -4,22 +4,26 @@
   align-items: center;
   min-height: 100vh;
   padding: 20px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #1a0a2e 0%, #6a1b9a 100%);
 }
 
 .auth-card {
-  background: rgba(255, 255, 255, 0.95);
+  background: rgba(30, 20, 50, 0.95);
   padding: 40px;
   border-radius: 20px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 20px 60px rgba(106, 27, 154, 0.5);
   width: 100%;
   max-width: 450px;
+  border: 1px solid #9c27b0;
 }
 
 .auth-card h2 {
   text-align: center;
   margin-bottom: 30px;
-  color: #333;
+  background: linear-gradient(135deg, #9c27b0, #ce93d8);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   font-size: 28px;
 }
 
@@ -31,51 +35,53 @@
   display: block;
   margin-bottom: 8px;
   font-weight: 600;
-  color: #555;
+  color: #ce93d8;
   font-size: 14px;
 }
 
 .form-group input {
   width: 100%;
   padding: 12px 15px;
-  border: 2px solid #e0e0e0;
+  border: 2px solid #6a1b9a;
   border-radius: 8px;
   font-size: 14px;
   transition: all 0.3s ease;
   box-sizing: border-box;
+  background: rgba(20, 10, 35, 0.8);
+  color: #fff;
 }
 
 .form-group input:focus {
   outline: none;
-  border-color: #667eea;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  border-color: #9c27b0;
+  box-shadow: 0 0 0 3px rgba(156, 39, 176, 0.2);
 }
 
 .form-group input:disabled {
-  background-color: #f5f5f5;
+  background-color: rgba(20, 10, 35, 0.5);
   cursor: not-allowed;
 }
 
 .form-group small {
   display: block;
   margin-top: 5px;
-  color: #888;
+  color: #ba68c8;
   font-size: 12px;
 }
 
 .error-message {
-  background-color: #fee;
-  color: #c33;
+  background-color: rgba(211, 47, 47, 0.2);
+  color: #ff6b6b;
   padding: 12px 15px;
   border-radius: 8px;
   margin-bottom: 20px;
   font-size: 14px;
-  border-left: 4px solid #c33;
+  border-left: 4px solid #d32f2f;
 }
 
 .success-message {
-  background-color: #efe;
-  color: #3c3;
+  background-color: rgba(76, 175, 80, 0.2);
+  color: #81c784;
   padding: 12px 15px;
   border-radius: 8px;
   margin-bottom: 20px;
@@ -86,7 +92,7 @@
 .btn-primary {
   width: 100%;
   padding: 14px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #9c27b0 0%, #7b1fa2 100%);
   color: white;
   border: none;
   border-radius: 8px;
@@ -98,7 +104,7 @@
 
 .btn-primary:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 5px 20px rgba(156, 39, 176, 0.6);
 }
 
 .btn-primary:disabled {
@@ -109,13 +115,13 @@
 .auth-switch {
   text-align: center;
   margin-top: 20px;
-  color: #666;
+  color: #ba68c8;
 }
 
 .auth-switch button {
   background: none;
   border: none;
-  color: #667eea;
+  color: #ce93d8;
   cursor: pointer;
   font-weight: 600;
   text-decoration: underline;

@@ -14,23 +14,29 @@ Your FURLS plugin now has a **beautiful web dashboard** with:
 ## 🚀 Quick Start (3 Steps!)
 
 ### Step 1: Generate Test Data (Optional - to preview dashboard)
+
 ```bash
 cd Dashboard
 npm run test-data
 ```
+
 This creates sample data so you can see the dashboard immediately!
 
 ### Step 2: Start the Dashboard
+
 ```bash
 npm run dev
 ```
+
 Or just double-click: **`start.bat`**
 
 This starts:
+
 - ✅ Backend API on http://localhost:3001
 - ✅ Frontend on http://localhost:5173
 
 ### Step 3: Open in Browser
+
 Go to: **http://localhost:5173**
 
 You should see the dashboard with test data!
@@ -38,6 +44,7 @@ You should see the dashboard with test data!
 ## 🎮 Using with Rocket League
 
 ### Automatic Export (Recommended)
+
 The plugin now **automatically exports** your stats when a match ends!
 
 1. Build the updated FURLS plugin (it has the new export code)
@@ -46,7 +53,9 @@ The plugin now **automatically exports** your stats when a match ends!
 4. When match ends → **stats auto-export** → dashboard updates!
 
 ### Manual Export
+
 Press **F6** in-game (BakkesMod console) and type:
+
 ```
 export_stats
 ```
@@ -54,6 +63,7 @@ export_stats
 ## 📂 Where Data is Saved
 
 The plugin exports to:
+
 ```
 %APPDATA%\bakkesmod\bakkesmod\data\furls_stats.json
 ```
@@ -63,22 +73,26 @@ The dashboard watches this file and updates automatically!
 ## 🎨 Dashboard Tours
 
 ### Dashboard Tab (📊)
+
 - **Current Session**: Accuracy, speed, boost, time
-- **All-Time Stats**: Career totals and averages  
+- **All-Time Stats**: Career totals and averages
 - **Trend Charts**: See your improvement over time
 
 ### Heatmap Tab (🔥)
+
 - **Field Visualization**: Color-coded shot/goal locations
 - **Toggle Views**: Switch between shots and goals
 - **Zone Details**: Click any zone for detailed stats
 - **Accuracy Mode**: See success rate per zone
 
 ### History Tab (📈)
+
 - **Session Table**: All your past sessions
 - **Performance Metrics**: Sortable columns
 - **Best Highlights**: Your top performances
 
 ### Stats Tab (📋)
+
 - **Current Session**: Full breakdown of this session
 - **Career Stats**: All-time totals
 - **Performance Metrics**: Detailed analytics
@@ -86,12 +100,16 @@ The dashboard watches this file and updates automatically!
 ## 🛠️ Files Modified/Created
 
 ### Plugin Files (C++)
+
 ✏️ **Modified:**
+
 - `FURLS\FURLS.h` - Added `ExportStatsToJSON()` declaration
 - `FURLS\FURLS.cpp` - Added JSON export function + auto-export on match end
 
 ### Dashboard Files (New!)
+
 📁 **Dashboard/**
+
 - `package.json` - Root dependencies
 - `start.bat` - Easy start script
 - `server/index.js` - API server (watches data file)
@@ -113,6 +131,7 @@ Before using with Rocket League, rebuild the plugin:
 ## 🎯 Console Commands
 
 In BakkesMod console (F6):
+
 - `export_stats` - Export current session to JSON
 - `export_heatmap` - Export heatmap to CSV
 - `furls_reset_stats` - Reset current session
@@ -129,21 +148,25 @@ In BakkesMod console (F6):
 ## 🐛 Troubleshooting
 
 ### Dashboard shows "Not Connected"
+
 - Make sure the API server is running (npm run dev)
 - Check that data file exists (run `npm run test-data`)
 - Verify the path: `%APPDATA%\bakkesmod\bakkesmod\data\furls_stats.json`
 
 ### No data after playing
+
 - Ensure the plugin is loaded in BakkesMod (F2 → Plugins → FURLS)
 - Complete a full session (match must end)
 - Or manually export: type `export_stats` in console (F6)
 - Rebuild the plugin if you haven't yet
 
 ### Port already in use
+
 - Edit `server/index.js` line 7: change `PORT = 3001`
 - Edit `client/src/App.jsx` line 10: update `API_URL`
 
 ### Can't install dependencies
+
 - Your Node.js might be outdated (need v20+)
 - Dependencies are already installed anyway!
 - Just run: `npm run dev`
@@ -173,7 +196,7 @@ In BakkesMod console (F6):
 ✨ **Trend Charts** - Visualize your improvement  
 ✨ **Performance Metrics** - Detailed analytics  
 ✨ **Responsive Design** - Works on any device  
-✨ **Auto Export** - No manual work needed  
+✨ **Auto Export** - No manual work needed
 
 ## 🎬 Quick Demo
 
@@ -206,6 +229,7 @@ In BakkesMod console (F6):
 Your FURLS plugin now has a **professional web dashboard** for tracking all your training statistics!
 
 **To preview it RIGHT NOW:**
+
 ```bash
 cd Dashboard
 npm run test-data

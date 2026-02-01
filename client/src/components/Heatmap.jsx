@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import './Heatmap.css';
+import { useState } from "react";
+import "./Heatmap.css";
 
 function Heatmap({ heatmapData, currentStats }) {
   const [showGoals, setShowGoals] = useState(false);
@@ -17,10 +17,10 @@ function Heatmap({ heatmapData, currentStats }) {
   }
 
   const data = showGoals ? heatmapData.goals : heatmapData.shots;
-  
+
   // Find max value for normalization
   const maxValue = Math.max(...data.flat());
-  
+
   // Calculate accuracy for each zone
   const getZoneAccuracy = (y, x) => {
     const shots = heatmapData.shots[y]?.[x] || 0;
@@ -29,10 +29,10 @@ function Heatmap({ heatmapData, currentStats }) {
   };
 
   const getColor = (value) => {
-    if (value === 0) return 'rgba(50, 50, 50, 0.3)';
-    
+    if (value === 0) return "rgba(50, 50, 50, 0.3)";
+
     const intensity = Math.min(value / maxValue, 1);
-    
+
     if (showGoals) {
       // Green for goals
       return `rgba(76, 175, 80, ${0.3 + intensity * 0.7})`;
@@ -55,14 +55,14 @@ function Heatmap({ heatmapData, currentStats }) {
       <div className="heatmap-header">
         <h2>🔥 Shot Heatmap</h2>
         <div className="heatmap-controls">
-          <button 
-            className={`toggle-btn ${!showGoals ? 'active' : ''}`}
+          <button
+            className={`toggle-btn ${!showGoals ? "active" : ""}`}
             onClick={() => setShowGoals(false)}
           >
             📍 Shots
           </button>
-          <button 
-            className={`toggle-btn ${showGoals ? 'active' : ''}`}
+          <button
+            className={`toggle-btn ${showGoals ? "active" : ""}`}
             onClick={() => setShowGoals(true)}
           >
             ⚽ Goals
@@ -79,10 +79,16 @@ function Heatmap({ heatmapData, currentStats }) {
                 {row.map((value, x) => (
                   <div
                     key={`${y}-${x}`}
-                    className={`heatmap-cell ${selectedZone?.y === y && selectedZone?.x === x ? 'selected' : ''}`}
+                    className={`heatmap-cell ${
+                      selectedZone?.y === y && selectedZone?.x === x
+                        ? "selected"
+                        : ""
+                    }`}
                     style={{ backgroundColor: getColor(value) }}
                     onClick={() => handleZoneClick(y, x)}
-                    title={`Zone (${x}, ${y}): ${value} ${showGoals ? 'goals' : 'shots'} | Accuracy: ${getZoneAccuracy(y, x)}%`}
+                    title={`Zone (${x}, ${y}): ${value} ${
+                      showGoals ? "goals" : "shots"
+                    } | Accuracy: ${getZoneAccuracy(y, x)}%`}
                   >
                     {value > 0 && value}
                   </div>
@@ -96,10 +102,21 @@ function Heatmap({ heatmapData, currentStats }) {
         {selectedZone && (
           <div className="zone-details">
             <h3>Zone Details</h3>
-            <p><strong>Position:</strong> ({selectedZone.x}, {selectedZone.y})</p>
-            <p><strong>Shots:</strong> {heatmapData.shots[selectedZone.y]?.[selectedZone.x] || 0}</p>
-            <p><strong>Goals:</strong> {heatmapData.goals[selectedZone.y]?.[selectedZone.x] || 0}</p>
-            <p><strong>Accuracy:</strong> {getZoneAccuracy(selectedZone.y, selectedZone.x)}%</p>
+            <p>
+              <strong>Position:</strong> ({selectedZone.x}, {selectedZone.y})
+            </p>
+            <p>
+              <strong>Shots:</strong>{" "}
+              {heatmapData.shots[selectedZone.y]?.[selectedZone.x] || 0}
+            </p>
+            <p>
+              <strong>Goals:</strong>{" "}
+              {heatmapData.goals[selectedZone.y]?.[selectedZone.x] || 0}
+            </p>
+            <p>
+              <strong>Accuracy:</strong>{" "}
+              {getZoneAccuracy(selectedZone.y, selectedZone.x)}%
+            </p>
             <button onClick={() => setSelectedZone(null)}>Close</button>
           </div>
         )}
@@ -112,10 +129,9 @@ function Heatmap({ heatmapData, currentStats }) {
             <span>High</span>
           </div>
           <p className="legend-info">
-            {showGoals 
-              ? 'Green intensity shows successful goal frequency from each zone'
-              : 'Color intensity shows shot frequency from each zone (blue = low, orange = high)'
-            }
+            {showGoals
+              ? "Green intensity shows successful goal frequency from each zone"
+              : "Color intensity shows shot frequency from each zone (blue = low, orange = high)"}
           </p>
         </div>
       </div>

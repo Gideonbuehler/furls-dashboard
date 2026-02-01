@@ -5,6 +5,7 @@
 Your FURLS Dashboard now has a **complete user authentication and social system**!
 
 ### New Features:
+
 - ✅ User registration and login
 - ✅ Personal stats tracking (saved to database)
 - ✅ Friends system (add, remove, search)
@@ -16,6 +17,7 @@ Your FURLS Dashboard now has a **complete user authentication and social system*
 ## 🚀 How to Start
 
 ### Quick Start:
+
 ```powershell
 cd c:\Users\gideo\source\repos\FURLS\Dashboard
 
@@ -35,12 +37,13 @@ Then open: **http://localhost:5173/**
    - Go to http://localhost:5173/
    - Click "Register"
    - Create username, email, password
-   
 2. **Play Rocket League**
+
    - Your stats will auto-save to your account
    - Every training session is stored
 
 3. **Add Friends**
+
    - Go to Friends tab (👥)
    - Search for usernames
    - Send friend requests
@@ -64,6 +67,7 @@ Then open: **http://localhost:5173/**
 ## 📊 How It Works
 
 ### Auto-Saving Stats:
+
 1. BakkesMod exports `furls_stats.json` after each session
 2. Backend server watches for file changes
 3. Frontend loads stats and displays them
@@ -71,6 +75,7 @@ Then open: **http://localhost:5173/**
 5. View your full history anytime!
 
 ### Friends & Social:
+
 - Search for any registered user
 - Send friend requests
 - Once accepted, view their stats (if they allow it)
@@ -98,6 +103,7 @@ Register → Login → Play RL → Stats Auto-Save → View Dashboard
 ## 🔧 Configuration
 
 ### Change JWT Secret (Recommended for production):
+
 1. Create `.env` file in Dashboard root:
    ```env
    JWT_SECRET=your-super-secret-random-string-here
@@ -105,7 +111,9 @@ Register → Login → Play RL → Stats Auto-Save → View Dashboard
    ```
 
 ### Privacy Settings (Coming Soon):
+
 Users will be able to set:
+
 - Stats visibility (public/friends/private)
 - Profile visibility
 - Notifications
@@ -113,23 +121,27 @@ Users will be able to set:
 ## 🐛 Known Issues & Fixes
 
 ### Port 3002 already in use:
+
 ```powershell
 Stop-Process -Id (Get-NetTCPConnection -LocalPort 3002 -ErrorAction SilentlyContinue | Select-Object -ExpandProperty OwningProcess) -Force
 ```
 
 ### Frontend won't start:
+
 ```powershell
 cd client
 & "C:\Program Files\nodejs\node.exe" node_modules/vite/bin/vite.js
 ```
 
 ### Database errors:
+
 - Delete `server/furls.db` and restart server
 - Tables will be recreated automatically
 
 ## 📦 New Dependencies Installed
 
 **Backend:**
+
 - `bcryptjs` - Password hashing
 - `jsonwebtoken` - JWT authentication
 - `sqlite3` - Database
@@ -137,12 +149,14 @@ cd client
 - `dotenv` - Environment variables
 
 **Frontend:**
+
 - `axios` - Already had it!
 - `react-router-dom` - For future routing
 
 ## 🎯 Next Steps
 
 ### Try These Features:
+
 1. Register 2+ accounts (use different browsers or incognito)
 2. Add each other as friends
 3. Play some Rocket League training
@@ -150,6 +164,7 @@ cd client
 5. View friend stats
 
 ### Future Enhancements:
+
 - Avatar uploads
 - Profile customization
 - Team/clan system
@@ -166,6 +181,7 @@ cd client
 ## 🎉 You're All Set!
 
 Your FURLS Dashboard now has:
+
 - ✅ User accounts
 - ✅ Friends system
 - ✅ Leaderboards

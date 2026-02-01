@@ -48,6 +48,7 @@ npm run dev
 ```
 
 This will start:
+
 - Backend API server on `http://localhost:3001`
 - Frontend React app on `http://localhost:5173` (or next available port)
 
@@ -75,21 +76,25 @@ npm run client
 ## Dashboard Sections
 
 ### 📊 Dashboard
+
 - Current session overview with key metrics
 - All-time statistics summary
 - Accuracy and performance trend charts
 
 ### 🔥 Heatmap
+
 - Interactive field heatmap showing shot locations
 - Toggle between shots and goals visualization
 - Click zones to see detailed statistics for specific areas
 
 ### 📈 History
+
 - Complete session history table
 - Performance trends over time
 - Best session highlights
 
 ### 📋 Stats
+
 - Detailed breakdown of current session
 - All-time career statistics
 - Comprehensive performance metrics
@@ -121,16 +126,19 @@ The FURLS plugin needs to export data in the following format:
 ## Troubleshooting
 
 ### Dashboard shows "Not Connected"
+
 - Make sure the FURLS plugin is running and has exported data
 - Check that the data file exists at `%APPDATA%\bakkesmod\bakkesmod\data\furls_stats.json`
 - Verify the server is running on port 3001
 
 ### No data appears
+
 - Complete at least one training session with the plugin active
 - The plugin will export data when a match ends
 - Check the browser console and server logs for errors
 
 ### Port already in use
+
 - Change the port in `server/index.js` (default: 3001)
 - Update the API_URL in `client/src/App.jsx` to match
 

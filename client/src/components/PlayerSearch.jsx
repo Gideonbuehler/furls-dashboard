@@ -1,14 +1,13 @@
-import { useState } from 'react';
-import './PlayerSearch.css';
-import { publicAPI } from '../services/api';
+import { useState } from "react";
+import "./PlayerSearch.css";
+import { publicAPI } from "../services/api";
 
 function PlayerSearch() {
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [selectedPlayer, setSelectedPlayer] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-
   const handleSearch = async (e) => {
     e.preventDefault();
     if (!searchQuery.trim()) return;
@@ -17,13 +16,15 @@ function PlayerSearch() {
       setLoading(true);
       setError(null);
       const response = await publicAPI.searchPlayers(searchQuery);
-      setSearchResults(response.data.players || []);
-      if (response.data.players.length === 0) {
-        setError('No players found');
+      // API returns array directly, not wrapped in {players: []}
+      const players = Array.isArray(response.data) ? response.data : [];
+      setSearchResults(players);
+      if (players.length === 0) {
+        setError("No players found");
       }
     } catch (err) {
-      setError('Failed to search players');
-      console.error('Search error:', err);
+      setError("Failed to search players");
+      console.error("Search error:", err);
     } finally {
       setLoading(false);
     }
@@ -36,27 +37,27 @@ function PlayerSearch() {
       const response = await publicAPI.getProfile(username);
       setSelectedPlayer(response.data);
     } catch (err) {
-      setError(err.response?.data?.error || 'Failed to load profile');
-      console.error('Profile error:', err);
+      setError(err.response?.data?.error || "Failed to load profile");
+      console.error("Profile error:", err);
     } finally {
       setLoading(false);
     }
   };
 
   const formatDate = (dateString) => {
-    if (!dateString) return 'Never';
+    if (!dateString) return "Never";
     return new Date(dateString).toLocaleDateString();
   };
 
   const formatAccuracy = (accuracy) => {
-    return accuracy ? `${accuracy.toFixed(1)}%` : 'N/A';
+    return accuracy ? `${accuracy.toFixed(1)}%` : "N/A";
   };
 
   return (
     <div className="player-search">
       <div className="search-container">
         <h2>🔍 Search Players</h2>
-        
+
         <form onSubmit={handleSearch} className="search-form">
           <input
             type="text"
@@ -66,7 +67,7 @@ function PlayerSearch() {
             className="search-input"
           />
           <button type="submit" className="btn-search" disabled={loading}>
-            {loading ? '🔄 Searching...' : '🔍 Search'}
+            {loading ? "🔄 Searching..." : "🔍 Search"}
           </button>
         </form>
 
@@ -92,7 +93,7 @@ function PlayerSearch() {
                       <span>⚽ {player.total_goals || 0} goals</span>
                     </div>
                   </div>
-                  <button 
+                  <button
                     className="btn-view-profile"
                     onClick={() => viewProfile(player.username)}
                   >
@@ -106,7 +107,7 @@ function PlayerSearch() {
 
         {selectedPlayer && (
           <div className="player-profile">
-            <button 
+            <button
               className="btn-back"
               onClick={() => setSelectedPlayer(null)}
             >
@@ -115,10 +116,14 @@ function PlayerSearch() {
 
             <div className="profile-header">
               <div className="profile-avatar">
-                {(selectedPlayer.display_name || selectedPlayer.username).charAt(0).toUpperCase()}
+                {(selectedPlayer.display_name || selectedPlayer.username)
+                  .charAt(0)
+                  .toUpperCase()}
               </div>
               <div className="profile-info">
-                <h2>{selectedPlayer.display_name || selectedPlayer.username}</h2>
+                <h2>
+                  {selectedPlayer.display_name || selectedPlayer.username}
+                </h2>
                 <p className="username">@{selectedPlayer.username}</p>
                 <p className="last-active">
                   Last active: {formatDate(selectedPlayer.last_active)}
@@ -129,45 +134,54 @@ function PlayerSearch() {
             <div className="profile-stats">
               <div className="stat-card">
                 <div className="stat-icon">🎯</div>
-                <div className="stat-value">{formatAccuracy(selectedPlayer.accuracy)}</div>
+                <div className="stat-value">
+                  {formatAccuracy(selectedPlayer.accuracy)}
+                </div>
                 <div className="stat-label">Accuracy</div>
               </div>
               <div className="stat-card">
                 <div className="stat-icon">🎮</div>
-                <div className="stat-value">{selectedPlayer.total_sessions || 0}</div>
+                <div className="stat-value">
+                  {selectedPlayer.total_sessions || 0}
+                </div>
                 <div className="stat-label">Total Sessions</div>
               </div>
               <div className="stat-card">
                 <div className="stat-icon">🚀</div>
-                <div className="stat-value">{selectedPlayer.total_shots || 0}</div>
+                <div className="stat-value">
+                  {selectedPlayer.total_shots || 0}
+                </div>
                 <div className="stat-label">Total Shots</div>
               </div>
               <div className="stat-card">
                 <div className="stat-icon">⚽</div>
-                <div className="stat-value">{selectedPlayer.total_goals || 0}</div>
+                <div className="stat-value">
+                  {selectedPlayer.total_goals || 0}
+                </div>
                 <div className="stat-label">Total Goals</div>
               </div>
             </div>
 
-            {selectedPlayer.recent_sessions && selectedPlayer.recent_sessions.length > 0 && (
-              <div className="recent-sessions">
-                <h3>📊 Recent Sessions</h3>
-                <div className="sessions-list">
-                  {selectedPlayer.recent_sessions.map((session) => (
-                    <div key={session.id} className="session-item">
-                      <div className="session-date">
-                        {formatDate(session.timestamp)}
+            {selectedPlayer.recent_sessions &&
+              selectedPlayer.recent_sessions.length > 0 && (
+                <div className="recent-sessions">
+                  <h3>📊 Recent Sessions</h3>
+                  <div className="sessions-list">
+                    {selectedPlayer.recent_sessions.map((session) => (
+                      <div key={session.id} className="session-item">
+                        <div className="session-date">
+                          {formatDate(session.timestamp)}
+                        </div>
+                        <div className="session-stats">
+                          <span>🚀 {session.total_shots} shots</span>
+                          <span>⚽ {session.total_goals} goals</span>
+                          <span>🎯 {formatAccuracy(session.accuracy)}</span>
+                        </div>
                       </div>
-                      <div className="session-stats">
-                        <span>🚀 {session.total_shots} shots</span>
-                        <span>⚽ {session.total_goals} goals</span>
-                        <span>🎯 {formatAccuracy(session.accuracy)}</span>
-                      </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
           </div>
         )}
       </div>

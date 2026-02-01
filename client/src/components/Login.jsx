@@ -1,18 +1,18 @@
-import { useState } from 'react';
-import { authAPI } from '../services/api';
-import './Auth.css';
+import { useState } from "react";
+import { authAPI } from "../services/api";
+import "./Auth.css";
 
 function Login({ onLogin }) {
   const [formData, setFormData] = useState({
-    username: '',
-    password: ''
+    username: "",
+    password: "",
   });
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
+    setError("");
     setLoading(true);
 
     try {
@@ -20,7 +20,7 @@ function Login({ onLogin }) {
       authAPI.setAuthData(response.data.token, response.data.user);
       onLogin(response.data.user);
     } catch (err) {
-      setError(err.response?.data?.error || 'Login failed');
+      setError(err.response?.data?.error || "Login failed");
     } finally {
       setLoading(false);
     }
@@ -36,7 +36,9 @@ function Login({ onLogin }) {
             <input
               type="text"
               value={formData.username}
-              onChange={(e) => setFormData({ ...formData, username: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, username: e.target.value })
+              }
               required
               disabled={loading}
             />
@@ -46,14 +48,16 @@ function Login({ onLogin }) {
             <input
               type="password"
               value={formData.password}
-              onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, password: e.target.value })
+              }
               required
               disabled={loading}
             />
           </div>
           {error && <div className="error-message">{error}</div>}
           <button type="submit" className="btn-primary" disabled={loading}>
-            {loading ? 'Logging in...' : 'Login'}
+            {loading ? "Logging in..." : "Login"}
           </button>
         </form>
       </div>

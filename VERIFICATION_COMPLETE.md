@@ -9,6 +9,7 @@ All components are working correctly! Your FURLS Dashboard is successfully readi
 ## ✅ Verified Components
 
 ### 1. ✅ BakkesMod Plugin → File Export
+
 - **Status**: ✅ WORKING
 - **File Location**: `C:\Users\gideo\AppData\Roaming\bakkesmod\bakkesmod\data\furls_stats.json`
 - **Last Updated**: 2026-01-30T20:50:40.128Z
@@ -16,13 +17,15 @@ All components are working correctly! Your FURLS Dashboard is successfully readi
 - **Plugin Exports**: Automatically on match end/goal
 
 ### 2. ✅ Backend Server (Port 3002)
+
 - **Status**: ✅ RUNNING
 - **URL**: http://localhost:3002
 - **File Reading**: ✅ Successfully reading plugin data
 - **API Response**: ✅ Serving current stats via `/api/stats/current`
 - **Database**: ✅ Initialized with users, sessions, friendships tables
 
-### 3. ✅ Frontend Dashboard (Port 5173)  
+### 3. ✅ Frontend Dashboard (Port 5173)
+
 - **Status**: ✅ RUNNING
 - **URL**: http://localhost:5173
 - **Polling**: Every 2 seconds for updates
@@ -30,6 +33,7 @@ All components are working correctly! Your FURLS Dashboard is successfully readi
 - **Auto-Save**: ✅ Configured to save sessions to database when logged in
 
 ### 4. ✅ Database (SQLite)
+
 - **Status**: ✅ INITIALIZED
 - **Location**: `c:\Users\gideo\source\repos\FURLS\Dashboard\server\furls.db`
 - **Tables**: users, sessions, friendships, user_settings
@@ -42,16 +46,16 @@ All components are working correctly! Your FURLS Dashboard is successfully readi
 ```
 ✅ BakkesMod Plugin (FURLS.dll)
    ↓ Exports JSON on match end
-   
+
 ✅ furls_stats.json (Local File)
    ↓ Watched by chokidar
-   
+
 ✅ Backend Server (port 3002)
    ↓ Serves via API
-   
+
 ✅ Frontend Dashboard (port 5173)
    ↓ Auto-saves when logged in
-   
+
 ✅ SQLite Database (furls.db)
    ↓ Stores all your sessions
 ```
@@ -65,12 +69,14 @@ All components are working correctly! Your FURLS Dashboard is successfully readi
 ### First Time Setup (One Time Only)
 
 1. **Create an Account**
+
    - Go to http://localhost:5173
    - Click "Register"
    - Create username and password
    - Auto-login after registration
 
 2. **Play Rocket League**
+
    - Start Rocket League
    - Go to Freeplay or Training
    - Play normally
@@ -85,6 +91,7 @@ All components are working correctly! Your FURLS Dashboard is successfully readi
 ### Daily Use
 
 1. **Start Servers** (if not running)
+
    ```powershell
    # Terminal 1: Backend
    cd c:\Users\gideo\source\repos\FURLS\Dashboard
@@ -96,6 +103,7 @@ All components are working correctly! Your FURLS Dashboard is successfully readi
    ```
 
 2. **Login**
+
    - Open http://localhost:5173
    - Login with your credentials
 
@@ -119,6 +127,7 @@ Every time you finish a training session, the following data saves to your accou
 - **Heatmaps**: Shot locations, goal locations
 
 All this data is then available in:
+
 - **Dashboard**: Overview of current session + all-time stats
 - **History**: List of all your past sessions
 - **Stats**: Detailed breakdown of performance
@@ -129,6 +138,7 @@ All this data is then available in:
 ## 🎯 Current Configuration
 
 ### Backend Server
+
 ```javascript
 // Location: server/index.js
 const PORT = 3002;
@@ -141,6 +151,7 @@ const STATS_FILE = furls_stats.json
 ```
 
 ### Frontend Client
+
 ```javascript
 // Location: client/src/App.jsx
 const POLL_INTERVAL = 2000; // 2 seconds
@@ -151,6 +162,7 @@ const POLL_INTERVAL = 2000; // 2 seconds
 ```
 
 ### Auto-Save Logic
+
 ```javascript
 // From App.jsx - loadAllData()
 if (currentRes?.data && authAPI.isAuthenticated()) {
@@ -190,6 +202,7 @@ if (currentRes?.data && authAPI.isAuthenticated()) {
 - [ ] **Test leaderboard** (view rankings)
 
 ### Automated Test
+
 ```powershell
 cd c:\Users\gideo\source\repos\FURLS\Dashboard
 node test_data_flow.js
@@ -237,4 +250,4 @@ Your FURLS Dashboard is now a complete training analytics platform! 🚀
 
 **System Status: ✅ READY FOR PRODUCTION USE**
 
-*Last Verified: 2026-01-30*
+_Last Verified: 2026-01-30_

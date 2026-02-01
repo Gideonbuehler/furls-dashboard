@@ -1,11 +1,11 @@
-import { useState, useEffect } from 'react';
-import { statsAPI, publicAPI } from '../services/api';
-import './Leaderboard.css';
+import { useState, useEffect } from "react";
+import { statsAPI, publicAPI } from "../services/api";
+import "./Leaderboard.css";
 
 function Leaderboard() {
   const [leaderboard, setLeaderboard] = useState([]);
-  const [type, setType] = useState('global'); // friends or global
-  const [stat, setStat] = useState('accuracy'); // accuracy, goals, shots, sessions
+  const [type, setType] = useState("global"); // friends or global
+  const [stat, setStat] = useState("accuracy"); // accuracy, goals, shots, sessions
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -15,7 +15,7 @@ function Leaderboard() {
   const loadLeaderboard = async () => {
     setLoading(true);
     try {
-      if (type === 'global') {
+      if (type === "global") {
         const response = await publicAPI.getLeaderboard(stat);
         setLeaderboard(response.data.players || []);
       } else {
@@ -23,7 +23,7 @@ function Leaderboard() {
         setLeaderboard(response.data);
       }
     } catch (error) {
-      console.error('Failed to load leaderboard:', error);
+      console.error("Failed to load leaderboard:", error);
       setLeaderboard([]);
     } finally {
       setLoading(false);
@@ -31,13 +31,15 @@ function Leaderboard() {
   };
   const getStatValue = (player) => {
     switch (stat) {
-      case 'accuracy':
-        return player.accuracy ? `${player.accuracy.toFixed(1)}%` : `${player.avg_accuracy?.toFixed(1)}%`;
-      case 'goals':
+      case "accuracy":
+        return player.accuracy
+          ? `${player.accuracy.toFixed(1)}%`
+          : `${player.avg_accuracy?.toFixed(1)}%`;
+      case "goals":
         return player.total_goals;
-      case 'shots':
+      case "shots":
         return player.total_shots;
-      case 'sessions':
+      case "sessions":
         return player.total_sessions;
       default:
         return player.avg_accuracy?.toFixed(1) || player.accuracy?.toFixed(1);
@@ -45,9 +47,9 @@ function Leaderboard() {
   };
 
   const getMedalEmoji = (rank) => {
-    if (rank === 0) return '🥇';
-    if (rank === 1) return '🥈';
-    if (rank === 2) return '🥉';
+    if (rank === 0) return "🥇";
+    if (rank === 1) return "🥈";
+    if (rank === 2) return "🥉";
     return null;
   };
 
@@ -55,7 +57,7 @@ function Leaderboard() {
     <div className="leaderboard-container">
       <div className="leaderboard-header">
         <h2>🏆 Leaderboard</h2>
-        
+
         <div className="leaderboard-filters">
           <div className="filter-group">
             <label>Type:</label>
@@ -64,7 +66,7 @@ function Leaderboard() {
               <option value="global">Global</option>
             </select>
           </div>
-            <div className="filter-group">
+          <div className="filter-group">
             <label>Stat:</label>
             <select value={stat} onChange={(e) => setStat(e.target.value)}>
               <option value="accuracy">Accuracy</option>
@@ -85,33 +87,36 @@ function Leaderboard() {
       ) : (
         <div className="leaderboard-list">
           {leaderboard.map((player, index) => (
-            <div key={player.id} className={`leaderboard-item rank-${index + 1}`}>
+            <div
+              key={player.id}
+              className={`leaderboard-item rank-${index + 1}`}
+            >
               <div className="rank">
                 {getMedalEmoji(index) || `#${index + 1}`}
               </div>
-                <div className="player-avatar">
+              <div className="player-avatar">
                 {player.avatar_url ? (
                   <img src={player.avatar_url} alt={player.username} />
                 ) : (
                   <div className="avatar-placeholder">
-                    {((player.display_name || player.username)[0]).toUpperCase()}
+                    {(player.display_name || player.username)[0].toUpperCase()}
                   </div>
                 )}
               </div>
-              
+
               <div className="player-info">
                 <h3>{player.display_name || player.username}</h3>
                 <p>@{player.username}</p>
                 <div className="player-stats-mini">
                   <span>{player.total_sessions || 0} sessions</span>
                   <span>•</span>
-                  <span>{player.total_goals || 0}/{player.total_shots || 0} goals</span>
+                  <span>
+                    {player.total_goals || 0}/{player.total_shots || 0} goals
+                  </span>
                 </div>
               </div>
-              
-              <div className="stat-value">
-                {getStatValue(player)}
-              </div>
+
+              <div className="stat-value">{getStatValue(player)}</div>
             </div>
           ))}
         </div>

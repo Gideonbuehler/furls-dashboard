@@ -5,6 +5,7 @@
 I've built a complete web-based dashboard for your FURLS BakkesMod plugin that includes:
 
 ### 1. **Backend API Server** (Node.js + Express)
+
 - **Location**: `Dashboard/server/index.js`
 - **Port**: 3001
 - **Features**:
@@ -15,6 +16,7 @@ I've built a complete web-based dashboard for your FURLS BakkesMod plugin that i
   - Computes all-time statistics
 
 ### 2. **Frontend Dashboard** (React + Vite)
+
 - **Location**: `Dashboard/client/`
 - **Port**: 5173
 - **Features**:
@@ -26,6 +28,7 @@ I've built a complete web-based dashboard for your FURLS BakkesMod plugin that i
   - Connection status indicator
 
 ### 3. **Plugin Data Export** (C++)
+
 - **Modified**: `FURLS.cpp` and `FURLS.h`
 - **Added**:
   - `ExportStatsToJSON()` function
@@ -36,6 +39,7 @@ I've built a complete web-based dashboard for your FURLS BakkesMod plugin that i
 ## 📊 Dashboard Features
 
 ### Dashboard Tab (📊)
+
 - **Current Session Cards**:
   - Accuracy (goals/shots percentage)
   - Average Speed
@@ -50,6 +54,7 @@ I've built a complete web-based dashboard for your FURLS BakkesMod plugin that i
   - Shots vs Goals comparison
 
 ### Heatmap Tab (🔥)
+
 - Interactive field visualization
 - Toggle between shots and goals
 - Click zones for detailed stats
@@ -57,12 +62,14 @@ I've built a complete web-based dashboard for your FURLS BakkesMod plugin that i
 - Accuracy overlay per zone
 
 ### History Tab (📈)
+
 - Complete session history table
 - Sortable columns
 - Color-coded accuracy ratings
 - Summary statistics (best performances)
 
 ### Stats Tab (📋)
+
 - Detailed current session breakdown
 - Shooting statistics
 - Speed & movement metrics
@@ -73,10 +80,12 @@ I've built a complete web-based dashboard for your FURLS BakkesMod plugin that i
 ## 🚀 How to Use
 
 ### First Time Setup:
+
 1. Open terminal in `Dashboard` folder
 2. Dependencies are already installed!
 
 ### Start the Dashboard:
+
 ```bash
 # Option 1: Easy start (Windows)
 start.bat
@@ -90,12 +99,14 @@ npm run client    # Terminal 2
 ```
 
 ### In Rocket League:
+
 1. Load BakkesMod with FURLS plugin
 2. Play a training/freeplay session
 3. **Data exports automatically when match ends!**
 4. Or use console command: `export_stats` (F6)
 
 ### View Your Stats:
+
 1. Open browser to `http://localhost:5173`
 2. Dashboard auto-refreshes every 2 seconds
 3. Explore different tabs!
@@ -131,16 +142,20 @@ Dashboard/
 ## 🔧 Plugin Changes
 
 ### FURLS.h
+
 - Added: `void ExportStatsToJSON();` declaration
 
 ### FURLS.cpp
+
 - **New Function**: `ExportStatsToJSON()` (lines ~2145-2240)
+
   - Exports all current session stats to JSON
   - Includes full shot and goal heatmaps
   - Adds timestamp
   - Saves to: `%APPDATA%\bakkesmod\bakkesmod\data\furls_stats.json`
 
 - **Modified**: `EventMatchEnded` hook (line ~178-197)
+
   - Now calls `ExportStatsToJSON()` automatically
   - Exports data when match ends
 
@@ -150,6 +165,7 @@ Dashboard/
 ## 📊 Data Format
 
 The plugin exports this JSON structure:
+
 ```json
 {
   "timestamp": "2026-01-30T20:00:00Z",
@@ -181,7 +197,7 @@ The plugin exports this JSON structure:
 - **Dark Theme**: Professional purple-black gradient
 - **Responsive**: Works on desktop, tablet, mobile
 - **Animations**: Smooth transitions and hover effects
-- **Color Coding**: 
+- **Color Coding**:
   - Green = Good performance (>50% accuracy)
   - Orange = Medium (30-50%)
   - Red = Needs improvement (<30%)
@@ -191,12 +207,14 @@ The plugin exports this JSON structure:
 ## 🔍 Technologies Used
 
 ### Backend:
+
 - Node.js
 - Express (API server)
 - CORS (cross-origin requests)
 - Chokidar (file watching)
 
 ### Frontend:
+
 - React 19
 - Vite (build tool)
 - Axios (HTTP requests)
@@ -204,6 +222,7 @@ The plugin exports this JSON structure:
 - CSS3 (styling)
 
 ### Plugin:
+
 - C++ (BakkesMod plugin)
 - JSON export format
 
@@ -218,18 +237,21 @@ The plugin exports this JSON structure:
 ## 🐛 Troubleshooting
 
 ### "Not Connected" Error
+
 - Check that BakkesMod is running
 - Play at least one complete session
 - Verify file exists: `%APPDATA%\bakkesmod\bakkesmod\data\furls_stats.json`
 - Check server console for errors
 
 ### No Data Showing
+
 - Complete a full training session (wait for match end)
 - Or manually run: `export_stats` in console (F6)
 - Refresh browser page
 - Check browser console (F12) for errors
 
 ### Port Conflicts
+
 - Change port in `server/index.js` (line 7)
 - Update `API_URL` in `client/src/App.jsx` (line 10)
 
@@ -243,6 +265,7 @@ The plugin exports this JSON structure:
 ## 📦 What to Commit to Git
 
 Recommended to commit:
+
 - All files in `Dashboard/` folder
 - Modified `FURLS.cpp` and `FURLS.h`
 - Exclude: `node_modules/`, `dist/`, `.env` (already in .gitignore)

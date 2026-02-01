@@ -13,20 +13,25 @@ Your FURLS Training Dashboard is **running and ready to use**!
 ## 📊 What You Have Now
 
 ### 1. **Live Web Dashboard**
+
 A beautiful, real-time dashboard showing:
+
 - Current session accuracy, speed, boost stats
 - All-time statistics summary
 - Session history with trend charts
 - Auto-updating every 2 seconds
 
 ### 2. **Backend API Server**
+
 - Watches BakkesMod data folder
 - Serves stats via REST API
 - Tracks up to 100 session history
 - Computes all-time statistics
 
 ### 3. **Plugin Export Feature**
+
 The FURLS plugin now has:
+
 - `ExportStatsToJSON()` function
 - Auto-export when match ends
 - Manual export command: `export_stats`
@@ -35,11 +40,13 @@ The FURLS plugin now has:
 ## 🚀 How to Start the Dashboard
 
 ### Easiest Method:
+
 ```
 Double-click: start-simple.bat
 ```
 
 ### Manual Method:
+
 ```bash
 cd Dashboard
 node server/index.js
@@ -50,27 +57,32 @@ Then open: http://localhost:3002
 ## 🎮 How to Use with Rocket League
 
 ### Step 1: Rebuild the Plugin
+
 1. Open `FURLS.sln` in Visual Studio
 2. Press **Ctrl+Shift+B** to build
 3. The updated DLL includes the new export functionality
 
 ### Step 2: Play Rocket League
+
 1. Start Rocket League with BakkesMod
 2. Play a training/freeplay session
 3. Complete the session (match end)
 4. **Stats automatically export to JSON!**
 
 ### Step 3: View Your Stats
+
 - Dashboard auto-refreshes every 2 seconds
 - No need to reload the page
 - See your stats appear in real-time!
 
 ### Manual Export:
+
 Press **F6** in-game and type: `export_stats`
 
 ## 📁 Files Created/Modified
 
 ### Dashboard Folder (New):
+
 ```
 Dashboard/
 ├── start-simple.bat          ← Easy start script
@@ -86,6 +98,7 @@ Dashboard/
 ```
 
 ### Plugin Files (Modified):
+
 ```
 FURLS/
 ├── FURLS.h                  ← Added ExportStatsToJSON()
@@ -95,27 +108,33 @@ FURLS/
 ## 📊 Dashboard Features
 
 ### Dashboard Tab (📊)
+
 **Current Session:**
+
 - 🎯 Accuracy (goals/shots percentage)
 - ⚡ Average Speed
 - 💨 Boost Used/Collected
 - ⏱️ Session Time & Possession
 
 **All-Time Stats:**
+
 - Total Sessions, Shots, Goals
 - Average Accuracy
 
 **Charts:**
+
 - Accuracy progression over sessions
 - Goals per session trend
 
 ### Stats Tab (📋)
+
 - Detailed current session breakdown
 - All statistics in one view
 
 ## 🔧 Technical Details
 
 ### Data Format (JSON):
+
 ```json
 {
   "timestamp": "2026-01-30T20:00:00Z",
@@ -135,11 +154,13 @@ FURLS/
 ```
 
 ### Data Location:
+
 ```
 %APPDATA%\bakkesmod\bakkesmod\data\furls_stats.json
 ```
 
 ### API Endpoints:
+
 - `GET /api/stats/current` - Current session
 - `GET /api/stats/history` - All sessions
 - `GET /api/stats/alltime` - Computed totals
@@ -147,6 +168,7 @@ FURLS/
 - `GET /api/health` - Server status
 
 ### Technology Stack:
+
 - **Frontend**: Pure HTML/CSS/JavaScript, Chart.js, Axios
 - **Backend**: Node.js, Express, Chokidar (file watcher)
 - **Plugin**: C++ with JSON export
@@ -161,17 +183,18 @@ FURLS/
 
 ## 🐛 Quick Troubleshooting
 
-| Problem | Solution |
-|---------|----------|
-| Dashboard won't load | Run `start-simple.bat` |
-| Port in use | Script auto-closes existing processes |
-| No data showing | Run `npm run test-data` |
-| Not updating from game | Rebuild plugin, complete a session |
-| Red connection dot | Check if server is running |
+| Problem                | Solution                              |
+| ---------------------- | ------------------------------------- |
+| Dashboard won't load   | Run `start-simple.bat`                |
+| Port in use            | Script auto-closes existing processes |
+| No data showing        | Run `npm run test-data`               |
+| Not updating from game | Rebuild plugin, complete a session    |
+| Red connection dot     | Check if server is running            |
 
 ## 📋 Console Commands (BakkesMod)
 
 Press **F6** in Rocket League to open console:
+
 - `export_stats` - Export current session to JSON
 - `export_heatmap` - Export heatmap to CSV
 - `furls_reset_stats` - Reset current session
@@ -180,6 +203,7 @@ Press **F6** in Rocket League to open console:
 ## 🎯 Checklist
 
 ### Already Done ✅
+
 - [x] Dashboard folder created
 - [x] Server code written
 - [x] Frontend dashboard created
@@ -191,6 +215,7 @@ Press **F6** in Rocket League to open console:
 - [x] Documentation written
 
 ### Next Steps ⏭️
+
 - [ ] Rebuild FURLS plugin in Visual Studio
 - [ ] Play Rocket League training
 - [ ] Complete a session
@@ -199,6 +224,7 @@ Press **F6** in Rocket League to open console:
 ## 🎨 Dashboard Preview
 
 Currently showing:
+
 - ✅ Test data with 65 shots, 33 goals (50.8% accuracy)
 - ✅ Average speed: 1451.5
 - ✅ Boost stats and session time
@@ -225,12 +251,15 @@ Currently showing:
 ## 🎮 Ready to Use!
 
 ### Right Now:
+
 ```
 Open: http://localhost:3002
 ```
+
 See the dashboard with test data!
 
 ### After Rebuilding Plugin:
+
 1. Build FURLS plugin (Ctrl+Shift+B)
 2. Play Rocket League training
 3. Complete session → auto-export

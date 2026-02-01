@@ -3,6 +3,7 @@
 ## Step 1: Prepare Your Repository
 
 ### 1.1 Push to GitHub
+
 Your code needs to be on GitHub for Render to deploy it.
 
 ```powershell
@@ -33,6 +34,7 @@ git push -u origin main
 ### 2.2 Configure Web Service
 
 **Basic Settings:**
+
 - **Name**: `furls-backend` (or `furls-api`)
 - **Region**: Choose closest to your users
 - **Branch**: `main`
@@ -42,6 +44,7 @@ git push -u origin main
 - **Start Command**: `node server/index.js`
 
 **Instance Type:**
+
 - Free tier is fine to start!
 - Can upgrade later if needed
 
@@ -55,6 +58,7 @@ JWT_SECRET=<generate-a-random-secret-here>
 ```
 
 To generate a secure JWT secret:
+
 ```powershell
 # Run in PowerShell:
 -join ((48..57) + (65..90) + (97..122) | Get-Random -Count 32 | ForEach-Object {[char]$_})
@@ -81,10 +85,13 @@ Copy the output and use it as your `JWT_SECRET`.
 2. Register/login at http://localhost:5173
 3. Open browser console (F12)
 4. Run this command:
+
 ```javascript
-await fetch('http://localhost:3002/api/auth/api-key', {
-  headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-}).then(r => r.json()).then(d => console.log('Your API Key:', d.apiKey))
+await fetch("http://localhost:3002/api/auth/api-key", {
+  headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+})
+  .then((r) => r.json())
+  .then((d) => console.log("Your API Key:", d.apiKey));
 ```
 
 5. **Copy your API key!**
@@ -138,6 +145,7 @@ npm run build
 2. Click **"New +"** → **"Static Site"**
 3. Select your repository
 4. Configure:
+
    - **Name**: `furls-dashboard`
    - **Branch**: `main`
    - **Root Directory**: `client`
@@ -176,6 +184,7 @@ If you own `furls.rl` or `furls.com`:
 ### Option 2: Use Render's Free Subdomain
 
 You already have:
+
 - **Backend**: `https://furls-backend.onrender.com`
 - **Frontend**: `https://furls-dashboard.onrender.com`
 
@@ -190,6 +199,7 @@ These work immediately!
 Since your backend is now live, update the default URL in the plugin:
 
 Edit `FURLS.cpp`, line ~100:
+
 ```cpp
 std::string serverUrl = "https://furls-backend.onrender.com"; // Your Render URL
 ```
@@ -197,6 +207,7 @@ std::string serverUrl = "https://furls-backend.onrender.com"; // Your Render URL
 Recompile the plugin and distribute to users.
 
 Or users can set it via console:
+
 ```
 furls_server_url https://furls-backend.onrender.com
 ```
@@ -206,17 +217,20 @@ furls_server_url https://furls-backend.onrender.com
 ## Step 7: Test the Complete Flow
 
 ### 7.1 Test Registration
+
 1. Go to `https://furls-dashboard.onrender.com`
 2. Register a new account
 3. Login
 
 ### 7.2 Test Plugin Upload
+
 1. Configure plugin with your API key (Step 3.2)
 2. Play Rocket League freeplay
 3. Score a goal
 4. Check dashboard - stats should appear!
 
 ### 7.3 Test Public Features
+
 1. Search for your username: `https://furls-dashboard.onrender.com/search`
 2. View your profile: `https://furls-dashboard.onrender.com/profile/YOUR_USERNAME`
 3. Check leaderboard: `https://furls-dashboard.onrender.com/leaderboard`
@@ -228,12 +242,15 @@ furls_server_url https://furls-backend.onrender.com
 Your FURLS platform is now publicly accessible!
 
 ### Public URLs:
+
 - **Dashboard**: `https://furls-dashboard.onrender.com`
 - **API**: `https://furls-backend.onrender.com`
 - **Your Profile**: `https://furls-dashboard.onrender.com/profile/YOUR_USERNAME`
 
 ### Share with Others:
+
 Anyone can now:
+
 1. Register an account
 2. Configure the plugin with their API key
 3. Upload their training stats
@@ -245,12 +262,14 @@ Anyone can now:
 ## 📊 Monitoring & Maintenance
 
 ### View Logs
+
 - Go to Render Dashboard
 - Click on your service
 - Click **"Logs"** tab
 - See real-time server activity
 
 ### Check Database
+
 Since you're using SQLite, the database is stored on the Render server.
 
 **Important**: Render's free tier may delete the database on deploys!
@@ -264,11 +283,13 @@ Since you're using SQLite, the database is stored on the Render server.
 ### Issue: Plugin Upload Fails
 
 **Check:**
+
 1. Is `furls_enable_upload` set to `1`?
 2. Is your API key correct?
 3. Is the server URL correct?
 
 **Test manually:**
+
 ```powershell
 # Test API endpoint
 curl https://furls-backend.onrender.com/api/stats/upload `
@@ -282,22 +303,28 @@ curl https://furls-backend.onrender.com/api/stats/upload `
 The backend is configured to allow all origins. If you see CORS errors:
 
 Edit `server/index.js`:
+
 ```javascript
-app.use(cors({
-  origin: ['https://furls-dashboard.onrender.com', 'http://localhost:5173'],
-  credentials: true
-}));
+app.use(
+  cors({
+    origin: ["https://furls-dashboard.onrender.com", "http://localhost:5173"],
+    credentials: true,
+  })
+);
 ```
 
 ### Issue: API Key Not Working
 
 Regenerate your API key:
+
 ```javascript
 // In browser console on dashboard:
-await fetch('http://localhost:3002/api/auth/regenerate-api-key', {
-  method: 'POST',
-  headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-}).then(r => r.json()).then(d => console.log('New API Key:', d.apiKey))
+await fetch("http://localhost:3002/api/auth/regenerate-api-key", {
+  method: "POST",
+  headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+})
+  .then((r) => r.json())
+  .then((d) => console.log("New API Key:", d.apiKey));
 ```
 
 ---
@@ -305,17 +332,20 @@ await fetch('http://localhost:3002/api/auth/regenerate-api-key', {
 ## 💰 Cost Breakdown
 
 ### Free Tier (Render):
+
 - **Backend**: Free (with 750 hours/month)
 - **Frontend**: Free
 - **Database**: Included (SQLite)
 - **Total**: **$0/month**
 
 ### Limitations:
+
 - Server sleeps after 15 min of inactivity (wakes on request)
 - Database may be deleted on redeploys
 - 100GB bandwidth/month
 
 ### Paid Tier ($7/month):
+
 - Always-on server
 - Persistent disk storage
 - Better performance
@@ -336,6 +366,7 @@ await fetch('http://localhost:3002/api/auth/regenerate-api-key', {
 ## 📞 Quick Reference
 
 ### Console Commands (In RL):
+
 ```
 furls_server_url https://furls-backend.onrender.com
 furls_api_key YOUR_API_KEY_HERE
@@ -343,11 +374,13 @@ furls_enable_upload 1
 ```
 
 ### Environment Variables:
+
 - `JWT_SECRET` - Random 32+ character string
 - `NODE_ENV` - production
 - `PORT` - 3002 (auto-set by Render)
 
 ### Important URLs:
+
 - **Backend**: https://furls-backend.onrender.com
 - **Frontend**: https://furls-dashboard.onrender.com
 - **Render Dashboard**: https://dashboard.render.com

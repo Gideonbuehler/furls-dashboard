@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react';
-import './Settings.css';
-import { authAPI } from '../services/api';
+import { useState, useEffect } from "react";
+import "./Settings.css";
+import { authAPI } from "../services/api";
 
 function Settings() {
-  const [apiKey, setApiKey] = useState('');
+  const [apiKey, setApiKey] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
@@ -21,15 +21,19 @@ function Settings() {
       const response = await authAPI.getApiKey();
       setApiKey(response.data.api_key);
     } catch (err) {
-      setError('Failed to load API key');
-      console.error('Error loading API key:', err);
+      setError("Failed to load API key");
+      console.error("Error loading API key:", err);
     } finally {
       setLoading(false);
     }
   };
 
   const handleRegenerateKey = async () => {
-    if (!window.confirm('Are you sure you want to regenerate your API key? Your old key will stop working immediately.')) {
+    if (
+      !window.confirm(
+        "Are you sure you want to regenerate your API key? Your old key will stop working immediately."
+      )
+    ) {
       return;
     }
 
@@ -39,10 +43,12 @@ function Settings() {
       setSuccess(null);
       const response = await authAPI.regenerateApiKey();
       setApiKey(response.data.api_key);
-      setSuccess('API key regenerated successfully! Update your BakkesMod plugin configuration.');
+      setSuccess(
+        "API key regenerated successfully! Update your BakkesMod plugin configuration."
+      );
     } catch (err) {
-      setError('Failed to regenerate API key');
-      console.error('Error regenerating API key:', err);
+      setError("Failed to regenerate API key");
+      console.error("Error regenerating API key:", err);
     } finally {
       setRegenerating(false);
     }
@@ -87,27 +93,30 @@ function Settings() {
         <div className="settings-section">
           <h3>🔑 API Key</h3>
           <p className="section-description">
-            Use this API key to configure your BakkesMod plugin to upload stats automatically.
+            Use this API key to configure your BakkesMod plugin to upload stats
+            automatically.
           </p>
 
           <div className="api-key-container">
             <div className="api-key-display">
-              <code className="api-key">{apiKey || 'No API key available'}</code>
-              <button 
-                className="btn-copy" 
+              <code className="api-key">
+                {apiKey || "No API key available"}
+              </code>
+              <button
+                className="btn-copy"
                 onClick={handleCopyKey}
                 disabled={!apiKey}
               >
-                {copied ? '✅ Copied!' : '📋 Copy'}
+                {copied ? "✅ Copied!" : "📋 Copy"}
               </button>
             </div>
 
-            <button 
-              className="btn-regenerate" 
+            <button
+              className="btn-regenerate"
               onClick={handleRegenerateKey}
               disabled={regenerating}
             >
-              {regenerating ? '🔄 Regenerating...' : '🔄 Regenerate Key'}
+              {regenerating ? "🔄 Regenerating..." : "🔄 Regenerate Key"}
             </button>
           </div>
 
@@ -116,14 +125,19 @@ function Settings() {
             <ol>
               <li>Open BakkesMod console (F6 in Rocket League)</li>
               <li>Copy your API key above</li>
-              <li>Run these commands:
+              <li>
+                Run these commands:
                 <div className="code-block">
-                  <code>furls_enable_upload 1</code><br/>
-                  <code>furls_api_key YOUR_API_KEY_HERE</code><br/>
+                  <code>furls_enable_upload 1</code>
+                  <br />
+                  <code>furls_api_key YOUR_API_KEY_HERE</code>
+                  <br />
                   <code>furls_server_url https://furls-api.onrender.com</code>
                 </div>
               </li>
-              <li>Your stats will now automatically upload after each match!</li>
+              <li>
+                Your stats will now automatically upload after each match!
+              </li>
             </ol>
           </div>
         </div>
@@ -135,24 +149,35 @@ function Settings() {
           </p>
           <div className="privacy-controls">
             <label className="privacy-option">
-              <input type="radio" name="visibility" value="public" defaultChecked />
+              <input
+                type="radio"
+                name="visibility"
+                value="public"
+                defaultChecked
+              />
               <span className="option-label">
                 <strong>Public</strong>
-                <span className="option-description">Anyone can view your profile and stats</span>
+                <span className="option-description">
+                  Anyone can view your profile and stats
+                </span>
               </span>
             </label>
             <label className="privacy-option">
               <input type="radio" name="visibility" value="friends" />
               <span className="option-label">
                 <strong>Friends Only</strong>
-                <span className="option-description">Only your friends can view your profile</span>
+                <span className="option-description">
+                  Only your friends can view your profile
+                </span>
               </span>
             </label>
             <label className="privacy-option">
               <input type="radio" name="visibility" value="private" />
               <span className="option-label">
                 <strong>Private</strong>
-                <span className="option-description">Only you can view your stats</span>
+                <span className="option-description">
+                  Only you can view your stats
+                </span>
               </span>
             </label>
           </div>

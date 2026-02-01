@@ -1,18 +1,18 @@
 .app {
   min-height: 100vh;
-  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+  background: linear-gradient(135deg, #0a0014 0%, #1a0a2e 100%);
   color: #fff;
 }
 
 .app-header {
-  background: rgba(20, 20, 20, 0.95);
+  background: rgba(20, 10, 35, 0.95);
   backdrop-filter: blur(10px);
-  border-bottom: 2px solid #333;
+  border-bottom: 2px solid #6a1b9a;
   padding: 1rem 2rem;
   position: sticky;
   top: 0;
   z-index: 100;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 4px 20px rgba(106, 27, 154, 0.3);
 }
 
 .header-content {
@@ -25,7 +25,7 @@
 .app-header h1 {
   margin: 0;
   font-size: 2rem;
-  background: linear-gradient(135deg, #4CAF50, #2196F3);
+  background: linear-gradient(135deg, #9c27b0, #7b1fa2);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -36,9 +36,10 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.5rem 1rem;
-  background: rgba(30, 30, 30, 0.8);
+  background: rgba(40, 20, 60, 0.8);
   border-radius: 20px;
   font-size: 0.9rem;
+  border: 1px solid #6a1b9a;
 }
 
 .status-indicator {
@@ -90,14 +91,16 @@
 }
 
 .tab-button:hover {
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(156, 39, 176, 0.2);
   color: #fff;
+  border-color: #9c27b0;
 }
 
 .tab-button.active {
-  background: linear-gradient(135deg, #4CAF50, #2196F3);
+  background: linear-gradient(135deg, #9c27b0, #7b1fa2);
   color: #fff;
   border-color: transparent;
+  box-shadow: 0 4px 15px rgba(156, 39, 176, 0.4);
 }
 
 .tab-icon {

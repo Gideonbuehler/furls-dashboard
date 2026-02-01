@@ -42,33 +42,34 @@ Anyone with Internet:
 **Needed**: Plugin uploads directly to server
 
 #### Option A: Add HTTP POST to Plugin
+
 ```cpp
 // In FURLS.cpp - Add after ExportStatsToJSON()
 void FURLS::UploadStatsToServer() {
     if (!enableServerUpload) return; // Make it optional
-    
+
     std::string serverUrl = "https://furls.rl/api/stats/upload";
     std::string apiKey = GetUserApiKey(); // From config file
     std::string jsonData = GenerateStatsJSON();
-    
+
     // Use curl or WinHTTP to POST data
     CURL *curl = curl_easy_init();
     if (curl) {
         struct curl_slist *headers = NULL;
         headers = curl_slist_append(headers, "Content-Type: application/json");
         headers = curl_slist_append(headers, ("Authorization: Bearer " + apiKey).c_str());
-        
+
         curl_easy_setopt(curl, CURLOPT_URL, serverUrl.c_str());
         curl_easy_setopt(curl, CURLOPT_POSTFIELDS, jsonData.c_str());
         curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
-        
+
         CURLcode res = curl_easy_perform(curl);
         if (res == CURLE_OK) {
             cvarManager->log("[FURLS] Stats uploaded successfully!");
         } else {
             cvarManager->log("[FURLS] Upload failed: " + std::string(curl_easy_strerror(res)));
         }
-        
+
         curl_easy_cleanup(curl);
         curl_slist_free_all(headers);
     }
@@ -82,31 +83,32 @@ void FURLS::OnMatchEnd() {
 ```
 
 #### Option B: Desktop Companion App (Easier)
+
 ```javascript
 // Create: furls-uploader.exe (Electron app)
 // Runs in system tray, watches for file changes
 
-const chokidar = require('chokidar');
-const axios = require('axios');
-const fs = require('fs');
+const chokidar = require("chokidar");
+const axios = require("axios");
+const fs = require("fs");
 
 const STATS_FILE = path.join(
   process.env.APPDATA,
-  'bakkesmod/bakkesmod/data/furls_stats.json'
+  "bakkesmod/bakkesmod/data/furls_stats.json"
 );
 
 // Watch for changes
-chokidar.watch(STATS_FILE).on('change', async () => {
+chokidar.watch(STATS_FILE).on("change", async () => {
   const stats = JSON.parse(fs.readFileSync(STATS_FILE));
   const apiKey = getStoredApiKey(); // From user settings
-  
+
   try {
-    await axios.post('https://furls.rl/api/stats/upload', stats, {
-      headers: { Authorization: `Bearer ${apiKey}` }
+    await axios.post("https://furls.rl/api/stats/upload", stats, {
+      headers: { Authorization: `Bearer ${apiKey}` },
     });
-    showNotification('Stats uploaded successfully!');
+    showNotification("Stats uploaded successfully!");
   } catch (err) {
-    showNotification('Upload failed', 'error');
+    showNotification("Upload failed", "error");
   }
 });
 ```
@@ -114,6 +116,7 @@ chokidar.watch(STATS_FILE).on('change', async () => {
 ### 2. Server Changes
 
 #### 2.1 Database Migration
+
 ```sql
 -- Current: SQLite (server/furls.db)
 -- Needed: PostgreSQL or MySQL
@@ -167,15 +170,16 @@ CREATE INDEX idx_users_total_goals ON users(total_goals DESC);
 ```
 
 #### 2.2 New API Endpoints
+
 ```javascript
 // server/routes/public.js (NEW FILE)
-const express = require('express');
+const express = require("express");
 const router = express.Router();
 
 // Public profile page
-router.get('/profile/:username', async (req, res) => {
+router.get("/profile/:username", async (req, res) => {
   const { username } = req.params;
-  
+
   const user = await db.get(
     `SELECT username, avatar_url, total_shots, total_goals, 
             total_sessions, created_at, profile_visibility
@@ -183,15 +187,15 @@ router.get('/profile/:username', async (req, res) => {
      WHERE username = $1`,
     [username]
   );
-  
+
   if (!user) {
-    return res.status(404).json({ error: 'Player not found' });
+    return res.status(404).json({ error: "Player not found" });
   }
-  
-  if (user.profile_visibility === 'private') {
-    return res.status(403).json({ error: 'Profile is private' });
+
+  if (user.profile_visibility === "private") {
+    return res.status(403).json({ error: "Profile is private" });
   }
-  
+
   // Get recent sessions (if public)
   const sessions = await db.all(
     `SELECT timestamp, shots, goals, average_speed 
@@ -201,14 +205,14 @@ router.get('/profile/:username', async (req, res) => {
      LIMIT 20`,
     [username]
   );
-  
+
   res.json({ user, sessions });
 });
 
 // Search players
-router.get('/search', async (req, res) => {
+router.get("/search", async (req, res) => {
   const { q } = req.query;
-  
+
   const players = await db.all(
     `SELECT username, avatar_url, total_shots, total_goals
      FROM users
@@ -217,19 +221,20 @@ router.get('/search', async (req, res) => {
      LIMIT 20`,
     [`%${q}%`]
   );
-  
+
   res.json(players);
 });
 
 // Global leaderboard
-router.get('/leaderboard/:stat', async (req, res) => {
+router.get("/leaderboard/:stat", async (req, res) => {
   const { stat } = req.params; // 'shots', 'goals', 'accuracy'
   const { limit = 100, offset = 0 } = req.query;
-  
-  let orderBy = 'total_shots';
-  if (stat === 'goals') orderBy = 'total_goals';
-  if (stat === 'accuracy') orderBy = '(total_goals::float / NULLIF(total_shots, 0))';
-  
+
+  let orderBy = "total_shots";
+  if (stat === "goals") orderBy = "total_goals";
+  if (stat === "accuracy")
+    orderBy = "(total_goals::float / NULLIF(total_shots, 0))";
+
   const players = await db.all(
     `SELECT username, avatar_url, total_shots, total_goals,
             (total_goals::float / NULLIF(total_shots, 0) * 100) as accuracy
@@ -240,7 +245,7 @@ router.get('/leaderboard/:stat', async (req, res) => {
      LIMIT $1 OFFSET $2`,
     [limit, offset]
   );
-  
+
   res.json(players);
 });
 
@@ -248,38 +253,39 @@ module.exports = router;
 ```
 
 #### 2.3 Upload Endpoint (Protected)
+
 ```javascript
 // server/routes/upload.js (NEW FILE)
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const { authenticateApiKey } = require('../auth');
+const { authenticateApiKey } = require("../auth");
 
 // Middleware to verify API key from plugin
 const authenticateApiKey = async (req, res, next) => {
-  const apiKey = req.headers.authorization?.replace('Bearer ', '');
-  
+  const apiKey = req.headers.authorization?.replace("Bearer ", "");
+
   if (!apiKey) {
-    return res.status(401).json({ error: 'API key required' });
+    return res.status(401).json({ error: "API key required" });
   }
-  
+
   const user = await db.get(
-    'SELECT id, username FROM users WHERE api_key = $1',
+    "SELECT id, username FROM users WHERE api_key = $1",
     [apiKey]
   );
-  
+
   if (!user) {
-    return res.status(401).json({ error: 'Invalid API key' });
+    return res.status(401).json({ error: "Invalid API key" });
   }
-  
+
   req.user = user;
   next();
 };
 
 // Upload stats from plugin
-router.post('/upload', authenticateApiKey, async (req, res) => {
+router.post("/upload", authenticateApiKey, async (req, res) => {
   const stats = req.body;
   const userId = req.user.id;
-  
+
   try {
     // Save session
     await db.run(
@@ -290,14 +296,23 @@ router.post('/upload', authenticateApiKey, async (req, res) => {
         shot_heatmap, goal_heatmap
       ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)`,
       [
-        userId, stats.timestamp, stats.shots, stats.goals,
-        stats.averageSpeed, stats.speedSamples, stats.boostCollected,
-        stats.boostUsed, stats.gameTime, stats.possessionTime,
-        stats.teamPossessionTime, stats.opponentPossessionTime,
-        JSON.stringify(stats.shotHeatmap), JSON.stringify(stats.goalHeatmap)
+        userId,
+        stats.timestamp,
+        stats.shots,
+        stats.goals,
+        stats.averageSpeed,
+        stats.speedSamples,
+        stats.boostCollected,
+        stats.boostUsed,
+        stats.gameTime,
+        stats.possessionTime,
+        stats.teamPossessionTime,
+        stats.opponentPossessionTime,
+        JSON.stringify(stats.shotHeatmap),
+        JSON.stringify(stats.goalHeatmap),
       ]
     );
-    
+
     // Update user totals
     await db.run(
       `UPDATE users 
@@ -308,11 +323,11 @@ router.post('/upload', authenticateApiKey, async (req, res) => {
        WHERE id = $3`,
       [stats.shots, stats.goals, userId]
     );
-    
-    res.json({ success: true, message: 'Stats uploaded successfully' });
+
+    res.json({ success: true, message: "Stats uploaded successfully" });
   } catch (err) {
-    console.error('Upload error:', err);
-    res.status(500).json({ error: 'Failed to save stats' });
+    console.error("Upload error:", err);
+    res.status(500).json({ error: "Failed to save stats" });
   }
 });
 
@@ -322,38 +337,41 @@ module.exports = router;
 ### 3. Frontend Changes
 
 #### 3.1 Add Player Search Page
+
 ```javascript
 // client/src/components/PlayerSearch.jsx
-import { useState } from 'react';
-import axios from 'axios';
+import { useState } from "react";
+import axios from "axios";
 
 function PlayerSearch() {
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState("");
   const [results, setResults] = useState([]);
-  
+
   const handleSearch = async () => {
     const res = await axios.get(`/api/public/search?q=${query}`);
     setResults(res.data);
   };
-  
+
   return (
     <div className="player-search">
       <h2>🔍 Search Players</h2>
-      <input 
+      <input
         type="text"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
-        onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+        onKeyPress={(e) => e.key === "Enter" && handleSearch()}
         placeholder="Search by username..."
       />
       <button onClick={handleSearch}>Search</button>
-      
+
       <div className="search-results">
-        {results.map(player => (
+        {results.map((player) => (
           <div key={player.username} className="player-card">
-            <img src={player.avatar_url || '/default-avatar.png'} />
+            <img src={player.avatar_url || "/default-avatar.png"} />
             <h3>{player.username}</h3>
-            <p>Shots: {player.total_shots} | Goals: {player.total_goals}</p>
+            <p>
+              Shots: {player.total_shots} | Goals: {player.total_goals}
+            </p>
             <a href={`/profile/${player.username}`}>View Profile →</a>
           </div>
         ))}
@@ -364,32 +382,36 @@ function PlayerSearch() {
 ```
 
 #### 3.2 Add Public Profile Page
+
 ```javascript
 // client/src/components/PublicProfile.jsx
-import { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
-import axios from 'axios';
+import { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
+import axios from "axios";
 
 function PublicProfile() {
   const { username } = useParams();
   const [profile, setProfile] = useState(null);
-  
+
   useEffect(() => {
-    axios.get(`/api/public/profile/${username}`)
-      .then(res => setProfile(res.data))
-      .catch(err => console.error(err));
+    axios
+      .get(`/api/public/profile/${username}`)
+      .then((res) => setProfile(res.data))
+      .catch((err) => console.error(err));
   }, [username]);
-  
+
   if (!profile) return <div>Loading...</div>;
-  
+
   return (
     <div className="public-profile">
       <div className="profile-header">
-        <img src={profile.user.avatar_url || '/default-avatar.png'} />
+        <img src={profile.user.avatar_url || "/default-avatar.png"} />
         <h1>{profile.user.username}</h1>
-        <p>Member since {new Date(profile.user.created_at).toLocaleDateString()}</p>
+        <p>
+          Member since {new Date(profile.user.created_at).toLocaleDateString()}
+        </p>
       </div>
-      
+
       <div className="profile-stats">
         <div className="stat-box">
           <h3>{profile.user.total_sessions}</h3>
@@ -404,17 +426,25 @@ function PublicProfile() {
           <p>Total Goals</p>
         </div>
         <div className="stat-box">
-          <h3>{((profile.user.total_goals / profile.user.total_shots) * 100).toFixed(1)}%</h3>
+          <h3>
+            {(
+              (profile.user.total_goals / profile.user.total_shots) *
+              100
+            ).toFixed(1)}
+            %
+          </h3>
           <p>Accuracy</p>
         </div>
       </div>
-      
+
       <div className="recent-sessions">
         <h2>Recent Sessions</h2>
-        {profile.sessions.map(session => (
+        {profile.sessions.map((session) => (
           <div key={session.timestamp} className="session-card">
             <span>{new Date(session.timestamp).toLocaleString()}</span>
-            <span>{session.shots} shots, {session.goals} goals</span>
+            <span>
+              {session.shots} shots, {session.goals} goals
+            </span>
           </div>
         ))}
       </div>
@@ -426,6 +456,7 @@ function PublicProfile() {
 ### 4. Hosting Requirements
 
 #### 4.1 Cloud Infrastructure
+
 ```yaml
 # Example: AWS/DigitalOcean setup
 
@@ -446,6 +477,7 @@ Estimated Cost:
 ```
 
 #### 4.2 Deployment Script
+
 ```bash
 # deploy.sh
 #!/bin/bash
@@ -470,45 +502,51 @@ echo "Deployment complete!"
 ```javascript
 // server/middleware/security.js
 
-const rateLimit = require('express-rate-limit');
-const helmet = require('helmet');
+const rateLimit = require("express-rate-limit");
+const helmet = require("helmet");
 
 // Rate limiting (prevent spam)
 const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100 // Max 100 requests per 15 minutes
+  max: 100, // Max 100 requests per 15 minutes
 });
 
 // API key rate limiting (for plugin uploads)
 const uploadLimiter = rateLimit({
   windowMs: 60 * 1000, // 1 minute
-  max: 10 // Max 10 uploads per minute per user
+  max: 10, // Max 10 uploads per minute per user
 });
 
 // Security headers
 app.use(helmet());
 
 // CORS (allow specific domains)
-app.use(cors({
-  origin: ['https://furls.rl', 'https://www.furls.rl'],
-  credentials: true
-}));
+app.use(
+  cors({
+    origin: ["https://furls.rl", "https://www.furls.rl"],
+    credentials: true,
+  })
+);
 
 // Input validation
-const { body, validationResult } = require('express-validator');
+const { body, validationResult } = require("express-validator");
 
-app.post('/api/stats/upload', [
-  body('shots').isInt({ min: 0, max: 10000 }),
-  body('goals').isInt({ min: 0, max: 10000 }),
-  body('timestamp').isISO8601(),
-  // ... more validations
-], async (req, res) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() });
+app.post(
+  "/api/stats/upload",
+  [
+    body("shots").isInt({ min: 0, max: 10000 }),
+    body("goals").isInt({ min: 0, max: 10000 }),
+    body("timestamp").isISO8601(),
+    // ... more validations
+  ],
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+    // ... handle upload
   }
-  // ... handle upload
-});
+);
 ```
 
 ### 6. Privacy Features
@@ -517,16 +555,16 @@ app.post('/api/stats/upload', [
 // server/routes/settings.js
 
 // User can control privacy
-router.put('/settings/privacy', authenticateToken, async (req, res) => {
+router.put("/settings/privacy", authenticateToken, async (req, res) => {
   const { profile_visibility, show_sessions } = req.body;
-  
+
   await db.run(
     `UPDATE user_settings 
      SET profile_visibility = $1, show_sessions_publicly = $2 
      WHERE user_id = $3`,
     [profile_visibility, show_sessions, req.user.id]
   );
-  
+
   res.json({ success: true });
 });
 ```
@@ -536,6 +574,7 @@ router.put('/settings/privacy', authenticateToken, async (req, res) => {
 ## 📋 Migration Checklist
 
 ### Phase 1: Foundation
+
 - [ ] Set up cloud server (AWS/DigitalOcean)
 - [ ] Register domain (furls.rl)
 - [ ] Set up PostgreSQL database
@@ -543,6 +582,7 @@ router.put('/settings/privacy', authenticateToken, async (req, res) => {
 - [ ] Deploy basic backend
 
 ### Phase 2: Upload System
+
 - [ ] Add API key generation to user accounts
 - [ ] Create upload endpoint
 - [ ] Build companion uploader app OR
@@ -550,6 +590,7 @@ router.put('/settings/privacy', authenticateToken, async (req, res) => {
 - [ ] Test upload system
 
 ### Phase 3: Public Features
+
 - [ ] Add public profile pages
 - [ ] Add player search
 - [ ] Add global leaderboards
@@ -557,6 +598,7 @@ router.put('/settings/privacy', authenticateToken, async (req, res) => {
 - [ ] Add avatar upload
 
 ### Phase 4: Polish
+
 - [ ] Add rate limiting
 - [ ] Add input validation
 - [ ] Add error logging
@@ -564,6 +606,7 @@ router.put('/settings/privacy', authenticateToken, async (req, res) => {
 - [ ] Add user onboarding
 
 ### Phase 5: Launch
+
 - [ ] Beta testing with small group
 - [ ] Fix bugs
 - [ ] Public announcement
@@ -576,6 +619,7 @@ router.put('/settings/privacy', authenticateToken, async (req, res) => {
 **Yes, you can host this as furls.rl and let anyone look up players!**
 
 **Key requirements:**
+
 1. **Upload System**: Users need a way to send their stats to the server
 2. **Public Endpoints**: Anyone can view profiles and leaderboards
 3. **Privacy Controls**: Users can choose what's public
@@ -583,6 +627,7 @@ router.put('/settings/privacy', authenticateToken, async (req, res) => {
 5. **Security**: Rate limiting, validation, authentication
 
 **Estimated Effort:**
+
 - Plugin modification: 1-2 weeks
 - Server changes: 2-3 weeks
 - Frontend updates: 1-2 weeks
@@ -590,6 +635,7 @@ router.put('/settings/privacy', authenticateToken, async (req, res) => {
 - **Total: 1.5-2 months** (full-time)
 
 **Cost:**
+
 - Hosting: $35-100/month
 - Domain: $10-50/year
 - Development time: (your time or hire developer)

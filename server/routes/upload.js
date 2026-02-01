@@ -1,24 +1,24 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const db = require('../database');
-const crypto = require('crypto');
+const db = require("../database");
+const crypto = require("crypto");
 
 // Middleware to verify API key from plugin
 const authenticateApiKey = async (req, res, next) => {
-  const apiKey = req.headers.authorization?.replace('Bearer ', '');
-  
+  const apiKey = req.headers.authorization?.replace("Bearer ", "");
+
   if (!apiKey) {
-    return res.status(401).json({ error: 'API key required' });
+    return res.status(401).json({ error: "API key required" });
   }
-  
+
   db.get(
-    'SELECT id, username FROM users WHERE api_key = ?',
+    "SELECT id, username FROM users WHERE api_key = ?",
     [apiKey],
     (err, user) => {
       if (err || !user) {
-        return res.status(401).json({ error: 'Invalid API key' });
+        return res.status(401).json({ error: "Invalid API key" });
       }
-      
+
       req.user = user;
       next();
     }
@@ -26,10 +26,10 @@ const authenticateApiKey = async (req, res, next) => {
 };
 
 // Upload stats from plugin
-router.post('/upload', authenticateApiKey, async (req, res) => {
+router.post("/upload", authenticateApiKey, async (req, res) => {
   const stats = req.body;
   const userId = req.user.id;
-  
+
   try {
     // Save session
     db.run(
@@ -53,12 +53,12 @@ router.post('/upload', authenticateApiKey, async (req, res) => {
         stats.teamPossessionTime || 0,
         stats.opponentPossessionTime || 0,
         JSON.stringify(stats.shotHeatmap || []),
-        JSON.stringify(stats.goalHeatmap || [])
+        JSON.stringify(stats.goalHeatmap || []),
       ],
       function (err) {
         if (err) {
-          console.error('[UPLOAD ERROR]', err);
-          return res.status(500).json({ error: 'Failed to save session' });
+          console.error("[UPLOAD ERROR]", err);
+          return res.status(500).json({ error: "Failed to save session" });
         }
 
         // Update user totals
@@ -72,18 +72,20 @@ router.post('/upload', authenticateApiKey, async (req, res) => {
           [stats.shots || 0, stats.goals || 0, userId],
           (err) => {
             if (err) {
-              console.error('[UPDATE ERROR]', err);
+              console.error("[UPDATE ERROR]", err);
             }
-            
-            console.log(`[UPLOAD SUCCESS] User ${req.user.username} - ${stats.shots} shots, ${stats.goals} goals`);
-            res.json({ success: true, message: 'Stats uploaded successfully' });
+
+            console.log(
+              `[UPLOAD SUCCESS] User ${req.user.username} - ${stats.shots} shots, ${stats.goals} goals`
+            );
+            res.json({ success: true, message: "Stats uploaded successfully" });
           }
         );
       }
     );
   } catch (err) {
-    console.error('[UPLOAD ERROR]', err);
-    res.status(500).json({ error: 'Failed to save stats' });
+    console.error("[UPLOAD ERROR]", err);
+    res.status(500).json({ error: "Failed to save stats" });
   }
 });
 

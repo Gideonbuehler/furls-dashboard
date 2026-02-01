@@ -1,31 +1,31 @@
-import { useState } from 'react';
-import { authAPI } from '../services/api';
-import './Auth.css';
+import { useState } from "react";
+import { authAPI } from "../services/api";
+import "./Auth.css";
 
 function Register({ onRegister }) {
   const [formData, setFormData] = useState({
-    username: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
-    displayName: ''
+    username: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+    displayName: "",
   });
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
+    setError("");
 
     // Validate passwords match
     if (formData.password !== formData.confirmPassword) {
-      setError('Passwords do not match');
+      setError("Passwords do not match");
       return;
     }
 
     // Validate username format
     if (!/^[a-zA-Z0-9_]+$/.test(formData.username)) {
-      setError('Username can only contain letters, numbers, and underscores');
+      setError("Username can only contain letters, numbers, and underscores");
       return;
     }
 
@@ -36,17 +36,17 @@ function Register({ onRegister }) {
         username: formData.username,
         email: formData.email,
         password: formData.password,
-        displayName: formData.displayName || formData.username
+        displayName: formData.displayName || formData.username,
       });
-      
+
       authAPI.setAuthData(response.data.token, response.data.user);
       onRegister(response.data.user);
     } catch (err) {
       const errors = err.response?.data?.errors;
       if (errors && Array.isArray(errors)) {
-        setError(errors.map(e => e.msg).join(', '));
+        setError(errors.map((e) => e.msg).join(", "));
       } else {
-        setError(err.response?.data?.error || 'Registration failed');
+        setError(err.response?.data?.error || "Registration failed");
       }
     } finally {
       setLoading(false);
@@ -63,7 +63,9 @@ function Register({ onRegister }) {
             <input
               type="text"
               value={formData.username}
-              onChange={(e) => setFormData({ ...formData, username: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, username: e.target.value })
+              }
               required
               minLength={3}
               maxLength={30}
@@ -77,7 +79,9 @@ function Register({ onRegister }) {
             <input
               type="email"
               value={formData.email}
-              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, email: e.target.value })
+              }
               required
               disabled={loading}
               placeholder="you@example.com"
@@ -88,7 +92,9 @@ function Register({ onRegister }) {
             <input
               type="text"
               value={formData.displayName}
-              onChange={(e) => setFormData({ ...formData, displayName: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, displayName: e.target.value })
+              }
               maxLength={50}
               disabled={loading}
               placeholder="Your Name (optional)"
@@ -99,7 +105,9 @@ function Register({ onRegister }) {
             <input
               type="password"
               value={formData.password}
-              onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, password: e.target.value })
+              }
               required
               minLength={6}
               disabled={loading}
@@ -111,14 +119,16 @@ function Register({ onRegister }) {
             <input
               type="password"
               value={formData.confirmPassword}
-              onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, confirmPassword: e.target.value })
+              }
               required
               disabled={loading}
             />
           </div>
           {error && <div className="error-message">{error}</div>}
           <button type="submit" className="btn-primary" disabled={loading}>
-            {loading ? 'Creating Account...' : 'Register'}
+            {loading ? "Creating Account..." : "Register"}
           </button>
         </form>
       </div>

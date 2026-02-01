@@ -1,15 +1,17 @@
-import './StatsOverview.css';
+import "./StatsOverview.css";
 
 function StatsOverview({ currentStats, allTimeStats }) {
   const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60);
     const secs = Math.floor(seconds % 60);
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
+    return `${mins}:${secs.toString().padStart(2, "0")}`;
   };
 
   const getCurrentAccuracy = () => {
     if (!currentStats || !currentStats.shots) return 0;
-    return currentStats.shots > 0 ? ((currentStats.goals / currentStats.shots) * 100).toFixed(1) : 0;
+    return currentStats.shots > 0
+      ? ((currentStats.goals / currentStats.shots) * 100).toFixed(1)
+      : 0;
   };
 
   return (
@@ -59,9 +61,13 @@ function StatsOverview({ currentStats, allTimeStats }) {
               <div className="stat-item">
                 <span>Efficiency:</span>
                 <strong>
-                  {currentStats.boostCollected > 0 
-                    ? ((currentStats.boostUsed / currentStats.boostCollected) * 100).toFixed(1) 
-                    : 0}%
+                  {currentStats.boostCollected > 0
+                    ? (
+                        (currentStats.boostUsed / currentStats.boostCollected) *
+                        100
+                      ).toFixed(1)
+                    : 0}
+                  %
                 </strong>
               </div>
             </div>
@@ -78,11 +84,15 @@ function StatsOverview({ currentStats, allTimeStats }) {
               </div>
               <div className="stat-item">
                 <span>Team Possession:</span>
-                <strong>{currentStats.teamPossessionTime?.toFixed(1) || 0}s</strong>
+                <strong>
+                  {currentStats.teamPossessionTime?.toFixed(1) || 0}s
+                </strong>
               </div>
               <div className="stat-item">
                 <span>Opponent Possession:</span>
-                <strong>{currentStats.opponentPossessionTime?.toFixed(1) || 0}s</strong>
+                <strong>
+                  {currentStats.opponentPossessionTime?.toFixed(1) || 0}s
+                </strong>
               </div>
             </div>
           </div>
@@ -91,7 +101,8 @@ function StatsOverview({ currentStats, allTimeStats }) {
             <p>No current session data available</p>
           </div>
         )}
-      </section>      {allTimeStats && (
+      </section>{" "}
+      {allTimeStats && (
         <section className="stats-section">
           <h2>🏆 All-Time Statistics</h2>
           <div className="stats-details">
@@ -99,30 +110,53 @@ function StatsOverview({ currentStats, allTimeStats }) {
               <h3>📈 Career Overview</h3>
               <div className="stat-item">
                 <span>Total Sessions:</span>
-                <strong>{allTimeStats.totalSessions || allTimeStats.total_sessions || 0}</strong>
+                <strong>
+                  {allTimeStats.totalSessions ||
+                    allTimeStats.total_sessions ||
+                    0}
+                </strong>
               </div>
               <div className="stat-item">
                 <span>Total Shots:</span>
-                <strong>{allTimeStats.totalShots || allTimeStats.total_shots || 0}</strong>
+                <strong>
+                  {allTimeStats.totalShots || allTimeStats.total_shots || 0}
+                </strong>
               </div>
               <div className="stat-item">
                 <span>Total Goals:</span>
-                <strong>{allTimeStats.totalGoals || allTimeStats.total_goals || 0}</strong>
+                <strong>
+                  {allTimeStats.totalGoals || allTimeStats.total_goals || 0}
+                </strong>
               </div>
               <div className="stat-item">
                 <span>Overall Accuracy:</span>
                 <strong className="highlight">
-                  {(allTimeStats.avgAccuracy || allTimeStats.avg_accuracy || 0).toFixed(1)}%
+                  {(
+                    allTimeStats.avgAccuracy ||
+                    allTimeStats.avg_accuracy ||
+                    0
+                  ).toFixed(1)}
+                  %
                 </strong>
               </div>
               <div className="stat-item">
                 <span>Average Speed:</span>
-                <strong>{(allTimeStats.avgSpeed || allTimeStats.avg_speed || 0).toFixed(2)}</strong>
+                <strong>
+                  {(
+                    allTimeStats.avgSpeed ||
+                    allTimeStats.avg_speed ||
+                    0
+                  ).toFixed(2)}
+                </strong>
               </div>
               <div className="stat-item">
                 <span>Total Play Time:</span>
                 <strong>
-                  {formatTime(allTimeStats.totalPlayTime || allTimeStats.total_play_time || 0)}
+                  {formatTime(
+                    allTimeStats.totalPlayTime ||
+                      allTimeStats.total_play_time ||
+                      0
+                  )}
                 </strong>
               </div>
             </div>
@@ -132,28 +166,49 @@ function StatsOverview({ currentStats, allTimeStats }) {
               <div className="stat-item">
                 <span>Avg Shots per Session:</span>
                 <strong>
-                  {((allTimeStats.totalSessions || allTimeStats.total_sessions || 0) > 0)
-                    ? ((allTimeStats.totalShots || allTimeStats.total_shots || 0) / 
-                       (allTimeStats.totalSessions || allTimeStats.total_sessions)).toFixed(1) 
+                  {(allTimeStats.totalSessions ||
+                    allTimeStats.total_sessions ||
+                    0) > 0
+                    ? (
+                        (allTimeStats.totalShots ||
+                          allTimeStats.total_shots ||
+                          0) /
+                        (allTimeStats.totalSessions ||
+                          allTimeStats.total_sessions)
+                      ).toFixed(1)
                     : 0}
                 </strong>
               </div>
               <div className="stat-item">
                 <span>Avg Goals per Session:</span>
                 <strong>
-                  {((allTimeStats.totalSessions || allTimeStats.total_sessions || 0) > 0)
-                    ? ((allTimeStats.totalGoals || allTimeStats.total_goals || 0) / 
-                       (allTimeStats.totalSessions || allTimeStats.total_sessions)).toFixed(1) 
+                  {(allTimeStats.totalSessions ||
+                    allTimeStats.total_sessions ||
+                    0) > 0
+                    ? (
+                        (allTimeStats.totalGoals ||
+                          allTimeStats.total_goals ||
+                          0) /
+                        (allTimeStats.totalSessions ||
+                          allTimeStats.total_sessions)
+                      ).toFixed(1)
                     : 0}
                 </strong>
               </div>
               <div className="stat-item">
                 <span>Avg Session Duration:</span>
                 <strong>
-                  {((allTimeStats.totalSessions || allTimeStats.total_sessions || 0) > 0)
-                    ? formatTime((allTimeStats.totalPlayTime || allTimeStats.total_play_time || 0) / 
-                                 (allTimeStats.totalSessions || allTimeStats.total_sessions)) 
-                    : '0:00'}
+                  {(allTimeStats.totalSessions ||
+                    allTimeStats.total_sessions ||
+                    0) > 0
+                    ? formatTime(
+                        (allTimeStats.totalPlayTime ||
+                          allTimeStats.total_play_time ||
+                          0) /
+                          (allTimeStats.totalSessions ||
+                            allTimeStats.total_sessions)
+                      )
+                    : "0:00"}
                 </strong>
               </div>
             </div>
