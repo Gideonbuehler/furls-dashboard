@@ -210,15 +210,6 @@ function App() {
             <div className="spinner"></div>
             <p className="loading-text">Loading training data...</p>
           </div>
-        ) : !connected ? (
-          <div className="error-message">
-            <div className="error-icon">⚠️</div>
-            <h2>Not Connected</h2>
-            <p>Make sure the FURLS plugin is running and exporting data.</p>
-            <p style={{ fontSize: "0.875rem", color: "var(--text-disabled)" }}>
-              Watching: <code>%APPDATA%\bakkesmod\bakkesmod\data</code>
-            </p>
-          </div>
         ) : (
           <>
             {activeTab === "dashboard" && (
