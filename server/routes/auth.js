@@ -48,29 +48,34 @@ router.post(
         [username, email, hashedPassword, displayName || username, apiKey]
       );
 
-      const userId = result.lastID;
-
       // Create default settings for user
       await dbAsync.run("INSERT INTO user_settings (user_id) VALUES (?)", [
-        userId,
+        result.id,
       ]);
 
       // Generate token
-      const token = generateToken(userId, username);
+      const token = generateToken(result.id, username);
 
       res.status(201).json({
         message: "User created successfully",
         user: {
-          id: userId,
+          id: result.id,
           username,
           email,
           displayName: displayName || username,
         },
         token,
-      });
-    } catch (error) {
+      });    } catch (error) {
       console.error("Registration error:", error);
-      res.status(500).json({ error: "Failed to register user" });
+      console.error("Error details:", {
+        message: error.message,
+        stack: error.stack,
+        code: error.code,
+      });
+      res.status(500).json({
+        error: "Failed to register user",
+        details: process.env.NODE_ENV === "production" ? undefined : error.message,
+      });
     }
   }
 );

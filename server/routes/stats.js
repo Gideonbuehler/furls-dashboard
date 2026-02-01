@@ -37,7 +37,7 @@ router.post("/save", authenticateToken, async (req, res) => {
 
     res.status(201).json({
       message: "Session saved successfully",
-      sessionId: result.lastID,
+      sessionId: result.id,
     });
   } catch (error) {
     console.error("Save session error:", error);
