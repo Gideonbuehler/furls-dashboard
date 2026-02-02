@@ -9,20 +9,28 @@ router.get("/profile/:username", async (req, res) => {
   try {
     console.log(`[PUBLIC PROFILE] Fetching profile for: ${username}`);
     
-    const user = await dbAsync.get(
-      `SELECT id, username, display_name, avatar_url, bio, total_shots, total_goals, 
-              total_sessions, created_at, profile_visibility, last_active
-       FROM users 
-       WHERE username = ?`,
+    // First, check if user exists with minimal query
+    const userCheck = await dbAsync.get(
+      `SELECT id FROM users WHERE username = ?`,
       [username]
     );
 
-    if (!user) {
+    if (!userCheck) {
       console.log(`[PUBLIC PROFILE] User not found: ${username}`);
       return res.status(404).json({ error: "Player not found" });
     }
 
-    console.log(`[PUBLIC PROFILE] User found: ${user.username}, visibility: ${user.profile_visibility}`);
+    // Now get full user data
+    const user = await dbAsync.get(
+      `SELECT id, username, display_name, avatar_url, bio, 
+              total_shots, total_goals, total_sessions, 
+              created_at, profile_visibility, last_active
+       FROM users 
+       WHERE id = ?`,
+      [userCheck.id]
+    );
+
+    console.log(`[PUBLIC PROFILE] User found: ${user.username}, visibility: ${user.profile_visibility || 'null'}`);
 
     if (user.profile_visibility === "private") {
       return res.status(403).json({ error: "Profile is private" });
@@ -32,6 +40,8 @@ router.get("/profile/:username", async (req, res) => {
     const accuracy = user.total_shots > 0 
       ? ((user.total_goals / user.total_shots) * 100).toFixed(1)
       : 0;
+
+    console.log(`[PUBLIC PROFILE] Fetching sessions for user ID: ${user.id}`);
 
     // Get recent sessions (if public)
     const sessions = await dbAsync.all(
@@ -53,8 +63,13 @@ router.get("/profile/:username", async (req, res) => {
       sessions: sessions || [] 
     });
   } catch (error) {
-    console.error(`[PUBLIC PROFILE ERROR] User: ${username}, Error:`, error.message, error.stack);
-    res.status(500).json({ error: "Failed to load profile", details: error.message });
+    console.error(`[PUBLIC PROFILE ERROR] User: ${username}`);
+    console.error(`[PUBLIC PROFILE ERROR] Message:`, error.message);
+    console.error(`[PUBLIC PROFILE ERROR] Stack:`, error.stack);
+    res.status(500).json({ 
+      error: "Failed to load profile", 
+      details: process.env.NODE_ENV === 'development' ? error.message : undefined 
+    });
   }
 });
 
@@ -127,6 +142,8 @@ router.get("/leaderboard/:stat", async (req, res) => {
   const { stat } = req.params;
   const { limit = 100, offset = 0 } = req.query;
 
+  console.log(`[PUBLIC LEADERBOARD] Stat: ${stat}, Limit: ${limit}, Offset: ${offset}`);
+
   let orderBy = "total_shots DESC";
   if (stat === "goals") orderBy = "total_goals DESC";
   if (stat === "accuracy")
@@ -143,15 +160,21 @@ router.get("/leaderboard/:stat", async (req, res) => {
   `;
 
   try {
+    console.log(`[PUBLIC LEADERBOARD] Executing query...`);
     const players = await dbAsync.all(query, [
       parseInt(limit),
       parseInt(offset),
     ]);
 
+    console.log(`[PUBLIC LEADERBOARD] Found ${players.length} players`);
     res.json(players || []);
   } catch (error) {
-    console.error("Leaderboard error:", error);
-    res.status(500).json({ error: "Failed to load leaderboard" });
+    console.error("[PUBLIC LEADERBOARD ERROR]", error.message);
+    console.error("[PUBLIC LEADERBOARD ERROR STACK]", error.stack);
+    res.status(500).json({ 
+      error: "Failed to load leaderboard",
+      details: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
   }
 });
 

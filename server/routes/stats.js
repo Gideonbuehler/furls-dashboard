@@ -250,6 +250,8 @@ router.get("/leaderboard", authenticateToken, async (req, res) => {
   const { type = "friends", stat = "accuracy" } = req.query;
 
   try {
+    console.log(`[LEADERBOARD] Type: ${type}, Stat: ${stat}, User: ${req.user.userId}`);
+    
     let query;
     let params = [];
 
@@ -258,23 +260,21 @@ router.get("/leaderboard", authenticateToken, async (req, res) => {
       query = `
         SELECT 
           u.id, u.username, u.display_name, u.avatar_url,
-          COUNT(s.id) as total_sessions,
-          SUM(s.shots) as total_shots,
-          SUM(s.goals) as total_goals,
-          AVG(CASE WHEN s.shots > 0 THEN (s.goals * 1.0 / s.shots) * 100 ELSE 0 END) as avg_accuracy,
-          AVG(s.average_speed) as avg_speed
+          u.total_sessions,
+          u.total_shots,
+          u.total_goals,
+          ROUND((CAST(u.total_goals AS FLOAT) / NULLIF(u.total_shots, 0) * 100), 2) as accuracy,
+          ROUND((CAST(u.total_goals AS FLOAT) / NULLIF(u.total_shots, 0) * 100), 2) as avg_accuracy
         FROM users u
-        LEFT JOIN sessions s ON u.id = s.user_id
-        WHERE u.id = ? OR u.id IN (
+        WHERE (u.id = ? OR u.id IN (
           SELECT CASE 
             WHEN user_id = ? THEN friend_id
             WHEN friend_id = ? THEN user_id
           END
           FROM friendships
           WHERE (user_id = ? OR friend_id = ?) AND status = 'accepted'
-        )
-        GROUP BY u.id
-        HAVING COUNT(s.id) > 0
+        ))
+        AND u.total_shots > 0
       `;
       params = [
         req.user.userId,
@@ -284,40 +284,43 @@ router.get("/leaderboard", authenticateToken, async (req, res) => {
         req.user.userId,
       ];
     } else {
-      // Global leaderboard (users with public stats)
+      // Global leaderboard - use users table directly
       query = `
         SELECT 
           u.id, u.username, u.display_name, u.avatar_url,
-          COUNT(s.id) as total_sessions,
-          SUM(s.shots) as total_shots,
-          SUM(s.goals) as total_goals,
-          AVG(CASE WHEN s.shots > 0 THEN (s.goals * 1.0 / s.shots) * 100 ELSE 0 END) as avg_accuracy,
-          AVG(s.average_speed) as avg_speed
+          u.total_sessions,
+          u.total_shots,
+          u.total_goals,
+          ROUND((CAST(u.total_goals AS FLOAT) / NULLIF(u.total_shots, 0) * 100), 2) as accuracy,
+          ROUND((CAST(u.total_goals AS FLOAT) / NULLIF(u.total_shots, 0) * 100), 2) as avg_accuracy
         FROM users u
-        LEFT JOIN sessions s ON u.id = s.user_id
-        LEFT JOIN user_settings us ON u.id = us.user_id
-        WHERE us.privacy_stats = 'public'
-        GROUP BY u.id
-        HAVING COUNT(s.id) > 0
+        WHERE (u.profile_visibility = 'public' OR u.profile_visibility IS NULL)
+        AND u.total_shots > 0
       `;
     }
 
     // Add ordering based on stat type
     const orderBy =
       stat === "accuracy"
-        ? "avg_accuracy"
+        ? "accuracy"
         : stat === "goals"
         ? "total_goals"
         : stat === "shots"
         ? "total_shots"
-        : "avg_accuracy";
+        : stat === "sessions"
+        ? "total_sessions"
+        : "accuracy";
 
     query += ` ORDER BY ${orderBy} DESC LIMIT 50`;
 
+    console.log(`[LEADERBOARD] Executing query with ${params.length} params`);
     const leaderboard = await dbAsync.all(query, params);
+    console.log(`[LEADERBOARD] Found ${leaderboard.length} entries`);
+    
     res.json(leaderboard);
   } catch (error) {
-    console.error("Get leaderboard error:", error);
+    console.error("[LEADERBOARD ERROR]", error.message);
+    console.error("[LEADERBOARD ERROR STACK]", error.stack);
     res.status(500).json({ error: "Failed to get leaderboard" });
   }
 });
