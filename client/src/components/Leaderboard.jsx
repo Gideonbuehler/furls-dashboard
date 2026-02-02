@@ -11,16 +11,16 @@ function Leaderboard() {
   useEffect(() => {
     loadLeaderboard();
   }, [type, stat]);
-
   const loadLeaderboard = async () => {
     setLoading(true);
     try {
       if (type === "global") {
         const response = await publicAPI.getLeaderboard(stat);
-        setLeaderboard(response.data.players || []);
+        // Response is an array directly, not wrapped in a players object
+        setLeaderboard(Array.isArray(response.data) ? response.data : []);
       } else {
         const response = await statsAPI.getLeaderboard(type, stat);
-        setLeaderboard(response.data);
+        setLeaderboard(Array.isArray(response.data) ? response.data : []);
       }
     } catch (error) {
       console.error("Failed to load leaderboard:", error);
@@ -84,11 +84,10 @@ function Leaderboard() {
         <div className="empty-state">
           <p>No data available yet. Complete some training sessions!</p>
         </div>
-      ) : (
-        <div className="leaderboard-list">
+      ) : (        <div className="leaderboard-list">
           {leaderboard.map((player, index) => (
             <div
-              key={player.id}
+              key={player.id || player.username || index}
               className={`leaderboard-item rank-${index + 1}`}
             >
               <div className="rank">

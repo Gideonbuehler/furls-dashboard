@@ -7,8 +7,10 @@ router.get("/profile/:username", async (req, res) => {
   const { username } = req.params;
 
   try {
+    console.log(`[PUBLIC PROFILE] Fetching profile for: ${username}`);
+    
     const user = await dbAsync.get(
-      `SELECT username, display_name, avatar_url, bio, total_shots, total_goals, 
+      `SELECT id, username, display_name, avatar_url, bio, total_shots, total_goals, 
               total_sessions, created_at, profile_visibility, last_active
        FROM users 
        WHERE username = ?`,
@@ -16,8 +18,11 @@ router.get("/profile/:username", async (req, res) => {
     );
 
     if (!user) {
+      console.log(`[PUBLIC PROFILE] User not found: ${username}`);
       return res.status(404).json({ error: "Player not found" });
     }
+
+    console.log(`[PUBLIC PROFILE] User found: ${user.username}, visibility: ${user.profile_visibility}`);
 
     if (user.profile_visibility === "private") {
       return res.status(403).json({ error: "Profile is private" });
@@ -32,11 +37,13 @@ router.get("/profile/:username", async (req, res) => {
     const sessions = await dbAsync.all(
       `SELECT id, timestamp, shots, goals, average_speed, game_time
        FROM sessions 
-       WHERE user_id = (SELECT id FROM users WHERE username = ?)
+       WHERE user_id = ?
        ORDER BY timestamp DESC 
        LIMIT 20`,
-      [username]
+      [user.id]
     );
+
+    console.log(`[PUBLIC PROFILE] Found ${sessions ? sessions.length : 0} sessions for ${username}`);
 
     res.json({ 
       user: {
@@ -46,8 +53,8 @@ router.get("/profile/:username", async (req, res) => {
       sessions: sessions || [] 
     });
   } catch (error) {
-    console.error("Profile error:", error);
-    res.status(500).json({ error: "Failed to load profile" });
+    console.error(`[PUBLIC PROFILE ERROR] User: ${username}, Error:`, error.message, error.stack);
+    res.status(500).json({ error: "Failed to load profile", details: error.message });
   }
 });
 
@@ -125,9 +132,8 @@ router.get("/leaderboard/:stat", async (req, res) => {
   if (stat === "accuracy")
     orderBy = "(CAST(total_goals AS FLOAT) / NULLIF(total_shots, 0)) DESC";
   if (stat === "sessions") orderBy = "total_sessions DESC";
-
   const query = `
-    SELECT username, avatar_url, total_shots, total_goals, total_sessions,
+    SELECT id, username, display_name, avatar_url, total_shots, total_goals, total_sessions,
            ROUND((CAST(total_goals AS FLOAT) / NULLIF(total_shots, 0) * 100), 2) as accuracy
     FROM users
     WHERE (profile_visibility = 'public' OR profile_visibility IS NULL)
