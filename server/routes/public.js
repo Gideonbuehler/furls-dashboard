@@ -146,43 +146,45 @@ router.get("/search", async (req, res) => {
 router.get("/leaderboard/:stat", async (req, res) => {
   const { stat } = req.params;
   const { limit = 100, offset = 0 } = req.query;
+  
   console.log(`[PUBLIC LEADERBOARD] Stat: ${stat}, Limit: ${limit}, Offset: ${offset}`);
-
-  let orderBy = "COALESCE(total_shots, 0) DESC";
-  if (stat === "goals") orderBy = "COALESCE(total_goals, 0) DESC";
-  if (stat === "accuracy")
-    orderBy = "(CAST(COALESCE(total_goals, 0) AS FLOAT) / NULLIF(COALESCE(total_shots, 0), 0)) DESC";
-  if (stat === "sessions") orderBy = "COALESCE(total_sessions, 0) DESC";
-  const query = `
-    SELECT id, username, 
-           COALESCE(display_name, username) as display_name, 
-           avatar_url, 
-           COALESCE(total_shots, 0) as total_shots, 
-           COALESCE(total_goals, 0) as total_goals, 
-           COALESCE(total_sessions, 0) as total_sessions,
-           ROUND((CAST(COALESCE(total_goals, 0) AS FLOAT) / NULLIF(COALESCE(total_shots, 0), 0) * 100), 2) as accuracy
-    FROM users
-    WHERE (COALESCE(profile_visibility, 'public') = 'public')
-    AND COALESCE(total_shots, 0) > 0
-    ORDER BY ${orderBy}
-    LIMIT ? OFFSET ?
-  `;
-
   try {
+    let orderBy = "COALESCE(total_shots, 0) DESC";
+    if (stat === "goals") orderBy = "COALESCE(total_goals, 0) DESC";
+    if (stat === "accuracy")
+      orderBy = "(COALESCE(total_goals, 0)::numeric / NULLIF(COALESCE(total_shots, 0), 0)) DESC NULLS LAST";
+    if (stat === "sessions") orderBy = "COALESCE(total_sessions, 0) DESC";
+      const query = `
+      SELECT id, username, 
+             COALESCE(display_name, username) as display_name, 
+             COALESCE(avatar_url, '') as avatar_url, 
+             COALESCE(total_shots, 0) as total_shots, 
+             COALESCE(total_goals, 0) as total_goals, 
+             COALESCE(total_sessions, 0) as total_sessions,
+             ROUND(COALESCE((COALESCE(total_goals, 0)::numeric / NULLIF(COALESCE(total_shots, 0), 0) * 100), 0)::numeric, 2) as accuracy
+      FROM users
+      WHERE COALESCE(profile_visibility, 'public') IN ('public', 'friends')
+      AND COALESCE(total_shots, 0) > 0
+      ORDER BY ${orderBy}
+      LIMIT ? OFFSET ?
+    `;
+
     console.log(`[PUBLIC LEADERBOARD] Executing query...`);
     const players = await dbAsync.all(query, [
       parseInt(limit),
       parseInt(offset),
     ]);
 
-    console.log(`[PUBLIC LEADERBOARD] Found ${players.length} players`);
+    console.log(`[PUBLIC LEADERBOARD] Found ${players ? players.length : 0} players`);
     res.json(players || []);
   } catch (error) {
     console.error("[PUBLIC LEADERBOARD ERROR]", error.message);
     console.error("[PUBLIC LEADERBOARD ERROR STACK]", error.stack);
+    console.error("[PUBLIC LEADERBOARD ERROR CODE]", error.code);
     res.status(500).json({ 
       error: "Failed to load leaderboard",
-      details: process.env.NODE_ENV === 'development' ? error.message : undefined
+      message: error.message,
+      code: error.code
     });
   }
 });
