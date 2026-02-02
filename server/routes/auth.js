@@ -307,4 +307,49 @@ router.put("/privacy", authenticateToken, async (req, res) => {
   }
 });
 
+// Upload avatar (using base64 instead of file upload for simplicity)
+router.post("/upload-avatar", authenticateToken, async (req, res) => {
+  try {
+    const { avatar } = req.body;
+
+    if (!avatar) {
+      return res.status(400).json({ error: "No image data provided" });
+    }
+
+    // Validate base64 image data
+    if (!avatar.startsWith('data:image/')) {
+      return res.status(400).json({ error: "Invalid image format" });
+    }
+
+    // Store base64 image directly (for simplicity - in production you'd use cloud storage)
+    // For now, we'll just store the data URL
+    const avatarUrl = avatar;
+
+    await dbAsync.run(
+      "UPDATE users SET avatar_url = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?",
+      [avatarUrl, req.user.userId]
+    );
+
+    const user = await dbAsync.get(
+      "SELECT id, username, email, display_name, avatar_url FROM users WHERE id = ?",
+      [req.user.userId]
+    );
+
+    res.json({
+      message: "Avatar uploaded successfully",
+      avatarUrl: user.avatar_url,
+      user: {
+        id: user.id,
+        username: user.username,
+        email: user.email,
+        displayName: user.display_name,
+        avatarUrl: user.avatar_url,
+      },
+    });
+  } catch (error) {
+    console.error("Upload avatar error:", error);
+    res.status(500).json({ error: "Failed to upload avatar" });
+  }
+});
+
 module.exports = router;

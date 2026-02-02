@@ -63,12 +63,15 @@ export const authAPI = {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
   },
-
   // Update profile
   updateProfile: (profileData) => api.put("/auth/profile", profileData),
 
   // Update privacy settings
   updatePrivacy: (privacyData) => api.put("/auth/privacy", privacyData),
+  // Upload avatar image
+  uploadAvatar: (imageData) => {
+    return api.post("/auth/upload-avatar", imageData);
+  },
 };
 
 // Friends API
@@ -89,11 +92,18 @@ export const statsAPI = {
     api.get(`/user/stats/history?limit=${limit}&offset=${offset}`),
   getAllTimeStats: () => api.get("/user/stats/alltime"),
   getSession: (sessionId) => api.get(`/user/stats/session/${sessionId}`),
-  getFriendStats: (friendId) => api.get(`/user/stats/friend/${friendId}`),
-  getLeaderboard: (type = "friends", stat = "accuracy") =>
+  getFriendStats: (friendId) => api.get(`/user/stats/friend/${friendId}`),  getLeaderboard: (type = "friends", stat = "accuracy") =>
     api.get(`/user/stats/leaderboard?type=${type}&stat=${stat}`),
   getPluginStatus: () => api.get("/user/stats/plugin-status"), // Check if plugin is connected
   getHeatmap: () => api.get("/user/stats/heatmap"), // Get aggregated heatmap data
+};
+
+// Public API (no authentication required)
+export const publicAPI = {
+  getPublicProfile: (username) => api.get(`/public/profile/${username}`),
+  getPublicStats: (username) => api.get(`/public/stats/${username}`),
+  searchPlayers: (query) => api.get(`/public/search?q=${query}`),
+  getLeaderboard: (stat = "accuracy") => api.get(`/public/leaderboard/${stat}`),
 };
 
 // Legacy local stats API (for backward compatibility)
@@ -103,14 +113,6 @@ export const localStatsAPI = {
   getAllTime: () => axios.get(`${API_URL}/stats/alltime`),
   getHeatmap: () => axios.get(`${API_URL}/heatmap`),
   getHealth: () => axios.get(`${API_URL}/health`),
-};
-
-// Public API (no authentication required)
-export const publicAPI = {
-  getProfile: (username) => axios.get(`${API_URL}/public/profile/${username}`),
-  searchPlayers: (query) => axios.get(`${API_URL}/public/search?q=${query}`),
-  getLeaderboard: (stat = "accuracy") =>
-    axios.get(`${API_URL}/public/leaderboard/${stat}`),
 };
 
 export default api;

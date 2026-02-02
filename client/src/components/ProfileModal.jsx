@@ -10,8 +10,11 @@ function ProfileModal({ isOpen, onClose, user }) {
     profileVisibility: "public",
   });
   const [loading, setLoading] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [success, setSuccess] = useState(null);
   const [error, setError] = useState(null);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState(null);
 
   useEffect(() => {
     if (isOpen) {
@@ -64,7 +67,6 @@ function ProfileModal({ isOpen, onClose, user }) {
       setLoading(false);
     }
   };
-
   const handlePrivacyUpdate = async () => {
     setLoading(true);
     setError(null);
@@ -83,6 +85,73 @@ function ProfileModal({ isOpen, onClose, user }) {
       );
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleFileSelect = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      setError('Please select an image file');
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      setError('Image must be less than 5MB');
+      return;
+    }
+
+    setSelectedFile(file);
+    
+    // Create preview
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setPreviewUrl(reader.result);
+    };
+    reader.readAsDataURL(file);
+  };
+  const handleImageUpload = async () => {
+    if (!selectedFile) return;
+
+    setUploading(true);
+    setError(null);
+
+    try {
+      // Convert to base64
+      const reader = new FileReader();
+      reader.onloadend = async () => {
+        try {
+          const base64Data = reader.result;
+          
+          const response = await authAPI.uploadAvatar({ avatar: base64Data });
+          
+          setProfile({ ...profile, avatarUrl: response.data.avatarUrl });
+          setSuccess('Avatar uploaded successfully!');
+          setSelectedFile(null);
+          setPreviewUrl(null);
+          
+          // Update local storage
+          const currentUser = authAPI.getCurrentUser();
+          authAPI.setAuthData(localStorage.getItem("token"), {
+            ...currentUser,
+            avatarUrl: response.data.avatarUrl,
+          });
+
+          setTimeout(() => {
+            window.location.reload();
+          }, 1500);
+        } catch (err) {
+          setError(err.response?.data?.error || 'Failed to upload image');
+          setUploading(false);
+        }
+      };
+      reader.readAsDataURL(selectedFile);
+    } catch (err) {
+      setError(err.message || 'Failed to process image');
+      setUploading(false);
     }
   };
 
@@ -146,10 +215,60 @@ function ProfileModal({ isOpen, onClose, user }) {
               <span className="form-hint">
                 {profile.bio.length}/500 characters
               </span>
-            </div>
+            </div>            <div className="form-group">
+              <label>Profile Picture</label>
+              
+              <div className="avatar-upload-section">
+                <div className="avatar-preview-large">
+                  {(previewUrl || profile.avatarUrl) ? (
+                    <img
+                      src={previewUrl || profile.avatarUrl}
+                      alt="Avatar"
+                      className="avatar-img-large"
+                      onError={(e) => {
+                        e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(profile.displayName || user?.username || 'U')}&size=200&background=bb86fc&color=fff`;
+                      }}
+                    />
+                  ) : (
+                    <div className="avatar-placeholder-large">
+                      {(profile.displayName || user?.username || 'U').charAt(0).toUpperCase()}
+                    </div>
+                  )}
+                </div>
 
-            <div className="form-group">
-              <label htmlFor="avatarUrl">Avatar URL</label>
+                <div className="upload-controls">
+                  <label className="file-upload-btn">
+                    📁 Choose Image
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleFileSelect}
+                      style={{ display: 'none' }}
+                    />
+                  </label>
+                  
+                  {selectedFile && (
+                    <button
+                      type="button"
+                      className="btn-upload"
+                      onClick={handleImageUpload}
+                      disabled={uploading}
+                    >
+                      {uploading ? '⏳ Uploading...' : '✅ Upload Image'}
+                    </button>
+                  )}
+                </div>
+
+                <span className="form-hint">
+                  Max 5MB • JPG, PNG, GIF • Square images work best
+                </span>
+              </div>
+
+              <div className="form-divider">
+                <span>OR</span>
+              </div>
+
+              <label htmlFor="avatarUrl">Use Image URL</label>
               <input
                 id="avatarUrl"
                 type="url"
@@ -161,26 +280,9 @@ function ProfileModal({ isOpen, onClose, user }) {
                 className="form-input"
               />
               <span className="form-hint">
-                URL to your profile picture (must be a valid image URL)
+                Paste a URL to your profile picture
               </span>
             </div>
-
-            {profile.avatarUrl && (
-              <div className="avatar-preview">
-                <span className="avatar-label">Preview:</span>
-                <img
-                  src={profile.avatarUrl}
-                  alt="Avatar preview"
-                  className="avatar-img"
-                  onError={(e) => {
-                    e.target.style.display = "none";
-                  }}
-                  onLoad={(e) => {
-                    e.target.style.display = "block";
-                  }}
-                />
-              </div>
-            )}
 
             <button type="submit" className="btn-save" disabled={loading}>
               {loading ? "💾 Saving..." : "💾 Save Profile"}

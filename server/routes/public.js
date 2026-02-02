@@ -8,8 +8,8 @@ router.get("/profile/:username", async (req, res) => {
 
   try {
     const user = await dbAsync.get(
-      `SELECT username, avatar_url, total_shots, total_goals, 
-              total_sessions, created_at, profile_visibility
+      `SELECT username, display_name, avatar_url, bio, total_shots, total_goals, 
+              total_sessions, created_at, profile_visibility, last_active
        FROM users 
        WHERE username = ?`,
       [username]
@@ -23,9 +23,14 @@ router.get("/profile/:username", async (req, res) => {
       return res.status(403).json({ error: "Profile is private" });
     }
 
+    // Calculate accuracy
+    const accuracy = user.total_shots > 0 
+      ? ((user.total_goals / user.total_shots) * 100).toFixed(1)
+      : 0;
+
     // Get recent sessions (if public)
     const sessions = await dbAsync.all(
-      `SELECT timestamp, shots, goals, average_speed 
+      `SELECT id, timestamp, shots, goals, average_speed, game_time
        FROM sessions 
        WHERE user_id = (SELECT id FROM users WHERE username = ?)
        ORDER BY timestamp DESC 
@@ -33,10 +38,55 @@ router.get("/profile/:username", async (req, res) => {
       [username]
     );
 
-    res.json({ user, sessions: sessions || [] });
+    res.json({ 
+      user: {
+        ...user,
+        accuracy: parseFloat(accuracy)
+      }, 
+      sessions: sessions || [] 
+    });
   } catch (error) {
     console.error("Profile error:", error);
     res.status(500).json({ error: "Failed to load profile" });
+  }
+});
+
+// Public stats endpoint
+router.get("/stats/:username", async (req, res) => {
+  const { username } = req.params;
+
+  try {
+    const user = await dbAsync.get(
+      `SELECT id, profile_visibility FROM users WHERE username = ?`,
+      [username]
+    );
+
+    if (!user) {
+      return res.status(404).json({ error: "Player not found" });
+    }
+
+    if (user.profile_visibility === "private") {
+      return res.status(403).json({ error: "Stats are private" });
+    }
+
+    // Get all-time stats
+    const stats = await dbAsync.get(
+      `SELECT 
+        COUNT(*) as total_sessions,
+        SUM(shots) as total_shots,
+        SUM(goals) as total_goals,
+        AVG(CASE WHEN shots > 0 THEN (goals * 1.0 / shots) * 100 ELSE 0 END) as avg_accuracy,
+        AVG(average_speed) as avg_speed,
+        SUM(game_time) as total_play_time
+      FROM sessions
+      WHERE user_id = ?`,
+      [user.id]
+    );
+
+    res.json(stats || {});
+  } catch (error) {
+    console.error("Stats error:", error);
+    res.status(500).json({ error: "Failed to load stats" });
   }
 });
 

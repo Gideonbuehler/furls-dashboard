@@ -1,13 +1,15 @@
 import { useState } from "react";
 import "./PlayerSearch.css";
 import { publicAPI } from "../services/api";
+import PublicProfile from "./PublicProfile";
 
 function PlayerSearch() {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
-  const [selectedPlayer, setSelectedPlayer] = useState(null);
+  const [selectedUsername, setSelectedUsername] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  
   const handleSearch = async (e) => {
     e.preventDefault();
     if (!searchQuery.trim()) return;
@@ -15,6 +17,7 @@ function PlayerSearch() {
     try {
       setLoading(true);
       setError(null);
+      setSelectedUsername(null); // Clear selected player
       const response = await publicAPI.searchPlayers(searchQuery);
       // API returns array directly, not wrapped in {players: []}
       const players = Array.isArray(response.data) ? response.data : [];
@@ -30,28 +33,29 @@ function PlayerSearch() {
     }
   };
 
-  const viewProfile = async (username) => {
-    try {
-      setLoading(true);
-      setError(null);
-      const response = await publicAPI.getProfile(username);
-      setSelectedPlayer(response.data);
-    } catch (err) {
-      setError(err.response?.data?.error || "Failed to load profile");
-      console.error("Profile error:", err);
-    } finally {
-      setLoading(false);
-    }
+  const viewProfile = (username) => {
+    setSelectedUsername(username);
+    setSearchResults([]); // Clear search results
   };
 
-  const formatDate = (dateString) => {
-    if (!dateString) return "Never";
-    return new Date(dateString).toLocaleDateString();
+  const backToSearch = () => {
+    setSelectedUsername(null);
+    setSearchQuery("");
   };
 
-  const formatAccuracy = (accuracy) => {
-    return accuracy ? `${accuracy.toFixed(1)}%` : "N/A";
+  const formatAccuracy = (player) => {
+    if (!player.total_shots || player.total_shots === 0) return "N/A";
+    return `${((player.total_goals / player.total_shots) * 100).toFixed(1)}%`;
   };
+
+  // If viewing a profile, show the PublicProfile component
+  if (selectedUsername) {
+    return (
+      <div className="player-search-with-profile">
+        <PublicProfile username={selectedUsername} onBack={backToSearch} />
+      </div>
+    );
+  }
 
   return (
     <div className="player-search">
@@ -76,19 +80,26 @@ function PlayerSearch() {
             <span className="alert-icon">⚠️</span>
             {error}
           </div>
-        )}
-
-        {searchResults.length > 0 && !selectedPlayer && (
+        )}        {searchResults.length > 0 && (
           <div className="search-results">
             <h3>Search Results ({searchResults.length})</h3>
             <div className="results-list">
-              {searchResults.map((player) => (
-                <div key={player.id} className="player-card">
+              {searchResults.map((player, index) => (
+                <div key={player.username || index} className="player-card">
+                  <div className="player-avatar-small">
+                    {player.avatar_url ? (
+                      <img src={player.avatar_url} alt={player.username} />
+                    ) : (
+                      <div className="avatar-placeholder-small">
+                        {(player.display_name || player.username).charAt(0).toUpperCase()}
+                      </div>
+                    )}
+                  </div>
                   <div className="player-info">
                     <h4>{player.display_name || player.username}</h4>
                     <p className="username">@{player.username}</p>
                     <div className="player-stats-preview">
-                      <span>🎯 {formatAccuracy(player.accuracy)}</span>
+                      <span>🎯 {formatAccuracy(player)}</span>
                       <span>🎮 {player.total_sessions || 0} sessions</span>
                       <span>⚽ {player.total_goals || 0} goals</span>
                     </div>
@@ -97,7 +108,7 @@ function PlayerSearch() {
                     className="btn-view-profile"
                     onClick={() => viewProfile(player.username)}
                   >
-                    View Profile
+                    View Profile →
                   </button>
                 </div>
               ))}
