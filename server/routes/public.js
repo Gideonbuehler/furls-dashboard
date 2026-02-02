@@ -146,14 +146,14 @@ router.get("/search", async (req, res) => {
 router.get("/leaderboard/:stat", async (req, res) => {
   const { stat } = req.params;
   const { limit = 100, offset = 0 } = req.query;
-
   console.log(`[PUBLIC LEADERBOARD] Stat: ${stat}, Limit: ${limit}, Offset: ${offset}`);
 
-  let orderBy = "total_shots DESC";
-  if (stat === "goals") orderBy = "total_goals DESC";
+  let orderBy = "COALESCE(total_shots, 0) DESC";
+  if (stat === "goals") orderBy = "COALESCE(total_goals, 0) DESC";
   if (stat === "accuracy")
-    orderBy = "(CAST(total_goals AS FLOAT) / NULLIF(total_shots, 0)) DESC";
-  if (stat === "sessions") orderBy = "total_sessions DESC";  const query = `
+    orderBy = "(CAST(COALESCE(total_goals, 0) AS FLOAT) / NULLIF(COALESCE(total_shots, 0), 0)) DESC";
+  if (stat === "sessions") orderBy = "COALESCE(total_sessions, 0) DESC";
+  const query = `
     SELECT id, username, 
            COALESCE(display_name, username) as display_name, 
            avatar_url, 
@@ -162,7 +162,7 @@ router.get("/leaderboard/:stat", async (req, res) => {
            COALESCE(total_sessions, 0) as total_sessions,
            ROUND((CAST(COALESCE(total_goals, 0) AS FLOAT) / NULLIF(COALESCE(total_shots, 0), 0) * 100), 2) as accuracy
     FROM users
-    WHERE (profile_visibility = 'public' OR profile_visibility IS NULL)
+    WHERE (COALESCE(profile_visibility, 'public') = 'public')
     AND COALESCE(total_shots, 0) > 0
     ORDER BY ${orderBy}
     LIMIT ? OFFSET ?
