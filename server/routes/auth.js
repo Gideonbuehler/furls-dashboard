@@ -177,8 +177,25 @@ router.get("/api-key", authenticateToken, async (req, res) => {
       req.user.userId,
     ]);
 
-    if (!user || !user.api_key) {
-      return res.status(404).json({ error: "API key not found" });
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    // If user doesn't have an API key, generate one automatically
+    if (!user.api_key) {
+      console.log(`[API KEY] User ${req.user.username} has no API key. Generating one...`);
+      const newApiKey = crypto.randomBytes(32).toString("hex");
+      
+      await dbAsync.run("UPDATE users SET api_key = ? WHERE id = ?", [
+        newApiKey,
+        req.user.userId,
+      ]);
+
+      console.log(`[API KEY] Generated new API key for user ${req.user.username}`);
+      return res.json({ 
+        api_key: newApiKey,
+        message: "API key generated"
+      });
     }
 
     res.json({ api_key: user.api_key });

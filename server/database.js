@@ -272,14 +272,34 @@ async function initializeTables() {
         } catch (err) {
           console.error(`❌ Error adding ${column} to ${table}:`, err.message);
         }
-      };
-
-      // Add missing columns to users table
+      };      // Add missing columns to users table      await addColumnIfNotExists('users', 'api_key', 'TEXT UNIQUE');
       await addColumnIfNotExists('users', 'bio', 'TEXT');
       await addColumnIfNotExists('users', 'profile_visibility', "TEXT DEFAULT 'public'");
       await addColumnIfNotExists('users', 'display_name', 'TEXT');
       await addColumnIfNotExists('users', 'avatar_url', 'TEXT');
-      await addColumnIfNotExists('users', 'last_active', 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP');
+      await addColumnIfNotExists('users', 'last_active', 'TIMESTAMP');
+
+      // Generate API keys for users who don't have one
+      console.log("Checking for users without API keys...");
+      const crypto = require('crypto');
+      const usersWithoutKeys = await client.query(
+        'SELECT id, username FROM users WHERE api_key IS NULL'
+      );
+      
+      if (usersWithoutKeys.rows.length > 0) {
+        console.log(`Found ${usersWithoutKeys.rows.length} users without API keys. Generating...`);
+        for (const user of usersWithoutKeys.rows) {
+          const apiKey = crypto.randomBytes(32).toString('hex');
+          await client.query(
+            'UPDATE users SET api_key = $1 WHERE id = $2',
+            [apiKey, user.id]
+          );
+          console.log(`✓ Generated API key for user: ${user.username}`);
+        }
+        console.log(`✅ Generated API keys for ${usersWithoutKeys.rows.length} users`);
+      } else {
+        console.log('✓ All users have API keys');
+      }
 
       console.log("✅ Database initialization complete!");
     } catch (err) {
