@@ -254,46 +254,32 @@ async function initializeTables() {
       // Run migrations for existing tables
       console.log("Running database migrations...");
       
-      // Add bio column if it doesn't exist
-      try {
-        await client.query(`
-          ALTER TABLE users ADD COLUMN IF NOT EXISTS bio TEXT
-        `);
-        console.log("✓ Added bio column to users table");
-      } catch (err) {
-        // Column might already exist
-        console.log("✓ Bio column already exists");
-      }
+      // Function to check if column exists and add it if not
+      const addColumnIfNotExists = async (table, column, definition) => {
+        try {
+          const result = await client.query(`
+            SELECT column_name 
+            FROM information_schema.columns 
+            WHERE table_name='${table}' AND column_name='${column}'
+          `);
+          
+          if (result.rows.length === 0) {
+            await client.query(`ALTER TABLE ${table} ADD COLUMN ${column} ${definition}`);
+            console.log(`✓ Added ${column} column to ${table} table`);
+          } else {
+            console.log(`✓ ${column} column already exists in ${table} table`);
+          }
+        } catch (err) {
+          console.error(`❌ Error adding ${column} to ${table}:`, err.message);
+        }
+      };
 
-      // Add profile_visibility column if it doesn't exist
-      try {
-        await client.query(`
-          ALTER TABLE users ADD COLUMN IF NOT EXISTS profile_visibility TEXT DEFAULT 'public'
-        `);
-        console.log("✓ Added profile_visibility column to users table");
-      } catch (err) {
-        console.log("✓ Profile_visibility column already exists");
-      }
-
-      // Add display_name column if it doesn't exist
-      try {
-        await client.query(`
-          ALTER TABLE users ADD COLUMN IF NOT EXISTS display_name TEXT
-        `);
-        console.log("✓ Added display_name column to users table");
-      } catch (err) {
-        console.log("✓ Display_name column already exists");
-      }
-
-      // Add avatar_url column if it doesn't exist
-      try {
-        await client.query(`
-          ALTER TABLE users ADD COLUMN IF NOT EXISTS avatar_url TEXT
-        `);
-        console.log("✓ Added avatar_url column to users table");
-      } catch (err) {
-        console.log("✓ Avatar_url column already exists");
-      }
+      // Add missing columns to users table
+      await addColumnIfNotExists('users', 'bio', 'TEXT');
+      await addColumnIfNotExists('users', 'profile_visibility', "TEXT DEFAULT 'public'");
+      await addColumnIfNotExists('users', 'display_name', 'TEXT');
+      await addColumnIfNotExists('users', 'avatar_url', 'TEXT');
+      await addColumnIfNotExists('users', 'last_active', 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP');
 
       console.log("✅ Database initialization complete!");
     } catch (err) {
