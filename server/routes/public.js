@@ -18,13 +18,18 @@ router.get("/profile/:username", async (req, res) => {
     if (!userCheck) {
       console.log(`[PUBLIC PROFILE] User not found: ${username}`);
       return res.status(404).json({ error: "Player not found" });
-    }
-
-    // Now get full user data
+    }    // Now get full user data
     const user = await dbAsync.get(
-      `SELECT id, username, display_name, avatar_url, bio, 
-              total_shots, total_goals, total_sessions, 
-              created_at, profile_visibility, last_active
+      `SELECT id, username, 
+              COALESCE(display_name, username) as display_name, 
+              avatar_url, 
+              COALESCE(bio, '') as bio, 
+              COALESCE(total_shots, 0) as total_shots, 
+              COALESCE(total_goals, 0) as total_goals, 
+              COALESCE(total_sessions, 0) as total_sessions, 
+              created_at, 
+              COALESCE(profile_visibility, 'public') as profile_visibility, 
+              last_active
        FROM users 
        WHERE id = ?`,
       [userCheck.id]
@@ -148,13 +153,17 @@ router.get("/leaderboard/:stat", async (req, res) => {
   if (stat === "goals") orderBy = "total_goals DESC";
   if (stat === "accuracy")
     orderBy = "(CAST(total_goals AS FLOAT) / NULLIF(total_shots, 0)) DESC";
-  if (stat === "sessions") orderBy = "total_sessions DESC";
-  const query = `
-    SELECT id, username, display_name, avatar_url, total_shots, total_goals, total_sessions,
-           ROUND((CAST(total_goals AS FLOAT) / NULLIF(total_shots, 0) * 100), 2) as accuracy
+  if (stat === "sessions") orderBy = "total_sessions DESC";  const query = `
+    SELECT id, username, 
+           COALESCE(display_name, username) as display_name, 
+           avatar_url, 
+           COALESCE(total_shots, 0) as total_shots, 
+           COALESCE(total_goals, 0) as total_goals, 
+           COALESCE(total_sessions, 0) as total_sessions,
+           ROUND((CAST(COALESCE(total_goals, 0) AS FLOAT) / NULLIF(COALESCE(total_shots, 0), 0) * 100), 2) as accuracy
     FROM users
     WHERE (profile_visibility = 'public' OR profile_visibility IS NULL)
-    AND total_shots > 0
+    AND COALESCE(total_shots, 0) > 0
     ORDER BY ${orderBy}
     LIMIT ? OFFSET ?
   `;
