@@ -87,7 +87,6 @@ function ProfileModal({ isOpen, onClose, user }) {
       setLoading(false);
     }
   };
-
   const handleFileSelect = (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -106,51 +105,83 @@ function ProfileModal({ isOpen, onClose, user }) {
 
     setSelectedFile(file);
     
-    // Create preview
+    // Create preview and compress
     const reader = new FileReader();
     reader.onloadend = () => {
-      setPreviewUrl(reader.result);
+      compressImage(reader.result);
     };
     reader.readAsDataURL(file);
   };
+
+  const compressImage = (base64) => {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      
+      // Maximum dimensions
+      const MAX_SIZE = 400;
+      
+      let width = img.width;
+      let height = img.height;
+      
+      // Calculate new dimensions (keep aspect ratio)
+      if (width > height) {
+        if (width > MAX_SIZE) {
+          height = (height * MAX_SIZE) / width;
+          width = MAX_SIZE;
+        }
+      } else {
+        if (height > MAX_SIZE) {
+          width = (width * MAX_SIZE) / height;
+          height = MAX_SIZE;
+        }
+      }
+      
+      canvas.width = width;
+      canvas.height = height;
+      
+      // Draw and compress
+      ctx.drawImage(img, 0, 0, width, height);
+      
+      // Convert to base64 with quality reduction (0.7 = 70% quality)
+      const compressed = canvas.toDataURL('image/jpeg', 0.7);
+      setPreviewUrl(compressed);
+    };
+    img.onerror = () => {
+      setError('Failed to load image');
+    };
+    img.src = base64;
+  };
+
   const handleImageUpload = async () => {
-    if (!selectedFile) return;
+    if (!previewUrl) {
+      setError('No image to upload');
+      return;
+    }
 
     setUploading(true);
     setError(null);
 
     try {
-      // Convert to base64
-      const reader = new FileReader();
-      reader.onloadend = async () => {
-        try {
-          const base64Data = reader.result;
-          
-          const response = await authAPI.uploadAvatar({ avatar: base64Data });
-          
-          setProfile({ ...profile, avatarUrl: response.data.avatarUrl });
-          setSuccess('Avatar uploaded successfully!');
-          setSelectedFile(null);
-          setPreviewUrl(null);
-          
-          // Update local storage
-          const currentUser = authAPI.getCurrentUser();
-          authAPI.setAuthData(localStorage.getItem("token"), {
-            ...currentUser,
-            avatarUrl: response.data.avatarUrl,
-          });
-
-          setTimeout(() => {
-            window.location.reload();
-          }, 1500);
-        } catch (err) {
-          setError(err.response?.data?.error || 'Failed to upload image');
-          setUploading(false);
-        }
-      };
-      reader.readAsDataURL(selectedFile);
+      const response = await authAPI.uploadAvatar({ avatar: previewUrl });
+      
+      setProfile({ ...profile, avatarUrl: response.data.avatarUrl });
+      setSuccess('Avatar uploaded successfully!');
+      setSelectedFile(null);
+      setPreviewUrl(null);
+      
+      // Update local storage
+      const currentUser = authAPI.getCurrentUser();
+      authAPI.setAuthData(localStorage.getItem("token"), {
+        ...currentUser,
+        avatarUrl: response.data.avatarUrl,
+      });      setTimeout(() => {
+        window.location.reload();
+      }, 1500);
     } catch (err) {
-      setError(err.message || 'Failed to process image');
+      setError(err.response?.data?.error || 'Failed to upload image');
+    } finally {
       setUploading(false);
     }
   };

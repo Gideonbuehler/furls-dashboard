@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { friendsAPI } from "../services/api";
+import PublicProfile from "./PublicProfile";
 import "./Friends.css";
 
 function Friends() {
@@ -9,6 +10,7 @@ function Friends() {
   const [searchResults, setSearchResults] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("friends"); // friends, requests, search
+  const [viewingProfile, setViewingProfile] = useState(null); // username to view
 
   useEffect(() => {
     loadFriends();
@@ -78,32 +80,53 @@ function Friends() {
       alert("Failed to remove friend");
     }
   };
-
   return (
     <div className="friends-container">
-      <div className="friends-header">
-        <h2>👥 Friends</h2>
-        <div className="friends-tabs">
-          <button
-            className={activeTab === "friends" ? "active" : ""}
-            onClick={() => setActiveTab("friends")}
+      {viewingProfile ? (
+        <div>
+          <button 
+            className="back-button" 
+            onClick={() => setViewingProfile(null)}
+            style={{
+              marginBottom: '1rem',
+              padding: '0.75rem 1.5rem',
+              background: 'rgba(139, 92, 246, 0.2)',
+              border: '2px solid #bb86fc',
+              borderRadius: '12px',
+              color: '#bb86fc',
+              cursor: 'pointer',
+              fontWeight: '600'
+            }}
           >
-            Friends ({friends.length})
+            ← Back to Friends
           </button>
-          <button
-            className={activeTab === "requests" ? "active" : ""}
-            onClick={() => setActiveTab("requests")}
-          >
-            Requests {requests.length > 0 && `(${requests.length})`}
-          </button>
-          <button
-            className={activeTab === "search" ? "active" : ""}
-            onClick={() => setActiveTab("search")}
-          >
-            Add Friends
-          </button>
+          <PublicProfile username={viewingProfile} />
         </div>
-      </div>
+      ) : (
+        <>
+          <div className="friends-header">
+            <h2>👥 Friends</h2>
+            <div className="friends-tabs">
+              <button
+                className={activeTab === "friends" ? "active" : ""}
+                onClick={() => setActiveTab("friends")}
+              >
+                Friends ({friends.length})
+              </button>
+              <button
+                className={activeTab === "requests" ? "active" : ""}
+                onClick={() => setActiveTab("requests")}
+              >
+                Requests {requests.length > 0 && `(${requests.length})`}
+              </button>
+              <button
+                className={activeTab === "search" ? "active" : ""}
+                onClick={() => setActiveTab("search")}
+              >
+                Add Friends
+              </button>
+            </div>
+          </div>
 
       <div className="friends-content">
         {activeTab === "friends" && (
@@ -133,13 +156,10 @@ function Friends() {
                       Friends since{" "}
                       {new Date(friend.friend_since).toLocaleDateString()}
                     </small>
-                  </div>
-                  <div className="friend-actions">
+                  </div>                  <div className="friend-actions">
                     <button
                       className="btn-view"
-                      onClick={() =>
-                        (window.location.href = `/friend/${friend.id}`)
-                      }
+                      onClick={() => setViewingProfile(friend.username)}
                     >
                       View Stats
                     </button>
@@ -241,14 +261,15 @@ function Friends() {
                           onClick={() => sendRequest(user.username)}
                         >
                           ➕ Add Friend
-                        </button>
-                      </div>
+                        </button>                      </div>
                     </div>
                   ))}
             </div>
           </div>
         )}
       </div>
+        </>
+      )}
     </div>
   );
 }
