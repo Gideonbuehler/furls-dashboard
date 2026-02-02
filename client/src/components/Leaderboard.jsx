@@ -28,21 +28,20 @@ function Leaderboard() {
     } finally {
       setLoading(false);
     }
-  };
-  const getStatValue = (player) => {
+  };  const getStatValue = (player) => {
     switch (stat) {
       case "accuracy":
-        return player.accuracy
-          ? `${player.accuracy.toFixed(1)}%`
-          : `${player.avg_accuracy?.toFixed(1)}%`;
+        const accuracy = player.accuracy ?? player.avg_accuracy ?? 0;
+        return `${Number(accuracy).toFixed(1)}%`;
       case "goals":
-        return player.total_goals;
+        return player.total_goals || 0;
       case "shots":
-        return player.total_shots;
+        return player.total_shots || 0;
       case "sessions":
-        return player.total_sessions;
+        return player.total_sessions || 0;
       default:
-        return player.avg_accuracy?.toFixed(1) || player.accuracy?.toFixed(1);
+        const defaultAccuracy = player.avg_accuracy ?? player.accuracy ?? 0;
+        return `${Number(defaultAccuracy).toFixed(1)}%`;
     }
   };
 
