@@ -249,8 +249,51 @@ async function initializeTables() {
       );
       await client.query(
         `CREATE INDEX IF NOT EXISTS idx_users_api_key ON users(api_key) WHERE api_key IS NOT NULL`
-      );
-      console.log("✓ Indexes created");
+      );      console.log("✓ Indexes created");
+
+      // Run migrations for existing tables
+      console.log("Running database migrations...");
+      
+      // Add bio column if it doesn't exist
+      try {
+        await client.query(`
+          ALTER TABLE users ADD COLUMN IF NOT EXISTS bio TEXT
+        `);
+        console.log("✓ Added bio column to users table");
+      } catch (err) {
+        // Column might already exist
+        console.log("✓ Bio column already exists");
+      }
+
+      // Add profile_visibility column if it doesn't exist
+      try {
+        await client.query(`
+          ALTER TABLE users ADD COLUMN IF NOT EXISTS profile_visibility TEXT DEFAULT 'public'
+        `);
+        console.log("✓ Added profile_visibility column to users table");
+      } catch (err) {
+        console.log("✓ Profile_visibility column already exists");
+      }
+
+      // Add display_name column if it doesn't exist
+      try {
+        await client.query(`
+          ALTER TABLE users ADD COLUMN IF NOT EXISTS display_name TEXT
+        `);
+        console.log("✓ Added display_name column to users table");
+      } catch (err) {
+        console.log("✓ Display_name column already exists");
+      }
+
+      // Add avatar_url column if it doesn't exist
+      try {
+        await client.query(`
+          ALTER TABLE users ADD COLUMN IF NOT EXISTS avatar_url TEXT
+        `);
+        console.log("✓ Added avatar_url column to users table");
+      } catch (err) {
+        console.log("✓ Avatar_url column already exists");
+      }
 
       console.log("✅ Database initialization complete!");
     } catch (err) {
