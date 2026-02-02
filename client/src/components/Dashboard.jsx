@@ -38,181 +38,201 @@ function Dashboard({ currentStats, allTimeStats, sessionHistory }) {
     shots: session.shots || 0,
     goals: session.goals || 0,
     speed: session.averageSpeed || session.average_speed || 0,
-  }));
-  return (
+  }));  return (
     <div className="dashboard">
-      <h2 className="section-title">Current Session</h2>
-      <div className="stats-grid">
-        <div className="stat-card accent">
-          <div className="stat-card-header">
-            <div className="stat-icon">🎯</div>
-          </div>
-          <div className="stat-label">Shot Accuracy</div>
-          <div className="stat-value">{getCurrentAccuracy()}%</div>{" "}
-          <div className="stat-detail">
-            {currentStats?.goals || 0} / {currentStats?.shots || 0} shots
-          </div>
-        </div>
-        <div className="stat-card primary">
-          <div className="stat-card-header">
-            <div className="stat-icon">⚡</div>
-          </div>
-          <div className="stat-label">Average Speed</div>
-          <div className="stat-value">
-            {currentStats?.averageSpeed?.toFixed(0) || 0}
-          </div>
-          <div className="stat-detail">units/s</div>
-        </div>
-        <div className="stat-card success">
-          <div className="stat-card-header">
-            <div className="stat-icon">💨</div>
-          </div>
-          <div className="stat-label">Boost Used</div>
-          <div className="stat-value">
-            {currentStats?.boostUsed?.toFixed(0) || 0}
-          </div>
-          <div className="stat-detail">
-            Collected: {currentStats?.boostCollected?.toFixed(0) || 0}
-          </div>
-        </div>
-        <div className="stat-card warning">
-          <div className="stat-card-header">
-            <div className="stat-icon">⏱️</div>
-          </div>
-          <div className="stat-label">Session Time</div>
-          <div className="stat-value">
-            {formatTime(currentStats?.gameTime || 0)}
-          </div>{" "}
-          <div className="stat-detail">
-            Possession: {currentStats?.possessionTime?.toFixed(1) || 0}s
-          </div>
-        </div>
-      </div>{" "}
-      {allTimeStats && (
-        <div className="all-time-stats">
-          <h2 className="section-title">All-Time Statistics</h2>
-          <div className="all-time-grid">
-            <div className="summary-card">
-              <div className="summary-label">Total Sessions</div>
-              <div className="summary-value">
-                {allTimeStats.totalSessions || allTimeStats.total_sessions || 0}
-              </div>
+      {/* Left Sidebar - Current Session Stats */}
+      <div className="stats-sidebar">
+        <h2 className="section-title">Current Session</h2>
+        <div className="stats-list">
+          <div className="stat-strip accent">
+            <div className="stat-header">
+              <div className="stat-icon">🎯</div>
+              <div className="stat-label">Shot Accuracy</div>
             </div>
-            <div className="summary-card">
-              <div className="summary-label">Total Shots</div>
-              <div className="summary-value">
-                {allTimeStats.totalShots || allTimeStats.total_shots || 0}
-              </div>
+            <div className="stat-value">{getCurrentAccuracy()}%</div>
+            <div className="stat-detail">
+              {currentStats?.goals || 0} / {currentStats?.shots || 0} shots
             </div>
-            <div className="summary-card">
-              <div className="summary-label">Total Goals</div>
-              <div className="summary-value">
-                {allTimeStats.totalGoals || allTimeStats.total_goals || 0}
-              </div>
-            </div>
-            <div className="summary-card">
-              <div className="summary-label">Average Accuracy</div>
-              <div className="summary-value">
-                {safeToFixed(
-                  allTimeStats?.avgAccuracy || allTimeStats?.avg_accuracy || 0
-                )}
-                %
-              </div>
-            </div>
-            <div className="summary-card">
-              <div className="summary-label">Average Speed</div>
-              <div className="summary-value">
-                {safeToFixed(
-                  allTimeStats?.avgSpeed || allTimeStats?.avg_speed || 0,
-                  0
-                )}
-              </div>
-            </div>
-            <div className="summary-card">
-              <div className="summary-label">Total Play Time</div>
-              <div className="summary-value">
-                {formatTime(
-                  allTimeStats.totalPlayTime ||
-                    allTimeStats.total_play_time ||
-                    0
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-      {chartData.length > 0 && (
-        <div className="charts-container">
-          <div className="chart-card">
-            <h3 className="chart-title">📈 Accuracy Progression</h3>
-            <ResponsiveContainer width="100%" height={300}>
-              <AreaChart data={chartData}>
-                <CartesianGrid
-                  strokeDasharray="3 3"
-                  stroke="var(--surface-3)"
-                />
-                <XAxis dataKey="session" stroke="var(--text-secondary)" />
-                <YAxis stroke="var(--text-secondary)" />
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: "var(--bg-card)",
-                    border: "1px solid var(--surface-3)",
-                    borderRadius: "8px",
-                  }}
-                  labelStyle={{ color: "var(--text-primary)" }}
-                />
-                <Legend />
-                <Area
-                  type="monotone"
-                  dataKey="accuracy"
-                  stroke="var(--accent-secondary)"
-                  fill="rgba(29, 233, 182, 0.2)"
-                  name="Accuracy %"
-                />
-              </AreaChart>
-            </ResponsiveContainer>
           </div>
 
-          <div className="chart-card">
-            <h3 className="chart-title">⚽ Shots & Goals</h3>
-            <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={chartData}>
-                <CartesianGrid
-                  strokeDasharray="3 3"
-                  stroke="var(--surface-3)"
-                />
-                <XAxis dataKey="session" stroke="var(--text-secondary)" />
-                <YAxis stroke="var(--text-secondary)" />
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: "var(--bg-card)",
-                    border: "1px solid var(--surface-3)",
-                    borderRadius: "8px",
-                  }}
-                  labelStyle={{ color: "var(--text-primary)" }}
-                />
-                <Legend />
-                <Line
-                  type="monotone"
-                  dataKey="shots"
-                  stroke="var(--primary-500)"
-                  strokeWidth={2}
-                  dot={{ r: 4 }}
-                  name="Shots"
-                />
-                <Line
-                  type="monotone"
-                  dataKey="goals"
-                  stroke="var(--accent-warning)"
-                  strokeWidth={2}
-                  dot={{ r: 4 }}
-                  name="Goals"
-                />
-              </LineChart>
-            </ResponsiveContainer>
+          <div className="stat-strip primary">
+            <div className="stat-header">
+              <div className="stat-icon">⚡</div>
+              <div className="stat-label">Average Speed</div>
+            </div>
+            <div className="stat-value">
+              {currentStats?.averageSpeed?.toFixed(0) || 0}
+            </div>
+            <div className="stat-detail">units/s</div>
+          </div>
+
+          <div className="stat-strip success">
+            <div className="stat-header">
+              <div className="stat-icon">💨</div>
+              <div className="stat-label">Boost Used</div>
+            </div>
+            <div className="stat-value">
+              {currentStats?.boostUsed?.toFixed(0) || 0}
+            </div>
+            <div className="stat-detail">
+              Collected: {currentStats?.boostCollected?.toFixed(0) || 0}
+            </div>
+          </div>
+
+          <div className="stat-strip warning">
+            <div className="stat-header">
+              <div className="stat-icon">⏱️</div>
+              <div className="stat-label">Session Time</div>
+            </div>
+            <div className="stat-value">
+              {formatTime(currentStats?.gameTime || 0)}
+            </div>
+            <div className="stat-detail">
+              Possession: {currentStats?.possessionTime?.toFixed(1) || 0}s
+            </div>
           </div>
         </div>
-      )}
+
+        {allTimeStats && (
+          <div className="all-time-section">
+            <h2 className="section-title">All-Time Stats</h2>
+            <div className="all-time-grid">
+              <div className="summary-strip">
+                <div className="summary-label">Total Sessions</div>
+                <div className="summary-value">
+                  {allTimeStats.totalSessions || allTimeStats.total_sessions || 0}
+                </div>
+              </div>
+              <div className="summary-strip">
+                <div className="summary-label">Total Shots</div>
+                <div className="summary-value">
+                  {allTimeStats.totalShots || allTimeStats.total_shots || 0}
+                </div>
+              </div>
+              <div className="summary-strip">
+                <div className="summary-label">Total Goals</div>
+                <div className="summary-value">
+                  {allTimeStats.totalGoals || allTimeStats.total_goals || 0}
+                </div>
+              </div>
+              <div className="summary-strip">
+                <div className="summary-label">Avg Accuracy</div>
+                <div className="summary-value">
+                  {safeToFixed(
+                    allTimeStats?.avgAccuracy || allTimeStats?.avg_accuracy || 0
+                  )}
+                  %
+                </div>
+              </div>
+              <div className="summary-strip">
+                <div className="summary-label">Avg Speed</div>
+                <div className="summary-value">
+                  {safeToFixed(
+                    allTimeStats?.avgSpeed || allTimeStats?.avg_speed || 0,
+                    0
+                  )}
+                </div>
+              </div>
+              <div className="summary-strip">
+                <div className="summary-label">Total Time</div>
+                <div className="summary-value">
+                  {formatTime(
+                    allTimeStats.totalPlayTime ||
+                      allTimeStats.total_play_time ||
+                      0
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Right Main Content - Charts */}
+      <div className="main-content">
+        {chartData.length > 0 ? (
+          <div className="charts-section">
+            <div className="chart-wrapper">
+              <h3 className="chart-title">📈 Accuracy Progression</h3>
+              <div className="chart-container">
+                <ResponsiveContainer width="100%" height={300}>
+                  <AreaChart data={chartData}>
+                    <CartesianGrid
+                      strokeDasharray="3 3"
+                      stroke="rgba(139, 92, 246, 0.1)"
+                    />
+                    <XAxis dataKey="session" stroke="rgba(255, 255, 255, 0.4)" />
+                    <YAxis stroke="rgba(255, 255, 255, 0.4)" />
+                    <Tooltip
+                      contentStyle={{
+                        backgroundColor: "rgba(20, 20, 20, 0.95)",
+                        border: "1px solid rgba(139, 92, 246, 0.3)",
+                        borderRadius: "8px",
+                      }}
+                      labelStyle={{ color: "#fff" }}
+                    />
+                    <Legend />
+                    <Area
+                      type="monotone"
+                      dataKey="accuracy"
+                      stroke="rgba(29, 233, 182, 0.8)"
+                      fill="rgba(29, 233, 182, 0.15)"
+                      name="Accuracy %"
+                      strokeWidth={2}
+                    />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+
+            <div className="chart-wrapper">
+              <h3 className="chart-title">⚽ Shots & Goals</h3>
+              <div className="chart-container">
+                <ResponsiveContainer width="100%" height={300}>
+                  <LineChart data={chartData}>
+                    <CartesianGrid
+                      strokeDasharray="3 3"
+                      stroke="rgba(139, 92, 246, 0.1)"
+                    />
+                    <XAxis dataKey="session" stroke="rgba(255, 255, 255, 0.4)" />
+                    <YAxis stroke="rgba(255, 255, 255, 0.4)" />
+                    <Tooltip
+                      contentStyle={{
+                        backgroundColor: "rgba(20, 20, 20, 0.95)",
+                        border: "1px solid rgba(139, 92, 246, 0.3)",
+                        borderRadius: "8px",
+                      }}
+                      labelStyle={{ color: "#fff" }}
+                    />
+                    <Legend />
+                    <Line
+                      type="monotone"
+                      dataKey="shots"
+                      stroke="rgba(100, 181, 246, 0.8)"
+                      strokeWidth={2}
+                      dot={{ r: 3 }}
+                      name="Shots"
+                    />
+                    <Line
+                      type="monotone"
+                      dataKey="goals"
+                      stroke="rgba(255, 213, 79, 0.8)"
+                      strokeWidth={2}
+                      dot={{ r: 3 }}
+                      name="Goals"
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div className="no-data">
+            <h3>No session data yet</h3>
+            <p>Start playing to see your stats!</p>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

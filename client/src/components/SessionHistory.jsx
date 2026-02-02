@@ -3,6 +3,69 @@ import "./SessionHistory.css";
 
 function SessionHistory({ sessionHistory }) {
   const [selectedSession, setSelectedSession] = useState(null);
+  const [sortConfig, setSortConfig] = useState({ key: null, direction: 'desc' });
+
+  const handleSort = (key) => {
+    let direction = 'desc';
+    if (sortConfig.key === key && sortConfig.direction === 'desc') {
+      direction = 'asc';
+    }
+    setSortConfig({ key, direction });
+  };
+
+  const getSortedSessions = () => {
+    if (!sortConfig.key) {
+      return [...sessionHistory].reverse();
+    }
+
+    return [...sessionHistory].sort((a, b) => {
+      let aValue, bValue;
+
+      switch (sortConfig.key) {
+        case 'date':
+          aValue = new Date(a.timestamp).getTime();
+          bValue = new Date(b.timestamp).getTime();
+          break;
+        case 'duration':
+          aValue = a.gameTime || a.game_time || 0;
+          bValue = b.gameTime || b.game_time || 0;
+          break;
+        case 'shots':
+          aValue = a.shots || 0;
+          bValue = b.shots || 0;
+          break;
+        case 'goals':
+          aValue = a.goals || 0;
+          bValue = b.goals || 0;
+          break;
+        case 'accuracy':
+          aValue = a.shots > 0 ? (a.goals / a.shots) * 100 : 0;
+          bValue = b.shots > 0 ? (b.goals / b.shots) * 100 : 0;
+          break;
+        case 'avgSpeed':
+          aValue = a.averageSpeed || a.average_speed || 0;
+          bValue = b.averageSpeed || b.average_speed || 0;
+          break;
+        case 'boost':
+          aValue = a.boostUsed || a.boost_used || 0;
+          bValue = b.boostUsed || b.boost_used || 0;
+          break;
+        case 'possession':
+          aValue = a.possessionTime || a.possession_time || 0;
+          bValue = b.possessionTime || b.possession_time || 0;
+          break;
+        default:
+          return 0;
+      }
+
+      if (sortConfig.direction === 'asc') {
+        return aValue - bValue;
+      } else {
+        return bValue - aValue;
+      }
+    });
+  };
+
   const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60);
     const secs = Math.floor(seconds % 60);
@@ -156,33 +219,44 @@ function SessionHistory({ sessionHistory }) {
       <h2>📈 Session History</h2>
       <p className="history-info">
         Showing {sessionHistory.length} most recent sessions
-      </p>
-
-      <div className="sessions-table-container">
+      </p>      <div className="sessions-table-container">
         <table className="sessions-table">
           <thead>
             <tr>
               <th>#</th>
-              <th>Date</th>
-              <th>Duration</th>
-              <th>Shots</th>
-              <th>Goals</th>
-              <th>Accuracy</th>
-              <th>Avg Speed</th> <th>Boost Used</th>
-              <th>Possession</th>
+              <th onClick={() => handleSort('date')} className="sortable">
+                Date {sortConfig.key === 'date' && (sortConfig.direction === 'asc' ? '↑' : '↓')}
+              </th>
+              <th onClick={() => handleSort('duration')} className="sortable">
+                Duration {sortConfig.key === 'duration' && (sortConfig.direction === 'asc' ? '↑' : '↓')}
+              </th>
+              <th onClick={() => handleSort('shots')} className="sortable">
+                Shots {sortConfig.key === 'shots' && (sortConfig.direction === 'asc' ? '↑' : '↓')}
+              </th>
+              <th onClick={() => handleSort('goals')} className="sortable">
+                Goals {sortConfig.key === 'goals' && (sortConfig.direction === 'asc' ? '↑' : '↓')}
+              </th>
+              <th onClick={() => handleSort('accuracy')} className="sortable">
+                Accuracy {sortConfig.key === 'accuracy' && (sortConfig.direction === 'asc' ? '↑' : '↓')}
+              </th>
+              <th onClick={() => handleSort('avgSpeed')} className="sortable">
+                Avg Speed {sortConfig.key === 'avgSpeed' && (sortConfig.direction === 'asc' ? '↑' : '↓')}
+              </th>
+              <th onClick={() => handleSort('boost')} className="sortable">
+                Boost Used {sortConfig.key === 'boost' && (sortConfig.direction === 'asc' ? '↑' : '↓')}
+              </th>
+              <th onClick={() => handleSort('possession')} className="sortable">
+                Possession {sortConfig.key === 'possession' && (sortConfig.direction === 'asc' ? '↑' : '↓')}
+              </th>
             </tr>
-          </thead>
-          <tbody>            {sessionHistory
-              .slice()
-              .reverse()
-              .map((session, index) => (
+          </thead>          <tbody>            {getSortedSessions().map((session, index) => (
                 <tr 
-                  key={sessionHistory.length - index} 
+                  key={session.id || index} 
                   className="session-row clickable"
                   onClick={() => setSelectedSession(session)}
                   style={{ cursor: 'pointer' }}
                 >
-                  <td>{sessionHistory.length - index}</td>
+                  <td>{index + 1}</td>
                   <td>{formatDate(session.timestamp)}</td>
                   <td>
                     {formatTime(session.gameTime || session.game_time || 0)}

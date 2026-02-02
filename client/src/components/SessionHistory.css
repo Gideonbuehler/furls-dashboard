@@ -40,6 +40,19 @@
   border-bottom: 2px solid #444;
 }
 
+/* Sortable column headers */
+.sessions-table th.sortable {
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.sessions-table th.sortable:hover {
+  background: rgba(76, 175, 80, 0.1);
+  color: #66bb6a;
+}
+
 .sessions-table td {
   padding: 1rem;
   border-bottom: 1px solid #333;

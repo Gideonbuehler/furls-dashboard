@@ -27,22 +27,37 @@
 
 .filter-group label {
   font-weight: 600;
-  color: #666;
+  color: rgba(226, 232, 240, 0.8);
   font-size: 14px;
 }
 
 .filter-group select {
   padding: 8px 16px;
-  border: 2px solid #e0e0e0;
-  border-radius: 6px;
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  border-radius: 8px;
   font-size: 14px;
   cursor: pointer;
-  background: white;
+  background: rgba(20, 20, 25, 0.6);
+  color: #e2e8f0;
+  backdrop-filter: blur(10px);
+  transition: all 0.2s ease;
+}
+
+.filter-group select:hover {
+  border-color: rgba(139, 92, 246, 0.5);
+  background: rgba(139, 92, 246, 0.1);
 }
 
 .filter-group select:focus {
   outline: none;
-  border-color: #667eea;
+  border-color: #bb86fc;
+  background: rgba(139, 92, 246, 0.15);
+}
+
+.filter-group select option {
+  background: #1a1a1f;
+  color: #e2e8f0;
+  padding: 8px;
 }
 
 .leaderboard-list {
