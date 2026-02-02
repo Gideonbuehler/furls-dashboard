@@ -48,270 +48,173 @@
 .leaderboard-list {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 8px;
 }
 
+/* Minimalistic card design */
 .leaderboard-item {
   display: flex;
   align-items: center;
-  gap: 20px;
-  padding: 24px;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.98) 100%);
-  border-radius: 16px;
-  border: 1px solid rgba(102, 126, 234, 0.1);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  position: relative;
-  overflow: hidden;
-}
-
-.leaderboard-item::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 5px;
-  height: 100%;
-  background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
-  opacity: 0;
-  transition: opacity 0.3s ease;
+  gap: 1rem;
+  padding: 0.875rem 1rem;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(139, 92, 246, 0.08);
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  cursor: pointer;
 }
 
 .leaderboard-item:hover {
-  transform: translateY(-4px) scale(1.01);
-  box-shadow: 0 8px 24px rgba(102, 126, 234, 0.15);
-  border-color: rgba(102, 126, 234, 0.2);
+  background: rgba(139, 92, 246, 0.05);
+  border-color: rgba(139, 92, 246, 0.2);
+  transform: translateX(2px);
 }
 
-.leaderboard-item:hover::before {
-  opacity: 1;
-}
-
+/* Top 3 styling - subtle highlights */
 .leaderboard-item.rank-1 {
-  background: linear-gradient(135deg, rgba(255, 215, 0, 0.15) 0%, rgba(255, 237, 78, 0.1) 100%);
-  border: 2px solid rgba(255, 215, 0, 0.4);
-  box-shadow: 0 6px 20px rgba(255, 215, 0, 0.2);
-}
-
-.leaderboard-item.rank-1::before {
-  background: linear-gradient(180deg, #ffd700 0%, #ffed4e 100%);
-  opacity: 1;
-  width: 6px;
+  background: rgba(255, 215, 0, 0.03);
+  border-color: rgba(255, 215, 0, 0.2);
 }
 
 .leaderboard-item.rank-2 {
-  background: linear-gradient(135deg, rgba(192, 192, 192, 0.12) 0%, rgba(232, 232, 232, 0.08) 100%);
-  border: 2px solid rgba(192, 192, 192, 0.4);
-  box-shadow: 0 6px 18px rgba(192, 192, 192, 0.2);
-}
-
-.leaderboard-item.rank-2::before {
-  background: linear-gradient(180deg, #c0c0c0 0%, #e8e8e8 100%);
-  opacity: 1;
-  width: 6px;
+  background: rgba(192, 192, 192, 0.03);
+  border-color: rgba(192, 192, 192, 0.2);
 }
 
 .leaderboard-item.rank-3 {
-  background: linear-gradient(135deg, rgba(205, 127, 50, 0.12) 0%, rgba(227, 168, 105, 0.08) 100%);
-  border: 2px solid rgba(205, 127, 50, 0.4);
-  box-shadow: 0 6px 18px rgba(205, 127, 50, 0.2);
+  background: rgba(205, 127, 50, 0.03);
+  border-color: rgba(205, 127, 50, 0.2);
 }
 
-.leaderboard-item.rank-3::before {
-  background: linear-gradient(180deg, #cd7f32 0%, #e3a869 100%);
-  opacity: 1;
-  width: 6px;
-}
-
+/* Rank number */
 .rank {
-  font-size: 26px;
-  font-weight: 800;
-  min-width: 60px;
+  font-size: 1.25rem;
+  font-weight: 700;
+  min-width: 50px;
   text-align: center;
-  color: #667eea;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.leaderboard-item.rank-1 .rank,
-.leaderboard-item.rank-2 .rank,
-.leaderboard-item.rank-3 .rank {
-  font-size: 36px;
-  filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.15));
+  color: rgba(139, 92, 246, 0.6);
 }
 
 .leaderboard-item.rank-1 .rank {
+  font-size: 1.5rem;
   color: #ffd700;
 }
 
 .leaderboard-item.rank-2 .rank {
+  font-size: 1.5rem;
   color: #c0c0c0;
 }
 
 .leaderboard-item.rank-3 .rank {
+  font-size: 1.5rem;
   color: #cd7f32;
 }
 
+/* Avatar */
 .player-avatar {
   position: relative;
 }
 
-.player-avatar::after {
-  content: '';
-  position: absolute;
-  inset: -3px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #667eea, #764ba2);
-  z-index: -1;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-.leaderboard-item:hover .player-avatar::after {
-  opacity: 1;
-}
-
-.leaderboard-item.rank-1 .player-avatar::after {
-  background: linear-gradient(135deg, #ffd700, #ffed4e);
-  opacity: 0.7;
-}
-
-.leaderboard-item.rank-2 .player-avatar::after {
-  background: linear-gradient(135deg, #c0c0c0, #e8e8e8);
-  opacity: 0.7;
-}
-
-.leaderboard-item.rank-3 .player-avatar::after {
-  background: linear-gradient(135deg, #cd7f32, #e3a869);
-  opacity: 0.7;
-}
-
 .player-avatar img,
 .player-avatar .avatar-placeholder {
-  width: 56px;
-  height: 56px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   object-fit: cover;
-  border: 3px solid white;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 2px solid rgba(139, 92, 246, 0.1);
 }
 
 .leaderboard-item.rank-1 .player-avatar img,
-.leaderboard-item.rank-1 .player-avatar .avatar-placeholder {
-  width: 64px;
-  height: 64px;
-  border: 4px solid rgba(255, 215, 0, 0.3);
-}
-
+.leaderboard-item.rank-1 .player-avatar .avatar-placeholder,
 .leaderboard-item.rank-2 .player-avatar img,
-.leaderboard-item.rank-2 .player-avatar .avatar-placeholder {
-  width: 60px;
-  height: 60px;
-  border: 4px solid rgba(192, 192, 192, 0.3);
-}
-
+.leaderboard-item.rank-2 .player-avatar .avatar-placeholder,
 .leaderboard-item.rank-3 .player-avatar img,
 .leaderboard-item.rank-3 .player-avatar .avatar-placeholder {
-  width: 60px;
-  height: 60px;
-  border: 4px solid rgba(205, 127, 50, 0.3);
+  width: 44px;
+  height: 44px;
 }
 
 .player-avatar .avatar-placeholder {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.8), rgba(118, 75, 162, 0.8));
   color: white;
-  font-size: 22px;
-  font-weight: 700;
+  font-size: 16px;
+  font-weight: 600;
 }
 
+/* Player info */
 .player-info {
   flex: 1;
 }
 
 .player-info h3 {
-  margin: 0 0 6px 0;
-  font-size: 18px;
-  font-weight: 700;
-  color: #2d3748;
-  letter-spacing: -0.3px;
-}
-
-.leaderboard-item.rank-1 .player-info h3,
-.leaderboard-item.rank-2 .player-info h3,
-.leaderboard-item.rank-3 .player-info h3 {
-  font-size: 20px;
+  margin: 0 0 4px 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: #e2e8f0;
 }
 
 .player-info p {
-  margin: 0 0 6px 0;
-  color: #667eea;
-  font-size: 14px;
+  margin: 0;
+  color: rgba(139, 92, 246, 0.7);
+  font-size: 13px;
   font-weight: 500;
 }
 
 .player-stats-mini {
   display: flex;
-  gap: 10px;
-  font-size: 12px;
-  color: #a0aec0;
-  font-weight: 500;
+  gap: 8px;
+  font-size: 11px;
+  color: rgba(226, 232, 240, 0.5);
+  margin-top: 4px;
 }
 
+.player-stats-mini span {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Stat value */
 .stat-value {
-  font-size: 32px;
-  font-weight: 800;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  min-width: 120px;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: rgba(139, 92, 246, 0.9);
+  min-width: 80px;
   text-align: right;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-  letter-spacing: -1px;
 }
 
 .leaderboard-item.rank-1 .stat-value {
-  font-size: 38px;
-  background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  filter: drop-shadow(0 2px 4px rgba(255, 215, 0, 0.3));
+  font-size: 1.75rem;
+  color: #ffd700;
 }
 
 .leaderboard-item.rank-2 .stat-value {
-  font-size: 36px;
-  background: linear-gradient(135deg, #9e9e9e 0%, #bdbdbd 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  filter: drop-shadow(0 2px 4px rgba(192, 192, 192, 0.3));
+  font-size: 1.625rem;
+  color: #c0c0c0;
 }
 
 .leaderboard-item.rank-3 .stat-value {
-  font-size: 36px;
-  background: linear-gradient(135deg, #cd7f32 0%, #e3a869 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  filter: drop-shadow(0 2px 4px rgba(205, 127, 50, 0.3));
+  font-size: 1.625rem;
+  color: #cd7f32;
 }
 
+/* Loading and empty states */
 .loading {
   text-align: center;
   padding: 40px;
-  color: #666;
+  color: rgba(226, 232, 240, 0.6);
 }
 
 .empty-state {
   text-align: center;
   padding: 60px 20px;
-  color: #999;
+  color: rgba(226, 232, 240, 0.4);
 }
 
 .empty-state p {
-  font-size: 16px;
+  font-size: 15px;
   margin: 0;
 }
