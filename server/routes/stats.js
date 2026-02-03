@@ -82,7 +82,10 @@ router.get("/alltime", authenticateToken, async (req, res) => {
         COUNT(*) as total_sessions,
         SUM(shots) as total_shots,
         SUM(goals) as total_goals,
-        AVG(CASE WHEN shots > 0 THEN (goals * 1.0 / shots) * 100 ELSE 0 END) as avg_accuracy,
+        CASE 
+          WHEN SUM(shots) > 0 THEN (SUM(goals) * 1.0 / SUM(shots)) * 100 
+          ELSE 0 
+        END as avg_accuracy,
         AVG(average_speed) as avg_speed,
         SUM(game_time) as total_play_time,
         SUM(boost_collected) as total_boost_collected,

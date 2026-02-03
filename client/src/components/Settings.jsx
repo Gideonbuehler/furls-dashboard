@@ -178,13 +178,11 @@ function Settings() {
                 <li>
                   <strong>Plugin not uploading?</strong> Make sure you've
                   enabled upload with <code>furls_enable_upload 1</code>
-                </li>
+                </li>{" "}
                 <li>
                   <strong>Wrong dashboard?</strong> Run{" "}
-                  <code>
-                    furls_dashboard_url https://furls-dashboard.onrender.com
-                  </code>{" "}
-                  to set the correct URL
+                  <code>furls_dashboard_url https://furls.net</code> to set the
+                  correct URL
                 </li>
                 <li>
                   <strong>API key error?</strong> Regenerate your key above and
@@ -200,10 +198,10 @@ function Settings() {
             <div className="info-item">
               <span className="info-label">Version:</span>
               <span className="info-value">1.0.0</span>
-            </div>
+            </div>{" "}
             <div className="info-item">
               <span className="info-label">Server:</span>
-              <span className="info-value">furls-dashboard.onrender.com</span>
+              <span className="info-value">furls.net</span>
             </div>
             <div className="info-item">
               <span className="info-label">Status:</span>

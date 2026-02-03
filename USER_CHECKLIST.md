@@ -27,6 +27,7 @@ plugin list
 - [ ] The plugin shows as "loaded"
 
 If you don't see FURLS:
+
 1. Download the latest plugin from the official source
 2. Copy `FURLS.dll` to: `%APPDATA%/bakkesmod/bakkesmod/plugins/`
 3. Restart BakkesMod
@@ -39,6 +40,7 @@ If you don't see FURLS:
 ### Check Current Settings
 
 In BakkesMod console:
+
 ```
 readcvar furls_server_url
 readcvar furls_api_key
@@ -54,13 +56,15 @@ readcvar furls_auto_upload
 ### If Values Are Wrong:
 
 In BakkesMod console:
+
 ```
 writecvar furls_server_url "https://furls.net"
 writecvar furls_api_key "YOUR_KEY_FROM_DASHBOARD"
 writecvar furls_auto_upload "1"
 ```
 
-**⚠️ CRITICAL:** 
+**⚠️ CRITICAL:**
+
 - [ ] Server URL is exactly `https://furls.net` (NOT `http`, NOT with trailing `/`)
 - [ ] API key matches what's on the dashboard
 - [ ] Auto upload is enabled (set to 1)
@@ -85,6 +89,7 @@ Invoke-RestMethod -Uri "https://furls.net/api/upload/test-auth" -Headers $header
 - [ ] Shows my username
 
 If this fails:
+
 1. Double-check you copied the API key correctly (no extra spaces)
 2. Make sure you're logged in to the dashboard
 3. Try regenerating your API key on the dashboard
@@ -176,11 +181,13 @@ After a successful upload:
 ### Issue: Plugin doesn't log anything to console
 
 **Possible causes:**
+
 - Plugin isn't loaded
 - Match end events aren't firing
 - You didn't take any shots (plugin requires shots > 0 OR goals > 0 OR gameTime > 10s)
 
 **Solution:**
+
 ```
 plugin load FURLS
 ```
@@ -194,12 +201,15 @@ Then try playing a match again.
 **Cause:** API key is wrong or missing
 
 **Solution:**
+
 1. Go to dashboard Settings page
 2. Copy API key exactly (select all, copy)
 3. In BakkesMod console:
+
 ```
 writecvar furls_api_key "PASTE_KEY_HERE"
 ```
+
 4. Try uploading again
 
 ---
@@ -210,33 +220,39 @@ writecvar furls_api_key "PASTE_KEY_HERE"
 
 **Solution:**
 In BakkesMod console:
+
 ```
 writecvar furls_server_url "https://furls.net"
 ```
 
 Make sure there's:
+
 - ✅ No trailing slash
 - ✅ HTTPS not HTTP
-- ✅ Exactly `furls.net` (not `furls-dashboard.onrender.com`)
+- ✅ Exactly `furls.net` (not `furls.net`)
 
 ---
 
 ### Issue: Manual test works but plugin doesn't
 
 **This means:**
+
 - ✅ Your API key is valid
 - ✅ Server is working
 - ✅ Network connection is fine
 - ❌ Plugin isn't uploading properly
 
 **Next steps:**
+
 1. Verify plugin config file at: `%APPDATA%/bakkesmod/bakkesmod/plugins/settings/furls.cfg`
 2. Check that it contains:
+
 ```
 furls_server_url "https://furls.net"
 furls_api_key "YOUR_KEY"
 furls_auto_upload "1"
 ```
+
 3. Restart BakkesMod after changing config
 4. Try uploading again
 
@@ -247,6 +263,7 @@ furls_auto_upload "1"
 **Cause:** Plugin stats collection might have issues
 
 **Solution:**
+
 - Make sure you're using the latest plugin version
 - Check if other stats plugins interfere
 - Try disabling other plugins temporarily
@@ -258,6 +275,7 @@ furls_auto_upload "1"
 If nothing works, provide this information:
 
 ### System Info
+
 ```
 Windows version:
 BakkesMod version:
@@ -265,13 +283,16 @@ Rocket League version:
 ```
 
 ### Plugin Info
+
 ```
 In BakkesMod console:
 plugin list
 ```
+
 Copy the FURLS line.
 
 ### Config Values
+
 ```
 In BakkesMod console:
 readcvar furls_server_url
@@ -280,12 +301,14 @@ readcvar furls_auto_upload
 ```
 
 ### Network Test
+
 ```powershell
 # In PowerShell
 Test-NetConnection -ComputerName furls.net -Port 443
 ```
 
 ### Recent Logs
+
 Check: `%APPDATA%/bakkesmod/bakkesmod/logs/`
 
 Look for files with today's date and search for "FURLS" or "upload"
@@ -321,6 +344,7 @@ When everything works correctly, you should see:
 ## Quick Reference Commands
 
 **BakkesMod Console Commands:**
+
 ```
 plugin list                                    # Check if FURLS is loaded
 readcvar furls_server_url                     # Check server URL
@@ -330,6 +354,7 @@ writecvar furls_auto_upload "1"               # Enable auto upload
 ```
 
 **PowerShell Test Commands:**
+
 ```powershell
 # Test API key
 $apiKey = "YOUR_KEY"; $headers = @{"Authorization" = "Bearer $apiKey"}; Invoke-RestMethod -Uri "https://furls.net/api/upload/test-auth" -Headers $headers
@@ -339,6 +364,7 @@ Test-NetConnection -ComputerName furls.net -Port 443
 ```
 
 **File Locations:**
+
 ```
 Plugin DLL:    %APPDATA%/bakkesmod/bakkesmod/plugins/FURLS.dll
 Config file:   %APPDATA%/bakkesmod/bakkesmod/plugins/settings/furls.cfg

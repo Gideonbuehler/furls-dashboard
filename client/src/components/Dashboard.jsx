@@ -51,8 +51,10 @@ function Dashboard({ currentStats, allTimeStats, sessionHistory }) {
 
   // Get most recent session with metadata
   const latestSession = sessionHistory.length > 0 ? sessionHistory[0] : null;
-  const hasMatchMetadata = latestSession && (latestSession.playlist || latestSession.is_ranked || latestSession.mmr);
-  
+  const hasMatchMetadata =
+    latestSession &&
+    (latestSession.playlist || latestSession.is_ranked || latestSession.mmr);
+
   return (
     <div className="dashboard-modern">
       {/* Match Metadata Banner - Shows if we have playlist/MMR info */}
@@ -75,17 +77,27 @@ function Dashboard({ currentStats, allTimeStats, sessionHistory }) {
             <div className="metadata-item">
               <span className="metadata-icon">📊</span>
               <span className="metadata-label">MMR:</span>
-              <span className="metadata-value">{Math.round(latestSession.mmr)}</span>
-            </div>
-          )}
-          {latestSession.mmr_change !== null && latestSession.mmr_change !== undefined && (
-            <div className={`metadata-item mmr-change ${latestSession.mmr_change >= 0 ? 'positive' : 'negative'}`}>
-              <span className="metadata-icon">{latestSession.mmr_change >= 0 ? '📈' : '📉'}</span>
               <span className="metadata-value">
-                {latestSession.mmr_change >= 0 ? '+' : ''}{Math.round(latestSession.mmr_change)}
+                {Math.round(latestSession.mmr)}
               </span>
             </div>
           )}
+          {latestSession.mmr_change !== null &&
+            latestSession.mmr_change !== undefined && (
+              <div
+                className={`metadata-item mmr-change ${
+                  latestSession.mmr_change >= 0 ? "positive" : "negative"
+                }`}
+              >
+                <span className="metadata-icon">
+                  {latestSession.mmr_change >= 0 ? "📈" : "📉"}
+                </span>
+                <span className="metadata-value">
+                  {latestSession.mmr_change >= 0 ? "+" : ""}
+                  {Math.round(latestSession.mmr_change)}
+                </span>
+              </div>
+            )}
         </div>
       )}
 
@@ -97,7 +109,8 @@ function Dashboard({ currentStats, allTimeStats, sessionHistory }) {
             <div className="hero-label">Shot Accuracy</div>
             <div className="hero-value">{getCurrentAccuracy()}%</div>
             <div className="hero-detail">
-              {currentStats?.goals || 0} goals from {currentStats?.shots || 0} shots
+              {currentStats?.goals || 0} goals from {currentStats?.shots || 0}{" "}
+              shots
             </div>
           </div>
         </div>
@@ -178,9 +191,7 @@ function Dashboard({ currentStats, allTimeStats, sessionHistory }) {
             <span className="quick-label">Total Playtime</span>
             <span className="quick-value">
               {formatPlayTime(
-                allTimeStats.totalPlayTime ||
-                  allTimeStats.total_play_time ||
-                  0
+                allTimeStats.totalPlayTime || allTimeStats.total_play_time || 0
               )}
             </span>
           </div>
@@ -202,7 +213,13 @@ function Dashboard({ currentStats, allTimeStats, sessionHistory }) {
               <ResponsiveContainer width="100%" height={280}>
                 <AreaChart data={chartData}>
                   <defs>
-                    <linearGradient id="accuracyGradient" x1="0" y1="0" x2="0" y2="1">
+                    <linearGradient
+                      id="accuracyGradient"
+                      x1="0"
+                      y1="0"
+                      x2="0"
+                      y2="1"
+                    >
                       <stop offset="5%" stopColor="#1de9b6" stopOpacity={0.3} />
                       <stop offset="95%" stopColor="#1de9b6" stopOpacity={0} />
                     </linearGradient>
@@ -231,7 +248,11 @@ function Dashboard({ currentStats, allTimeStats, sessionHistory }) {
                       padding: "12px",
                       boxShadow: "0 8px 32px rgba(0, 0, 0, 0.4)",
                     }}
-                    labelStyle={{ color: "#fff", fontWeight: 600, marginBottom: "8px" }}
+                    labelStyle={{
+                      color: "#fff",
+                      fontWeight: 600,
+                      marginBottom: "8px",
+                    }}
                     itemStyle={{ color: "#1de9b6", fontSize: "14px" }}
                   />
                   <Area
@@ -284,7 +305,11 @@ function Dashboard({ currentStats, allTimeStats, sessionHistory }) {
                       padding: "12px",
                       boxShadow: "0 8px 32px rgba(0, 0, 0, 0.4)",
                     }}
-                    labelStyle={{ color: "#fff", fontWeight: 600, marginBottom: "8px" }}
+                    labelStyle={{
+                      color: "#fff",
+                      fontWeight: 600,
+                      marginBottom: "8px",
+                    }}
                     cursor={{ fill: "rgba(139, 92, 246, 0.1)" }}
                   />
                   <Legend
@@ -320,7 +345,13 @@ function Dashboard({ currentStats, allTimeStats, sessionHistory }) {
               <ResponsiveContainer width="100%" height={280}>
                 <LineChart data={chartData}>
                   <defs>
-                    <linearGradient id="speedGradient" x1="0" y1="0" x2="1" y2="0">
+                    <linearGradient
+                      id="speedGradient"
+                      x1="0"
+                      y1="0"
+                      x2="1"
+                      y2="0"
+                    >
                       <stop offset="0%" stopColor="#bb86fc" />
                       <stop offset="100%" stopColor="#64b5f6" />
                     </linearGradient>
@@ -349,7 +380,11 @@ function Dashboard({ currentStats, allTimeStats, sessionHistory }) {
                       padding: "12px",
                       boxShadow: "0 8px 32px rgba(0, 0, 0, 0.4)",
                     }}
-                    labelStyle={{ color: "#fff", fontWeight: 600, marginBottom: "8px" }}
+                    labelStyle={{
+                      color: "#fff",
+                      fontWeight: 600,
+                      marginBottom: "8px",
+                    }}
                   />
                   <Line
                     type="monotone"
@@ -369,7 +404,9 @@ function Dashboard({ currentStats, allTimeStats, sessionHistory }) {
         <div className="empty-state-modern">
           <div className="empty-icon">📊</div>
           <h3>No Session Data Yet</h3>
-          <p>Start playing Rocket League to see your stats and progression here!</p>
+          <p>
+            Start playing Rocket League to see your stats and progression here!
+          </p>
           <p className="empty-hint">
             Make sure the FURLS plugin is installed and configured correctly.
           </p>

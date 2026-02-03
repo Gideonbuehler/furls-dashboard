@@ -12,10 +12,11 @@ The server is correctly configured to accept uploads at **TWO** endpoints:
 ```javascript
 // From server/index.js
 app.use("/api/upload", uploadRoutes); // Line 30 - Plugin upload endpoint
-app.use("/api/stats", uploadRoutes);  // Line 31 - Legacy endpoint
+app.use("/api/stats", uploadRoutes); // Line 31 - Legacy endpoint
 ```
 
 This means **BOTH** of these URLs work:
+
 - ✅ `https://furls.net/api/upload/upload`
 - ✅ `https://furls.net/api/stats/upload`
 
@@ -24,11 +25,13 @@ This means **BOTH** of these URLs work:
 ## Test Results
 
 Your PowerShell test script successfully uploads to:
+
 ```
 https://furls.net/api/upload/upload
 ```
 
 This confirms:
+
 - ✅ Server is running
 - ✅ API key authentication works
 - ✅ Upload endpoint processes data correctly
@@ -41,11 +44,13 @@ Since manual uploads work but the plugin doesn't, the issue is likely **one of t
 ### 1. Plugin is calling the wrong server URL
 
 **Check the plugin config file** (usually in BakkesMod folder):
+
 ```
 %APPDATA%/bakkesmod/bakkesmod/plugins/settings/furls.cfg
 ```
 
 Look for these settings:
+
 ```
 furls_server_url "https://furls.net"
 furls_api_key "your-key-here"
@@ -53,7 +58,8 @@ furls_auto_upload "1"
 ```
 
 **⚠️ CRITICAL: Check for these issues:**
-- ❌ Old URL: `https://furls-dashboard.onrender.com`
+
+- ❌ Old URL: `https://furls.net`
 - ❌ Trailing slash: `https://furls.net/`
 - ❌ Missing https: `http://furls.net`
 - ✅ Correct: `https://furls.net`
@@ -61,6 +67,7 @@ furls_auto_upload "1"
 ### 2. Plugin upload conditions are too strict
 
 The plugin code you shared only uploads when:
+
 ```cpp
 if (shots > 0 || goals > 0 || gameTime > 10) {
     // Upload
@@ -68,6 +75,7 @@ if (shots > 0 || goals > 0 || gameTime > 10) {
 ```
 
 This means the plugin WON'T upload if:
+
 - Zero shots taken
 - Zero goals scored
 - Game time less than 10 seconds
@@ -77,11 +85,13 @@ This means the plugin WON'T upload if:
 ### 3. Match end events aren't firing
 
 The plugin uploads on these events:
+
 - `EventMatchEnded`
 - `EventMatchWinnerSet`
 - `Destroyed`
 
 **To test this**: Check BakkesMod console (`F6` in-game) after a match ends. Look for:
+
 ```
 [STATS] Match ended processing complete
 [FURLS] Starting upload...
@@ -93,11 +103,13 @@ If you don't see these messages, the plugin isn't detecting match end.
 ### 4. Plugin is using wrong endpoint path
 
 From the C++ code, the plugin should be making a POST request to:
+
 ```
 {server_url}/api/stats/upload
 ```
 
 So if `furls_server_url` is `https://furls.net`, the full URL becomes:
+
 ```
 https://furls.net/api/stats/upload
 ```
@@ -116,6 +128,7 @@ This is correct and should work! ✅
 6. Check console immediately for messages starting with `[FURLS]` or `[STATS]`
 
 **What to look for:**
+
 ```
 [STATS] Match ended processing complete
 [FURLS] Starting upload...
@@ -125,6 +138,7 @@ This is correct and should work! ✅
 ```
 
 **Error messages to watch for:**
+
 ```
 [FURLS] Upload failed: 401 Unauthorized
 [FURLS] Upload failed: 404 Not Found
@@ -146,6 +160,7 @@ furls_enable_heatmaps "1"
 ```
 
 **To set them via console:**
+
 ```
 writecvar furls_server_url "https://furls.net"
 writecvar furls_api_key "YOUR_KEY_FROM_DASHBOARD"
@@ -155,6 +170,7 @@ writecvar furls_auto_upload "1"
 ### Step 3: Test API Key in Console
 
 In BakkesMod console, try:
+
 ```
 furls_test_upload
 ```
@@ -164,17 +180,20 @@ This should trigger a manual upload attempt and show detailed logs.
 ### Step 4: Check Windows Firewall
 
 The plugin uses WinHTTP to make HTTPS requests. Ensure:
+
 1. BakkesMod is allowed through Windows Firewall
 2. Rocket League is allowed through Windows Firewall
 3. No antivirus is blocking outgoing HTTPS connections
 
 **To test network connectivity:**
+
 ```powershell
 # In PowerShell
 Test-NetConnection -ComputerName furls.net -Port 443
 ```
 
 Should show:
+
 ```
 TcpTestSucceeded : True
 ```
@@ -182,11 +201,13 @@ TcpTestSucceeded : True
 ### Step 5: Enable Plugin Debug Logging
 
 If the plugin supports debug mode, enable it:
+
 ```
 writecvar furls_debug_logging "1"
 ```
 
 Then check BakkesMod logs at:
+
 ```
 %APPDATA%/bakkesmod/bakkesmod/logs/
 ```
@@ -223,8 +244,9 @@ If this works, your API key is valid and the server is accepting uploads.
 ### A. Plugin has hardcoded old URL
 
 If the plugin source code has:
+
 ```cpp
-std::string serverUrl = "https://furls-dashboard.onrender.com";
+std::string serverUrl = "https://furls.net";
 ```
 
 Then even if you set `furls_server_url` in the config, it won't be used.
@@ -246,6 +268,7 @@ If BakkesMod's game state wrapper isn't detecting match end events.
 ### D. Upload is being silently suppressed
 
 The plugin code might have additional conditions that prevent upload:
+
 - Minimum match duration
 - Online vs offline mode check
 - Playlist type restrictions
@@ -254,13 +277,13 @@ The plugin code might have additional conditions that prevent upload:
 
 ## What Works vs What Doesn't
 
-| Method | Status | Notes |
-|--------|--------|-------|
-| PowerShell test script | ✅ Works | Confirms server + API key valid |
-| Manual API call | ✅ Works | Confirms endpoint is correct |
-| Plugin in freeplay | ❌ Doesn't work | Need to diagnose |
-| Plugin in online match | ❌ Doesn't work | Need to diagnose |
-| Dashboard displays data | ✅ Works | When data is uploaded |
+| Method                  | Status          | Notes                           |
+| ----------------------- | --------------- | ------------------------------- |
+| PowerShell test script  | ✅ Works        | Confirms server + API key valid |
+| Manual API call         | ✅ Works        | Confirms endpoint is correct    |
+| Plugin in freeplay      | ❌ Doesn't work | Need to diagnose                |
+| Plugin in online match  | ❌ Doesn't work | Need to diagnose                |
+| Dashboard displays data | ✅ Works        | When data is uploaded           |
 
 ## Next Steps
 
@@ -329,18 +352,22 @@ The plugin code might have additional conditions that prevent upload:
 ## Key Questions to Answer
 
 1. **Does the plugin log ANYTHING to BakkesMod console?**
+
    - If no: Plugin isn't loading or events aren't firing
    - If yes: Check what the logs say
 
 2. **What is in the plugin config file right now?**
+
    - Need to see actual `furls.cfg` contents
    - Verify server URL is correct
 
 3. **Does `plugin list` show FURLS as loaded?**
+
    - If no: Plugin installation issue
    - If yes: Plugin is running but not uploading
 
 4. **Are match end events firing for other plugins?**
+
    - Test with another plugin that hooks match end
    - Confirms BakkesMod event system works
 

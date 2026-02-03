@@ -10,7 +10,8 @@ function Leaderboard() {
 
   useEffect(() => {
     loadLeaderboard();
-  }, [type, stat]);  const loadLeaderboard = async () => {
+  }, [type, stat]);
+  const loadLeaderboard = async () => {
     setLoading(true);
     try {
       if (type === "global") {
@@ -79,7 +80,8 @@ function Leaderboard() {
             </select>
           </div>
         </div>
-      </div>      {loading ? (
+      </div>{" "}
+      {loading ? (
         <div className="loading">Loading leaderboard...</div>
       ) : leaderboard.length === 0 ? (
         <div className="empty-state">

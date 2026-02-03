@@ -119,7 +119,8 @@ function SessionHistory({ sessionHistory }) {
           }}
         >
           ← Back to History
-        </button>        <div className="session-detail-container">
+        </button>{" "}
+        <div className="session-detail-container">
           <div className="session-detail-header">
             <h2>📊 Session Details</h2>
             <p className="session-date">
@@ -128,13 +129,17 @@ function SessionHistory({ sessionHistory }) {
           </div>
 
           {/* Match Metadata Section */}
-          {(selectedSession.playlist || selectedSession.is_ranked || selectedSession.mmr) && (
+          {(selectedSession.playlist ||
+            selectedSession.is_ranked ||
+            selectedSession.mmr) && (
             <div className="session-metadata-section">
               {selectedSession.playlist && (
                 <div className="session-metadata-badge">
                   <span className="badge-icon">🎮</span>
                   <span className="badge-label">Playlist:</span>
-                  <span className="badge-value">{selectedSession.playlist}</span>
+                  <span className="badge-value">
+                    {selectedSession.playlist}
+                  </span>
                 </div>
               )}
               {selectedSession.is_ranked === 1 && (
@@ -143,21 +148,32 @@ function SessionHistory({ sessionHistory }) {
                   <span className="badge-value">Ranked Match</span>
                 </div>
               )}
-              {selectedSession.mmr !== null && selectedSession.mmr !== undefined && (
-                <div className="session-metadata-badge">
-                  <span className="badge-icon">📊</span>
-                  <span className="badge-label">MMR:</span>
-                  <span className="badge-value">{Math.round(selectedSession.mmr)}</span>
-                </div>
-              )}
-              {selectedSession.mmr_change !== null && selectedSession.mmr_change !== undefined && (
-                <div className={`session-metadata-badge mmr-change ${selectedSession.mmr_change >= 0 ? 'positive' : 'negative'}`}>
-                  <span className="badge-icon">{selectedSession.mmr_change >= 0 ? '📈' : '📉'}</span>
-                  <span className="badge-value">
-                    {selectedSession.mmr_change >= 0 ? '+' : ''}{Math.round(selectedSession.mmr_change)} MMR
-                  </span>
-                </div>
-              )}
+              {selectedSession.mmr !== null &&
+                selectedSession.mmr !== undefined && (
+                  <div className="session-metadata-badge">
+                    <span className="badge-icon">📊</span>
+                    <span className="badge-label">MMR:</span>
+                    <span className="badge-value">
+                      {Math.round(selectedSession.mmr)}
+                    </span>
+                  </div>
+                )}
+              {selectedSession.mmr_change !== null &&
+                selectedSession.mmr_change !== undefined && (
+                  <div
+                    className={`session-metadata-badge mmr-change ${
+                      selectedSession.mmr_change >= 0 ? "positive" : "negative"
+                    }`}
+                  >
+                    <span className="badge-icon">
+                      {selectedSession.mmr_change >= 0 ? "📈" : "📉"}
+                    </span>
+                    <span className="badge-value">
+                      {selectedSession.mmr_change >= 0 ? "+" : ""}
+                      {Math.round(selectedSession.mmr_change)} MMR
+                    </span>
+                  </div>
+                )}
             </div>
           )}
 
@@ -338,7 +354,8 @@ function SessionHistory({ sessionHistory }) {
                 Boost Used{" "}
                 {sortConfig.key === "boost" &&
                   (sortConfig.direction === "asc" ? "↑" : "↓")}
-              </th>              <th onClick={() => handleSort("possession")} className="sortable">
+              </th>{" "}
+              <th onClick={() => handleSort("possession")} className="sortable">
                 Possession{" "}
                 {sortConfig.key === "possession" &&
                   (sortConfig.direction === "asc" ? "↑" : "↓")}
@@ -383,7 +400,8 @@ function SessionHistory({ sessionHistory }) {
                 </td>
                 <td>
                   {(session.boostUsed || session.boost_used || 0).toFixed(0)}
-                </td>                <td>
+                </td>{" "}
+                <td>
                   {(
                     session.possessionTime ||
                     session.possession_time ||
@@ -402,9 +420,15 @@ function SessionHistory({ sessionHistory }) {
                   )}
                 </td>
                 <td>
-                  {session.mmr_change !== null && session.mmr_change !== undefined ? (
-                    <span className={`mmr-delta ${session.mmr_change >= 0 ? 'positive' : 'negative'}`}>
-                      {session.mmr_change >= 0 ? '+' : ''}{Math.round(session.mmr_change)}
+                  {session.mmr_change !== null &&
+                  session.mmr_change !== undefined ? (
+                    <span
+                      className={`mmr-delta ${
+                        session.mmr_change >= 0 ? "positive" : "negative"
+                      }`}
+                    >
+                      {session.mmr_change >= 0 ? "+" : ""}
+                      {Math.round(session.mmr_change)}
                     </span>
                   ) : (
                     <span className="text-muted">-</span>

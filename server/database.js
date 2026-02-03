@@ -79,7 +79,7 @@ async function initializeTables() {
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
       )
-    `);    // Sessions table
+    `); // Sessions table
     db.run(`
       CREATE TABLE IF NOT EXISTS sessions (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -132,7 +132,7 @@ async function initializeTables() {
         notifications_enabled BOOLEAN DEFAULT 1,
         FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
       )
-    `);    // Create indexes
+    `); // Create indexes
     db.run(
       `CREATE INDEX IF NOT EXISTS idx_sessions_user_id ON sessions(user_id)`
     );
@@ -151,38 +151,41 @@ async function initializeTables() {
 
     // Run SQLite migrations for existing tables
     console.log("Running SQLite migrations...");
-    
+
     // Add new columns to sessions table if they don't exist
     db.all("PRAGMA table_info(sessions)", [], (err, columns) => {
       if (err) {
         console.error("❌ Error checking sessions table:", err);
         return;
       }
-      
-      const columnNames = columns.map(col => col.name);
-      
-      if (!columnNames.includes('playlist')) {
+
+      const columnNames = columns.map((col) => col.name);
+
+      if (!columnNames.includes("playlist")) {
         db.run("ALTER TABLE sessions ADD COLUMN playlist TEXT", (err) => {
           if (err) console.error("❌ Error adding playlist column:", err);
           else console.log("✓ Added playlist column to sessions table");
         });
       }
-      
-      if (!columnNames.includes('is_ranked')) {
-        db.run("ALTER TABLE sessions ADD COLUMN is_ranked INTEGER DEFAULT 0", (err) => {
-          if (err) console.error("❌ Error adding is_ranked column:", err);
-          else console.log("✓ Added is_ranked column to sessions table");
-        });
+
+      if (!columnNames.includes("is_ranked")) {
+        db.run(
+          "ALTER TABLE sessions ADD COLUMN is_ranked INTEGER DEFAULT 0",
+          (err) => {
+            if (err) console.error("❌ Error adding is_ranked column:", err);
+            else console.log("✓ Added is_ranked column to sessions table");
+          }
+        );
       }
-      
-      if (!columnNames.includes('mmr')) {
+
+      if (!columnNames.includes("mmr")) {
         db.run("ALTER TABLE sessions ADD COLUMN mmr REAL", (err) => {
           if (err) console.error("❌ Error adding mmr column:", err);
           else console.log("✓ Added mmr column to sessions table");
         });
       }
-      
-      if (!columnNames.includes('mmr_change')) {
+
+      if (!columnNames.includes("mmr_change")) {
         db.run("ALTER TABLE sessions ADD COLUMN mmr_change REAL", (err) => {
           if (err) console.error("❌ Error adding mmr_change column:", err);
           else console.log("✓ Added mmr_change column to sessions table");
@@ -215,7 +218,7 @@ async function initializeTables() {
           updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
       `);
-      console.log("✓ Users table ready");      // Sessions table (training sessions)
+      console.log("✓ Users table ready"); // Sessions table (training sessions)
       await client.query(`
         CREATE TABLE IF NOT EXISTS sessions (
           id SERIAL PRIMARY KEY,
@@ -316,7 +319,8 @@ async function initializeTables() {
           }
         } catch (err) {
           console.error(`❌ Error adding ${column} to ${table}:`, err.message);
-        }      }; // Add missing columns to users table      await addColumnIfNotExists('users', 'api_key', 'TEXT UNIQUE');
+        }
+      }; // Add missing columns to users table      await addColumnIfNotExists('users', 'api_key', 'TEXT UNIQUE');
       await addColumnIfNotExists("users", "bio", "TEXT");
       await addColumnIfNotExists(
         "users",

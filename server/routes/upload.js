@@ -58,7 +58,7 @@ router.post("/upload", authenticateApiKey, async (req, res) => {
       return res
         .status(400)
         .json({ error: "Missing required fields: shots and goals" });
-    }    // Save session
+    } // Save session
     const result = await dbAsync.run(
       `INSERT INTO sessions (
         user_id, timestamp, shots, goals, average_speed,
