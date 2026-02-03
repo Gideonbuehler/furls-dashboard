@@ -33,7 +33,6 @@ function Dashboard({ currentStats, allTimeStats, sessionHistory }) {
     const secs = Math.floor(seconds % 60);
     return `${mins}:${secs.toString().padStart(2, "0")}`;
   };
-
   const formatPlayTime = (seconds) => {
     const hours = Math.floor(seconds / 3600);
     const mins = Math.floor((seconds % 3600) / 60);
@@ -41,7 +40,8 @@ function Dashboard({ currentStats, allTimeStats, sessionHistory }) {
     return `${mins}m`;
   };
 
-  // Prepare chart data from session history  const chartData = sessionHistory.slice(-20).map((session, index) => ({
+  // Prepare chart data from session history
+  const chartData = sessionHistory.slice(-20).map((session, index) => ({
     session: index + 1,
     accuracy: session.shots > 0 ? (session.goals / session.shots) * 100 : 0,
     shots: session.shots || 0,
