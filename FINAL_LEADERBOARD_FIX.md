@@ -5,11 +5,13 @@
 PostgreSQL's `ROUND()` function requires NUMERIC type, not FLOAT/DOUBLE PRECISION.
 
 ### Error:
+
 ```
 function round(double precision, integer) does not exist
 ```
 
 ### Root Cause:
+
 ```sql
 -- ❌ WRONG (works in SQLite, fails in PostgreSQL)
 ROUND((CAST(value AS FLOAT) / divisor * 100), 2)
@@ -25,6 +27,7 @@ ROUND((value::numeric / divisor * 100)::numeric, 2)
 ### File: `server/routes/public.js`
 
 #### Changed Accuracy Calculation:
+
 ```sql
 -- OLD (broken):
 ROUND(COALESCE((CAST(COALESCE(total_goals, 0) AS FLOAT) / NULLIF(COALESCE(total_shots, 0), 0) * 100), 0), 2) as accuracy
@@ -34,6 +37,7 @@ ROUND(COALESCE((COALESCE(total_goals, 0)::numeric / NULLIF(COALESCE(total_shots,
 ```
 
 #### Changed ORDER BY for Accuracy:
+
 ```sql
 -- OLD (broken):
 orderBy = "(CAST(COALESCE(total_goals, 0) AS FLOAT) / NULLIF(COALESCE(total_shots, 0), 0)) DESC NULLS LAST"

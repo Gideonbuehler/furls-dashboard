@@ -3,6 +3,7 @@
 ## ✅ What Was Changed
 
 ### 1. **Dashboard Cards** - Ultra Minimal Design
+
 - Reduced padding and sizing for cleaner look
 - Removed heavy gradients and shadows
 - Subtle border accents (1px instead of 2px)
@@ -11,6 +12,7 @@
 - Backdrop blur for modern glass effect
 
 ### 2. **Leaderboard** - Clean & Minimal
+
 - Simplified card structure
 - Removed bulky medals and rankings
 - Clean typography hierarchy
@@ -19,6 +21,7 @@
 - Modern glass-morphism styling
 
 ### 3. **Friends Cards** - Sleek Design
+
 - Minimalist card layout
 - Clean avatar display
 - Better button styling
@@ -26,6 +29,7 @@
 - Subtle animations
 
 ### 4. **History Session Cards** - Clickable & Detailed
+
 - Added click-to-expand functionality
 - Detailed session stats view
 - Smooth transitions
@@ -33,6 +37,7 @@
 - Better data organization
 
 ### 5. **Player Search** - Fixed
+
 - Removed undefined `selectedPlayer` reference
 - Now uses correct `selectedUsername` state
 - No more console errors
@@ -42,6 +47,7 @@
 ## 🎨 Design Changes
 
 ### Before:
+
 - Heavy gradients and shadows
 - Large padding (2rem)
 - Thick borders (2px)
@@ -50,6 +56,7 @@
 - Bulky typography
 
 ### After:
+
 - Subtle backgrounds with blur
 - Compact padding (1.25rem)
 - Thin borders (1px)
@@ -84,18 +91,21 @@ git push origin main
 ## 🎯 Key Features
 
 ### Clickable History Sessions:
+
 - Click any session row → See full stats
 - Shows: Shots, Goals, Accuracy, Speed, Boost, Time
 - Back button to return to list
 - Smooth slide-in animation
 
 ### Minimalist Cards:
+
 - Less visual clutter
 - Better readability
 - Faster perception of stats
 - Modern glass-morphism effect
 
 ### Consistent Design Language:
+
 - All cards use same styling
 - Unified hover effects
 - Consistent spacing
@@ -106,6 +116,7 @@ git push origin main
 ## 📊 Visual Comparison
 
 ### Card Styling:
+
 ```css
 /* Before */
 background: linear-gradient(...);
@@ -125,6 +136,7 @@ box-shadow: 0 4px 12px...;
 ```
 
 ### Typography:
+
 ```css
 /* Before */
 font-size: 3rem;

@@ -8,7 +8,7 @@ router.get("/profile/:username", async (req, res) => {
 
   try {
     console.log(`[PUBLIC PROFILE] Fetching profile for: ${username}`);
-    
+
     // First, check if user exists with minimal query
     const userCheck = await dbAsync.get(
       `SELECT id FROM users WHERE username = ?`,
@@ -18,7 +18,7 @@ router.get("/profile/:username", async (req, res) => {
     if (!userCheck) {
       console.log(`[PUBLIC PROFILE] User not found: ${username}`);
       return res.status(404).json({ error: "Player not found" });
-    }    // Now get full user data
+    } // Now get full user data
     const user = await dbAsync.get(
       `SELECT id, username, 
               COALESCE(display_name, username) as display_name, 
@@ -35,16 +35,21 @@ router.get("/profile/:username", async (req, res) => {
       [userCheck.id]
     );
 
-    console.log(`[PUBLIC PROFILE] User found: ${user.username}, visibility: ${user.profile_visibility || 'null'}`);
+    console.log(
+      `[PUBLIC PROFILE] User found: ${user.username}, visibility: ${
+        user.profile_visibility || "null"
+      }`
+    );
 
     if (user.profile_visibility === "private") {
       return res.status(403).json({ error: "Profile is private" });
     }
 
     // Calculate accuracy
-    const accuracy = user.total_shots > 0 
-      ? ((user.total_goals / user.total_shots) * 100).toFixed(1)
-      : 0;
+    const accuracy =
+      user.total_shots > 0
+        ? ((user.total_goals / user.total_shots) * 100).toFixed(1)
+        : 0;
 
     console.log(`[PUBLIC PROFILE] Fetching sessions for user ID: ${user.id}`);
 
@@ -58,22 +63,27 @@ router.get("/profile/:username", async (req, res) => {
       [user.id]
     );
 
-    console.log(`[PUBLIC PROFILE] Found ${sessions ? sessions.length : 0} sessions for ${username}`);
+    console.log(
+      `[PUBLIC PROFILE] Found ${
+        sessions ? sessions.length : 0
+      } sessions for ${username}`
+    );
 
-    res.json({ 
+    res.json({
       user: {
         ...user,
-        accuracy: parseFloat(accuracy)
-      }, 
-      sessions: sessions || [] 
+        accuracy: parseFloat(accuracy),
+      },
+      sessions: sessions || [],
     });
   } catch (error) {
     console.error(`[PUBLIC PROFILE ERROR] User: ${username}`);
     console.error(`[PUBLIC PROFILE ERROR] Message:`, error.message);
     console.error(`[PUBLIC PROFILE ERROR] Stack:`, error.stack);
-    res.status(500).json({ 
-      error: "Failed to load profile", 
-      details: process.env.NODE_ENV === 'development' ? error.message : undefined 
+    res.status(500).json({
+      error: "Failed to load profile",
+      details:
+        process.env.NODE_ENV === "development" ? error.message : undefined,
     });
   }
 });
@@ -146,15 +156,18 @@ router.get("/search", async (req, res) => {
 router.get("/leaderboard/:stat", async (req, res) => {
   const { stat } = req.params;
   const { limit = 100, offset = 0 } = req.query;
-  
-  console.log(`[PUBLIC LEADERBOARD] Stat: ${stat}, Limit: ${limit}, Offset: ${offset}`);
+
+  console.log(
+    `[PUBLIC LEADERBOARD] Stat: ${stat}, Limit: ${limit}, Offset: ${offset}`
+  );
   try {
     let orderBy = "COALESCE(total_shots, 0) DESC";
     if (stat === "goals") orderBy = "COALESCE(total_goals, 0) DESC";
     if (stat === "accuracy")
-      orderBy = "(COALESCE(total_goals, 0)::numeric / NULLIF(COALESCE(total_shots, 0), 0)) DESC NULLS LAST";
+      orderBy =
+        "(COALESCE(total_goals, 0)::numeric / NULLIF(COALESCE(total_shots, 0), 0)) DESC NULLS LAST";
     if (stat === "sessions") orderBy = "COALESCE(total_sessions, 0) DESC";
-      const query = `
+    const query = `
       SELECT id, username, 
              COALESCE(display_name, username) as display_name, 
              COALESCE(avatar_url, '') as avatar_url, 
@@ -175,16 +188,18 @@ router.get("/leaderboard/:stat", async (req, res) => {
       parseInt(offset),
     ]);
 
-    console.log(`[PUBLIC LEADERBOARD] Found ${players ? players.length : 0} players`);
+    console.log(
+      `[PUBLIC LEADERBOARD] Found ${players ? players.length : 0} players`
+    );
     res.json(players || []);
   } catch (error) {
     console.error("[PUBLIC LEADERBOARD ERROR]", error.message);
     console.error("[PUBLIC LEADERBOARD ERROR STACK]", error.stack);
     console.error("[PUBLIC LEADERBOARD ERROR CODE]", error.code);
-    res.status(500).json({ 
+    res.status(500).json({
       error: "Failed to load leaderboard",
       message: error.message,
-      code: error.code
+      code: error.code,
     });
   }
 });

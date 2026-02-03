@@ -250,8 +250,10 @@ router.get("/leaderboard", authenticateToken, async (req, res) => {
   const { type = "friends", stat = "accuracy" } = req.query;
 
   try {
-    console.log(`[LEADERBOARD] Type: ${type}, Stat: ${stat}, User: ${req.user.userId}`);
-    
+    console.log(
+      `[LEADERBOARD] Type: ${type}, Stat: ${stat}, User: ${req.user.userId}`
+    );
+
     let query;
     let params = [];
 
@@ -316,7 +318,7 @@ router.get("/leaderboard", authenticateToken, async (req, res) => {
     console.log(`[LEADERBOARD] Executing query with ${params.length} params`);
     const leaderboard = await dbAsync.all(query, params);
     console.log(`[LEADERBOARD] Found ${leaderboard.length} entries`);
-    
+
     res.json(leaderboard);
   } catch (error) {
     console.error("[LEADERBOARD ERROR]", error.message);

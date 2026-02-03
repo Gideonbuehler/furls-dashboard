@@ -3,9 +3,11 @@
 ## 🔴 Critical Issue: Users Can't Upload Stats
 
 ### **Root Cause:**
+
 Users who registered BEFORE the `api_key` column was added to the database schema don't have API keys generated. Only users who registered AFTER the migration have API keys.
 
 ### **Impact:**
+
 - ❌ Existing users can't upload stats (401 Unauthorized)
 - ❌ Settings page shows no API key for old users
 - ✅ New users work fine (have API keys)
@@ -16,6 +18,7 @@ Users who registered BEFORE the `api_key` column was added to the database schem
 ## ✅ Fixes Implemented
 
 ### 1. **Database Migration - Generate Missing API Keys**
+
 Added automatic API key generation for users who don't have one.
 
 **File:** `server/database.js`
@@ -28,21 +31,22 @@ const usersWithoutKeys = await dbAsync.all(
 
 if (usersWithoutKeys.length > 0) {
   console.log(`🔑 Generating API keys for ${usersWithoutKeys.length} users...`);
-  
+
   for (const user of usersWithoutKeys) {
     const apiKey = crypto.randomBytes(32).toString("hex");
-    await dbAsync.run(
-      `UPDATE users SET api_key = ? WHERE id = ?`,
-      [apiKey, user.id]
-    );
+    await dbAsync.run(`UPDATE users SET api_key = ? WHERE id = ?`, [
+      apiKey,
+      user.id,
+    ]);
     console.log(`  ✓ Generated API key for user: ${user.username}`);
   }
-  
+
   console.log(`✅ API key generation complete!`);
 }
 ```
 
 ### 2. **Settings Page - Auto-Generate on First View**
+
 If a user visits Settings and has no API key, one is automatically generated.
 
 **File:** `server/routes/auth.js`
@@ -50,18 +54,17 @@ If a user visits Settings and has no API key, one is automatically generated.
 ```javascript
 router.get("/api-key", authenticateToken, async (req, res) => {
   try {
-    const user = await dbAsync.get(
-      "SELECT api_key FROM users WHERE id = ?",
-      [req.user.userId]
-    );
+    const user = await dbAsync.get("SELECT api_key FROM users WHERE id = ?", [
+      req.user.userId,
+    ]);
 
     // If no API key exists, generate one
     if (!user || !user.api_key) {
       const newApiKey = crypto.randomBytes(32).toString("hex");
-      await dbAsync.run(
-        "UPDATE users SET api_key = ? WHERE id = ?",
-        [newApiKey, req.user.userId]
-      );
+      await dbAsync.run("UPDATE users SET api_key = ? WHERE id = ?", [
+        newApiKey,
+        req.user.userId,
+      ]);
       return res.json({ apiKey: newApiKey });
     }
 
@@ -74,6 +77,7 @@ router.get("/api-key", authenticateToken, async (req, res) => {
 ```
 
 ### 3. **Leaderboard Query - Fixed Missing Columns**
+
 Added COALESCE to all columns and ORDER BY clause.
 
 **File:** `server/routes/public.js`
@@ -82,7 +86,8 @@ Added COALESCE to all columns and ORDER BY clause.
 let orderBy = "COALESCE(total_shots, 0) DESC";
 if (stat === "goals") orderBy = "COALESCE(total_goals, 0) DESC";
 if (stat === "accuracy")
-  orderBy = "(CAST(COALESCE(total_goals, 0) AS FLOAT) / NULLIF(COALESCE(total_shots, 0), 0)) DESC";
+  orderBy =
+    "(CAST(COALESCE(total_goals, 0) AS FLOAT) / NULLIF(COALESCE(total_shots, 0), 0)) DESC";
 if (stat === "sessions") orderBy = "COALESCE(total_sessions, 0) DESC";
 
 const query = `
@@ -106,6 +111,7 @@ const query = `
 ## 🔧 All Changes Made
 
 ### Modified Files:
+
 1. ✅ `server/database.js` - API key migration
 2. ✅ `server/routes/auth.js` - Auto-generate API keys
 3. ✅ `server/routes/public.js` - Fixed leaderboard queries
@@ -132,6 +138,7 @@ git push origin main
 Watch Render logs for these messages:
 
 ### ✅ Success Messages:
+
 ```
 Initializing PostgreSQL tables...
 ✓ Users table ready
@@ -150,6 +157,7 @@ Running database migrations...
 ```
 
 ### 🎯 What This Will Fix:
+
 - ✅ All existing users will get API keys automatically
 - ✅ Stats uploads will work for everyone
 - ✅ Settings page will show API keys for all users
@@ -161,6 +169,7 @@ Running database migrations...
 ## 🧪 Testing After Deployment
 
 ### Test 1: Existing User Gets API Key
+
 1. Login as an existing user (not you)
 2. Go to Settings tab
 3. Verify API key is displayed
@@ -168,18 +177,21 @@ Running database migrations...
 5. Test it in the plugin
 
 ### Test 2: Stats Upload Works
+
 1. Configure plugin with the API key
 2. Play freeplay, shoot some shots
 3. Exit match
 4. Check dashboard for new session
 
 ### Test 3: Leaderboard Works
+
 1. Go to Leaderboard tab
 2. Select "Global"
 3. Try all stats: Accuracy, Goals, Shots, Sessions
 4. Should display ranked players (no 500 error)
 
 ### Test 4: Friend Profile Works
+
 1. Go to Friends tab
 2. Click "View Stats" on a friend
 3. Should show their profile (no 500 error)
@@ -215,7 +227,9 @@ foreach ($endpoint in $endpoints) {
 ## 🆘 Troubleshooting
 
 ### Issue: Users still can't upload after deployment
+
 **Fix:** Tell them to:
+
 1. Logout
 2. Login again
 3. Go to Settings
@@ -223,10 +237,12 @@ foreach ($endpoint in $endpoints) {
 5. Update plugin
 
 ### Issue: Leaderboard still shows 500 error
+
 **Check:** Server logs for SQL error details
 **Fix:** May need to add more COALESCE or check column names
 
 ### Issue: Migration didn't run
+
 **Check:** Render logs for migration messages
 **Fix:** Restart Render service manually
 
@@ -235,6 +251,7 @@ foreach ($endpoint in $endpoints) {
 ## 🎯 Success Criteria
 
 After deployment is successful when:
+
 - [ ] Render logs show "🔑 Generating API keys for X users..."
 - [ ] All users can see their API key in Settings
 - [ ] Stats upload works for all users
@@ -254,6 +271,7 @@ After deployment is successful when:
 ## 💡 Why This Happened
 
 The `api_key` column was added to the database schema, but:
+
 1. Existing users had no API key (NULL)
 2. No migration to backfill API keys
 3. New users get API keys on registration (works)

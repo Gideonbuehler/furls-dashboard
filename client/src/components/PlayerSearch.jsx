@@ -9,7 +9,7 @@ function PlayerSearch() {
   const [selectedUsername, setSelectedUsername] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  
+
   const handleSearch = async (e) => {
     e.preventDefault();
     if (!searchQuery.trim()) return;
@@ -61,7 +61,6 @@ function PlayerSearch() {
     <div className="player-search">
       <div className="search-container">
         <h2>🔍 Search Players</h2>
-
         <form onSubmit={handleSearch} className="search-form">
           <input
             type="text"
@@ -74,13 +73,13 @@ function PlayerSearch() {
             {loading ? "🔄 Searching..." : "🔍 Search"}
           </button>
         </form>
-
         {error && (
           <div className="alert alert-error">
             <span className="alert-icon">⚠️</span>
             {error}
           </div>
-        )}        {searchResults.length > 0 && (
+        )}{" "}
+        {searchResults.length > 0 && (
           <div className="search-results">
             <h3>Search Results ({searchResults.length})</h3>
             <div className="results-list">
@@ -91,7 +90,9 @@ function PlayerSearch() {
                       <img src={player.avatar_url} alt={player.username} />
                     ) : (
                       <div className="avatar-placeholder-small">
-                        {(player.display_name || player.username).charAt(0).toUpperCase()}
+                        {(player.display_name || player.username)
+                          .charAt(0)
+                          .toUpperCase()}
                       </div>
                     )}
                   </div>
@@ -111,7 +112,8 @@ function PlayerSearch() {
                     View Profile →
                   </button>
                 </div>
-              ))}            </div>
+              ))}{" "}
+            </div>
           </div>
         )}
       </div>

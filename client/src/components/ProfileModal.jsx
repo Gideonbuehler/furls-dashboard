@@ -92,19 +92,19 @@ function ProfileModal({ isOpen, onClose, user }) {
     if (!file) return;
 
     // Validate file type
-    if (!file.type.startsWith('image/')) {
-      setError('Please select an image file');
+    if (!file.type.startsWith("image/")) {
+      setError("Please select an image file");
       return;
     }
 
     // Validate file size (max 5MB)
     if (file.size > 5 * 1024 * 1024) {
-      setError('Image must be less than 5MB');
+      setError("Image must be less than 5MB");
       return;
     }
 
     setSelectedFile(file);
-    
+
     // Create preview and compress
     const reader = new FileReader();
     reader.onloadend = () => {
@@ -116,15 +116,15 @@ function ProfileModal({ isOpen, onClose, user }) {
   const compressImage = (base64) => {
     const img = new Image();
     img.onload = () => {
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
-      
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
+
       // Maximum dimensions
       const MAX_SIZE = 400;
-      
+
       let width = img.width;
       let height = img.height;
-      
+
       // Calculate new dimensions (keep aspect ratio)
       if (width > height) {
         if (width > MAX_SIZE) {
@@ -137,26 +137,26 @@ function ProfileModal({ isOpen, onClose, user }) {
           height = MAX_SIZE;
         }
       }
-      
+
       canvas.width = width;
       canvas.height = height;
-      
+
       // Draw and compress
       ctx.drawImage(img, 0, 0, width, height);
-      
+
       // Convert to base64 with quality reduction (0.7 = 70% quality)
-      const compressed = canvas.toDataURL('image/jpeg', 0.7);
+      const compressed = canvas.toDataURL("image/jpeg", 0.7);
       setPreviewUrl(compressed);
     };
     img.onerror = () => {
-      setError('Failed to load image');
+      setError("Failed to load image");
     };
     img.src = base64;
   };
 
   const handleImageUpload = async () => {
     if (!previewUrl) {
-      setError('No image to upload');
+      setError("No image to upload");
       return;
     }
 
@@ -165,22 +165,23 @@ function ProfileModal({ isOpen, onClose, user }) {
 
     try {
       const response = await authAPI.uploadAvatar({ avatar: previewUrl });
-      
+
       setProfile({ ...profile, avatarUrl: response.data.avatarUrl });
-      setSuccess('Avatar uploaded successfully!');
+      setSuccess("Avatar uploaded successfully!");
       setSelectedFile(null);
       setPreviewUrl(null);
-      
+
       // Update local storage
       const currentUser = authAPI.getCurrentUser();
       authAPI.setAuthData(localStorage.getItem("token"), {
         ...currentUser,
         avatarUrl: response.data.avatarUrl,
-      });      setTimeout(() => {
+      });
+      setTimeout(() => {
         window.location.reload();
       }, 1500);
     } catch (err) {
-      setError(err.response?.data?.error || 'Failed to upload image');
+      setError(err.response?.data?.error || "Failed to upload image");
     } finally {
       setUploading(false);
     }
@@ -229,7 +230,6 @@ function ProfileModal({ isOpen, onClose, user }) {
               />
               <span className="form-hint">How your name appears to others</span>
             </div>
-
             <div className="form-group">
               <label htmlFor="bio">Bio</label>
               <textarea
@@ -246,23 +246,28 @@ function ProfileModal({ isOpen, onClose, user }) {
               <span className="form-hint">
                 {profile.bio.length}/500 characters
               </span>
-            </div>            <div className="form-group">
+            </div>{" "}
+            <div className="form-group">
               <label>Profile Picture</label>
-              
+
               <div className="avatar-upload-section">
                 <div className="avatar-preview-large">
-                  {(previewUrl || profile.avatarUrl) ? (
+                  {previewUrl || profile.avatarUrl ? (
                     <img
                       src={previewUrl || profile.avatarUrl}
                       alt="Avatar"
                       className="avatar-img-large"
                       onError={(e) => {
-                        e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(profile.displayName || user?.username || 'U')}&size=200&background=bb86fc&color=fff`;
+                        e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(
+                          profile.displayName || user?.username || "U"
+                        )}&size=200&background=bb86fc&color=fff`;
                       }}
                     />
                   ) : (
                     <div className="avatar-placeholder-large">
-                      {(profile.displayName || user?.username || 'U').charAt(0).toUpperCase()}
+                      {(profile.displayName || user?.username || "U")
+                        .charAt(0)
+                        .toUpperCase()}
                     </div>
                   )}
                 </div>
@@ -274,10 +279,10 @@ function ProfileModal({ isOpen, onClose, user }) {
                       type="file"
                       accept="image/*"
                       onChange={handleFileSelect}
-                      style={{ display: 'none' }}
+                      style={{ display: "none" }}
                     />
                   </label>
-                  
+
                   {selectedFile && (
                     <button
                       type="button"
@@ -285,7 +290,7 @@ function ProfileModal({ isOpen, onClose, user }) {
                       onClick={handleImageUpload}
                       disabled={uploading}
                     >
-                      {uploading ? '⏳ Uploading...' : '✅ Upload Image'}
+                      {uploading ? "⏳ Uploading..." : "✅ Upload Image"}
                     </button>
                   )}
                 </div>
@@ -314,7 +319,6 @@ function ProfileModal({ isOpen, onClose, user }) {
                 Paste a URL to your profile picture
               </span>
             </div>
-
             <button type="submit" className="btn-save" disabled={loading}>
               {loading ? "💾 Saving..." : "💾 Save Profile"}
             </button>

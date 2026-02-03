@@ -92,7 +92,8 @@ export const statsAPI = {
     api.get(`/user/stats/history?limit=${limit}&offset=${offset}`),
   getAllTimeStats: () => api.get("/user/stats/alltime"),
   getSession: (sessionId) => api.get(`/user/stats/session/${sessionId}`),
-  getFriendStats: (friendId) => api.get(`/user/stats/friend/${friendId}`),  getLeaderboard: (type = "friends", stat = "accuracy") =>
+  getFriendStats: (friendId) => api.get(`/user/stats/friend/${friendId}`),
+  getLeaderboard: (type = "friends", stat = "accuracy") =>
     api.get(`/user/stats/leaderboard?type=${type}&stat=${stat}`),
   getPluginStatus: () => api.get("/user/stats/plugin-status"), // Check if plugin is connected
   getHeatmap: () => api.get("/user/stats/heatmap"), // Get aggregated heatmap data

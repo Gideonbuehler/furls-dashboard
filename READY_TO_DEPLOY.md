@@ -3,19 +3,23 @@
 ## ✅ All Issues Resolved
 
 ### 1. Friend Profile 500 Error - ✅ FIXED
+
 - Added COALESCE fallbacks for missing columns
 - Enhanced error logging
 
-### 2. Global Leaderboard 500 Error - ✅ FIXED  
+### 2. Global Leaderboard 500 Error - ✅ FIXED
+
 - Fixed PostgreSQL ROUND() function (use ::numeric instead of CAST AS FLOAT)
 - Added COALESCE fallbacks
 - Fixed ORDER BY with NULLS LAST
 
 ### 3. Leaderboard Client Error - ✅ FIXED
+
 - Handle null/undefined accuracy values
 - Use Number() wrapper to safely call .toFixed()
 
 ### 4. Missing API Keys - ✅ FIXED
+
 - Auto-generate API keys for existing users on server startup
 - Auto-generate API keys when viewing Settings page
 - All users can now upload stats
@@ -25,12 +29,14 @@
 ## 📦 Files Modified
 
 ### Server:
+
 1. ✅ `server/database.js` - API key migration
-2. ✅ `server/routes/auth.js` - Auto-generate API keys  
+2. ✅ `server/routes/auth.js` - Auto-generate API keys
 3. ✅ `server/routes/public.js` - PostgreSQL ROUND() fix + COALESCE
 4. ✅ `server/routes/stats.js` - Friends leaderboard
 
 ### Client:
+
 5. ✅ `client/src/components/Leaderboard.jsx` - Null safety for accuracy
 6. ✅ `client/src/components/Friends.jsx` - Profile viewing
 7. ✅ `client/src/components/ProfileModal.jsx` - Syntax fix
@@ -80,6 +86,7 @@ Checking for users without API keys...
 ## 🧪 Test After Deployment
 
 ### Automated Test:
+
 ```powershell
 # Test all leaderboard endpoints
 $endpoints = @(
@@ -108,9 +115,10 @@ try {
 ```
 
 ### Manual Test:
+
 1. **Login** to https://furls.net
 2. **Settings Tab**: Verify API key is shown
-3. **Leaderboard Tab**: 
+3. **Leaderboard Tab**:
    - Select "Global" → Should show ranked players
    - Try all stats: Accuracy, Goals, Shots, Sessions
    - No 500 errors, no JavaScript errors
@@ -125,19 +133,20 @@ try {
 
 ## 🎯 What's Fixed
 
-| Issue | Before | After |
-|-------|--------|-------|
-| Friend profiles | ❌ 500 error | ✅ Loads correctly |
-| Global leaderboard | ❌ 500 error | ✅ Shows ranked players |
-| Leaderboard accuracy | ❌ JS error (toFixed) | ✅ Handles null values |
-| User API keys | ❌ Missing for old users | ✅ Auto-generated |
-| Stats upload | ❌ 401 for old users | ✅ Works for everyone |
+| Issue                | Before                   | After                   |
+| -------------------- | ------------------------ | ----------------------- |
+| Friend profiles      | ❌ 500 error             | ✅ Loads correctly      |
+| Global leaderboard   | ❌ 500 error             | ✅ Shows ranked players |
+| Leaderboard accuracy | ❌ JS error (toFixed)    | ✅ Handles null values  |
+| User API keys        | ❌ Missing for old users | ✅ Auto-generated       |
+| Stats upload         | ❌ 401 for old users     | ✅ Works for everyone   |
 
 ---
 
 ## 🔍 Key Changes
 
 ### PostgreSQL ROUND() Fix:
+
 ```sql
 -- Before (broken):
 ROUND((CAST(goals AS FLOAT) / shots * 100), 2)
@@ -147,15 +156,17 @@ ROUND((goals::numeric / shots * 100)::numeric, 2)
 ```
 
 ### Client Null Safety:
+
 ```javascript
 // Before (broken):
-player.accuracy.toFixed(1)
+player.accuracy.toFixed(1);
 
 // After (working):
-Number(player.accuracy ?? 0).toFixed(1)
+Number(player.accuracy ?? 0).toFixed(1);
 ```
 
 ### API Key Migration:
+
 ```javascript
 // Auto-generate missing keys on startup
 const usersWithoutKeys = await dbAsync.all(
@@ -164,16 +175,17 @@ const usersWithoutKeys = await dbAsync.all(
 
 for (const user of usersWithoutKeys) {
   const apiKey = crypto.randomBytes(32).toString("hex");
-  await dbAsync.run(
-    `UPDATE users SET api_key = ? WHERE id = ?`,
-    [apiKey, user.id]
-  );
+  await dbAsync.run(`UPDATE users SET api_key = ? WHERE id = ?`, [
+    apiKey,
+    user.id,
+  ]);
 }
 ```
 
 ---
 
 ## ⏱️ Deployment Time
+
 **ETA: 2-3 minutes**
 
 ## 🎉 Success Criteria

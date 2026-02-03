@@ -70,7 +70,9 @@ function PublicProfile({ username, onBack }) {
 
   if (error) {
     return (
-      <div className="public-profile">        <div className="error-container">
+      <div className="public-profile">
+        {" "}
+        <div className="error-container">
           <div className="error-icon">😞</div>
           <h2>{error}</h2>
           <button className="btn-back" onClick={onBack}>
@@ -81,7 +83,8 @@ function PublicProfile({ username, onBack }) {
     );
   }
 
-  return (    <div className="public-profile">
+  return (
+    <div className="public-profile">
       {onBack && (
         <button className="btn-back-float" onClick={onBack}>
           ← Back to Search
@@ -121,7 +124,9 @@ function PublicProfile({ username, onBack }) {
             {profile.user.display_name || profile.user.username}
           </h1>
           <p className="profile-username">@{profile.user.username}</p>
-          {profile.user.bio && <p className="profile-bio">{profile.user.bio}</p>}
+          {profile.user.bio && (
+            <p className="profile-bio">{profile.user.bio}</p>
+          )}
           <div className="profile-meta">
             <span className="meta-item">
               📅 Joined {formatDate(profile.user.created_at)}

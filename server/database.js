@@ -79,9 +79,7 @@ async function initializeTables() {
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
       )
-    `);
-
-    // Sessions table
+    `);    // Sessions table
     db.run(`
       CREATE TABLE IF NOT EXISTS sessions (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -99,6 +97,10 @@ async function initializeTables() {
         opponent_possession_time REAL DEFAULT 0,
         shot_heatmap TEXT,
         goal_heatmap TEXT,
+        playlist TEXT,
+        is_ranked INTEGER DEFAULT 0,
+        mmr REAL,
+        mmr_change REAL,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
       )
@@ -130,9 +132,7 @@ async function initializeTables() {
         notifications_enabled BOOLEAN DEFAULT 1,
         FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
       )
-    `);
-
-    // Create indexes
+    `);    // Create indexes
     db.run(
       `CREATE INDEX IF NOT EXISTS idx_sessions_user_id ON sessions(user_id)`
     );
@@ -146,11 +146,51 @@ async function initializeTables() {
       `CREATE INDEX IF NOT EXISTS idx_friendships_friend_id ON friendships(friend_id)`
     );
     db.run(
-      `CREATE INDEX IF NOT EXISTS idx_friendships_status ON friendships(status)`,
-      (err) => {
-        if (!err) console.log("✅ SQLite database initialized successfully");
-      }
+      `CREATE INDEX IF NOT EXISTS idx_friendships_status ON friendships(status)`
     );
+
+    // Run SQLite migrations for existing tables
+    console.log("Running SQLite migrations...");
+    
+    // Add new columns to sessions table if they don't exist
+    db.all("PRAGMA table_info(sessions)", [], (err, columns) => {
+      if (err) {
+        console.error("❌ Error checking sessions table:", err);
+        return;
+      }
+      
+      const columnNames = columns.map(col => col.name);
+      
+      if (!columnNames.includes('playlist')) {
+        db.run("ALTER TABLE sessions ADD COLUMN playlist TEXT", (err) => {
+          if (err) console.error("❌ Error adding playlist column:", err);
+          else console.log("✓ Added playlist column to sessions table");
+        });
+      }
+      
+      if (!columnNames.includes('is_ranked')) {
+        db.run("ALTER TABLE sessions ADD COLUMN is_ranked INTEGER DEFAULT 0", (err) => {
+          if (err) console.error("❌ Error adding is_ranked column:", err);
+          else console.log("✓ Added is_ranked column to sessions table");
+        });
+      }
+      
+      if (!columnNames.includes('mmr')) {
+        db.run("ALTER TABLE sessions ADD COLUMN mmr REAL", (err) => {
+          if (err) console.error("❌ Error adding mmr column:", err);
+          else console.log("✓ Added mmr column to sessions table");
+        });
+      }
+      
+      if (!columnNames.includes('mmr_change')) {
+        db.run("ALTER TABLE sessions ADD COLUMN mmr_change REAL", (err) => {
+          if (err) console.error("❌ Error adding mmr_change column:", err);
+          else console.log("✓ Added mmr_change column to sessions table");
+        });
+      }
+
+      console.log("✅ SQLite database initialized successfully");
+    });
   } else {
     // PostgreSQL table initialization (async)
     const client = await pool.connect();
@@ -175,9 +215,7 @@ async function initializeTables() {
           updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
       `);
-      console.log("✓ Users table ready");
-
-      // Sessions table (training sessions)
+      console.log("✓ Users table ready");      // Sessions table (training sessions)
       await client.query(`
         CREATE TABLE IF NOT EXISTS sessions (
           id SERIAL PRIMARY KEY,
@@ -195,6 +233,10 @@ async function initializeTables() {
           opponent_possession_time REAL DEFAULT 0,
           shot_heatmap TEXT,
           goal_heatmap TEXT,
+          playlist TEXT,
+          is_ranked INTEGER DEFAULT 0,
+          mmr REAL,
+          mmr_change REAL,
           created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
           FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
         )
@@ -249,11 +291,12 @@ async function initializeTables() {
       );
       await client.query(
         `CREATE INDEX IF NOT EXISTS idx_users_api_key ON users(api_key) WHERE api_key IS NOT NULL`
-      );      console.log("✓ Indexes created");
+      );
+      console.log("✓ Indexes created");
 
       // Run migrations for existing tables
       console.log("Running database migrations...");
-      
+
       // Function to check if column exists and add it if not
       const addColumnIfNotExists = async (table, column, definition) => {
         try {
@@ -262,43 +305,58 @@ async function initializeTables() {
             FROM information_schema.columns 
             WHERE table_name='${table}' AND column_name='${column}'
           `);
-          
+
           if (result.rows.length === 0) {
-            await client.query(`ALTER TABLE ${table} ADD COLUMN ${column} ${definition}`);
+            await client.query(
+              `ALTER TABLE ${table} ADD COLUMN ${column} ${definition}`
+            );
             console.log(`✓ Added ${column} column to ${table} table`);
           } else {
             console.log(`✓ ${column} column already exists in ${table} table`);
           }
         } catch (err) {
           console.error(`❌ Error adding ${column} to ${table}:`, err.message);
-        }
-      };      // Add missing columns to users table      await addColumnIfNotExists('users', 'api_key', 'TEXT UNIQUE');
-      await addColumnIfNotExists('users', 'bio', 'TEXT');
-      await addColumnIfNotExists('users', 'profile_visibility', "TEXT DEFAULT 'public'");
-      await addColumnIfNotExists('users', 'display_name', 'TEXT');
-      await addColumnIfNotExists('users', 'avatar_url', 'TEXT');
-      await addColumnIfNotExists('users', 'last_active', 'TIMESTAMP');
+        }      }; // Add missing columns to users table      await addColumnIfNotExists('users', 'api_key', 'TEXT UNIQUE');
+      await addColumnIfNotExists("users", "bio", "TEXT");
+      await addColumnIfNotExists(
+        "users",
+        "profile_visibility",
+        "TEXT DEFAULT 'public'"
+      );
+      await addColumnIfNotExists("users", "display_name", "TEXT");
+      await addColumnIfNotExists("users", "avatar_url", "TEXT");
+      await addColumnIfNotExists("users", "last_active", "TIMESTAMP");
+
+      // Add missing columns to sessions table (playlist metadata)
+      await addColumnIfNotExists("sessions", "playlist", "TEXT");
+      await addColumnIfNotExists("sessions", "is_ranked", "INTEGER DEFAULT 0");
+      await addColumnIfNotExists("sessions", "mmr", "REAL");
+      await addColumnIfNotExists("sessions", "mmr_change", "REAL");
 
       // Generate API keys for users who don't have one
       console.log("Checking for users without API keys...");
-      const crypto = require('crypto');
+      const crypto = require("crypto");
       const usersWithoutKeys = await client.query(
-        'SELECT id, username FROM users WHERE api_key IS NULL'
+        "SELECT id, username FROM users WHERE api_key IS NULL"
       );
-      
+
       if (usersWithoutKeys.rows.length > 0) {
-        console.log(`Found ${usersWithoutKeys.rows.length} users without API keys. Generating...`);
+        console.log(
+          `Found ${usersWithoutKeys.rows.length} users without API keys. Generating...`
+        );
         for (const user of usersWithoutKeys.rows) {
-          const apiKey = crypto.randomBytes(32).toString('hex');
-          await client.query(
-            'UPDATE users SET api_key = $1 WHERE id = $2',
-            [apiKey, user.id]
-          );
+          const apiKey = crypto.randomBytes(32).toString("hex");
+          await client.query("UPDATE users SET api_key = $1 WHERE id = $2", [
+            apiKey,
+            user.id,
+          ]);
           console.log(`✓ Generated API key for user: ${user.username}`);
         }
-        console.log(`✅ Generated API keys for ${usersWithoutKeys.rows.length} users`);
+        console.log(
+          `✅ Generated API keys for ${usersWithoutKeys.rows.length} users`
+        );
       } else {
-        console.log('✓ All users have API keys');
+        console.log("✓ All users have API keys");
       }
 
       console.log("✅ Database initialization complete!");

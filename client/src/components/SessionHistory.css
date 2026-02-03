@@ -278,3 +278,96 @@
   background: rgba(139, 92, 246, 0.3) !important;
   transform: translateX(-5px);
 }
+
+/* Playlist and MMR badges in table */
+.playlist-badge {
+  display: inline-block;
+  padding: 0.3rem 0.6rem;
+  background: rgba(139, 92, 246, 0.2);
+  border: 1px solid rgba(139, 92, 246, 0.4);
+  border-radius: 6px;
+  font-size: 0.85rem;
+  color: #bb86fc;
+  white-space: nowrap;
+}
+
+.mmr-delta {
+  display: inline-block;
+  padding: 0.3rem 0.6rem;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.mmr-delta.positive {
+  background: rgba(34, 197, 94, 0.2);
+  border: 1px solid rgba(34, 197, 94, 0.4);
+  color: #4ade80;
+}
+
+.mmr-delta.negative {
+  background: rgba(239, 68, 68, 0.2);
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  color: #f87171;
+}
+
+.text-muted {
+  color: #666;
+  font-style: italic;
+}
+
+/* Session metadata section in detail view */
+.session-metadata-section {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding: 1.5rem;
+  background: rgba(59, 130, 246, 0.1);
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  border-radius: 12px;
+  margin-bottom: 1.5rem;
+}
+
+.session-metadata-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: rgba(30, 30, 30, 0.6);
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  border-radius: 8px;
+  font-size: 0.95rem;
+}
+
+.session-metadata-badge.ranked {
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.2) 0%, rgba(255, 165, 0, 0.2) 100%);
+  border: 1px solid rgba(255, 215, 0, 0.4);
+}
+
+.session-metadata-badge.mmr-change {
+  font-weight: 600;
+}
+
+.session-metadata-badge.mmr-change.positive {
+  background: rgba(34, 197, 94, 0.2);
+  border: 1px solid rgba(34, 197, 94, 0.4);
+}
+
+.session-metadata-badge.mmr-change.negative {
+  background: rgba(239, 68, 68, 0.2);
+  border: 1px solid rgba(239, 68, 68, 0.4);
+}
+
+.badge-icon {
+  font-size: 1.2rem;
+}
+
+.badge-label {
+  color: #a0a0a0;
+  font-size: 0.9rem;
+}
+
+.badge-value {
+  color: #ffffff;
+  font-weight: 600;
+}

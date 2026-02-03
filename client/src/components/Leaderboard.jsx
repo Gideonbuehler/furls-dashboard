@@ -10,25 +10,29 @@ function Leaderboard() {
 
   useEffect(() => {
     loadLeaderboard();
-  }, [type, stat]);
-  const loadLeaderboard = async () => {
+  }, [type, stat]);  const loadLeaderboard = async () => {
     setLoading(true);
     try {
       if (type === "global") {
         const response = await publicAPI.getLeaderboard(stat);
+        console.log("[Leaderboard] Global response:", response.data);
         // Response is an array directly, not wrapped in a players object
         setLeaderboard(Array.isArray(response.data) ? response.data : []);
       } else {
         const response = await statsAPI.getLeaderboard(type, stat);
+        console.log("[Leaderboard] Friends response:", response.data);
+        console.log("[Leaderboard] Friends count:", response.data?.length || 0);
         setLeaderboard(Array.isArray(response.data) ? response.data : []);
       }
     } catch (error) {
-      console.error("Failed to load leaderboard:", error);
+      console.error("[Leaderboard] Failed to load leaderboard:", error);
+      console.error("[Leaderboard] Error details:", error.response?.data);
       setLeaderboard([]);
     } finally {
       setLoading(false);
     }
-  };  const getStatValue = (player) => {
+  };
+  const getStatValue = (player) => {
     switch (stat) {
       case "accuracy":
         const accuracy = player.accuracy ?? player.avg_accuracy ?? 0;
@@ -75,15 +79,28 @@ function Leaderboard() {
             </select>
           </div>
         </div>
-      </div>
-
-      {loading ? (
+      </div>      {loading ? (
         <div className="loading">Loading leaderboard...</div>
       ) : leaderboard.length === 0 ? (
         <div className="empty-state">
-          <p>No data available yet. Complete some training sessions!</p>
+          {type === "friends" ? (
+            <>
+              <p>No friends data available yet.</p>
+              <p>
+                Make sure you have added friends and that you or your friends
+                have completed training sessions.
+              </p>
+              <p className="hint">
+                Tip: Go to the Friends tab to add friends, then play some
+                matches!
+              </p>
+            </>
+          ) : (
+            <p>No data available yet. Complete some training sessions!</p>
+          )}
         </div>
-      ) : (        <div className="leaderboard-list">
+      ) : (
+        <div className="leaderboard-list">
           {leaderboard.map((player, index) => (
             <div
               key={player.id || player.username || index}

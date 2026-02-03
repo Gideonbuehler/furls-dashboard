@@ -183,18 +183,22 @@ router.get("/api-key", authenticateToken, async (req, res) => {
 
     // If user doesn't have an API key, generate one automatically
     if (!user.api_key) {
-      console.log(`[API KEY] User ${req.user.username} has no API key. Generating one...`);
+      console.log(
+        `[API KEY] User ${req.user.username} has no API key. Generating one...`
+      );
       const newApiKey = crypto.randomBytes(32).toString("hex");
-      
+
       await dbAsync.run("UPDATE users SET api_key = ? WHERE id = ?", [
         newApiKey,
         req.user.userId,
       ]);
 
-      console.log(`[API KEY] Generated new API key for user ${req.user.username}`);
-      return res.json({ 
+      console.log(
+        `[API KEY] Generated new API key for user ${req.user.username}`
+      );
+      return res.json({
         api_key: newApiKey,
-        message: "API key generated"
+        message: "API key generated",
       });
     }
 
@@ -334,7 +338,7 @@ router.post("/upload-avatar", authenticateToken, async (req, res) => {
     }
 
     // Validate base64 image data
-    if (!avatar.startsWith('data:image/')) {
+    if (!avatar.startsWith("data:image/")) {
       return res.status(400).json({ error: "Invalid image format" });
     }
 
