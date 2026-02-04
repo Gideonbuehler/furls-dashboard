@@ -197,7 +197,7 @@ function Settings() {
           <div className="info-grid">
             <div className="info-item">
               <span className="info-label">Version:</span>
-              <span className="info-value">1.0.0</span>
+              <span className="info-value">1.0.3</span>
             </div>{" "}
             <div className="info-item">
               <span className="info-label">Server:</span>
