@@ -119,7 +119,8 @@ function Dashboard({ currentStats, allTimeStats, sessionHistory }) {
               shots
             </div>
           </div>
-        </div>        <div className="hero-card speed">
+        </div>{" "}
+        <div className="hero-card speed">
           <div className="hero-icon">⚡</div>
           <div className="hero-content">
             <div className="hero-label">Average Speed</div>
@@ -129,7 +130,6 @@ function Dashboard({ currentStats, allTimeStats, sessionHistory }) {
             <div className="hero-detail">mph</div>
           </div>
         </div>
-
         <div className="hero-card boost">
           <div className="hero-icon">🔋</div>
           <div className="hero-content">
@@ -142,7 +142,6 @@ function Dashboard({ currentStats, allTimeStats, sessionHistory }) {
             </div>
           </div>
         </div>
-
         <div className="hero-card time">
           <div className="hero-icon">⏱️</div>
           <div className="hero-content">
@@ -389,7 +388,8 @@ function Dashboard({ currentStats, allTimeStats, sessionHistory }) {
                       fontWeight: 600,
                       marginBottom: "8px",
                     }}
-                  />                  <Line
+                  />{" "}
+                  <Line
                     type="monotone"
                     dataKey="speed"
                     stroke="url(#speedGradient)"

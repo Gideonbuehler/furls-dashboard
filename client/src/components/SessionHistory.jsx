@@ -192,7 +192,6 @@ function SessionHistory({ sessionHistory }) {
               </div>
               <div className="detail-stat-label">Total Shots</div>
             </div>
-
             <div className="detail-stat-card">
               <div className="detail-stat-icon">⚽</div>
               <div className="detail-stat-value">
@@ -200,25 +199,24 @@ function SessionHistory({ sessionHistory }) {
               </div>
               <div className="detail-stat-label">Goals Scored</div>
             </div>
-
             <div className="detail-stat-card">
               <div className="detail-stat-icon">🎯</div>
               <div className="detail-stat-value">
                 {getAccuracy(selectedSession)}%
               </div>
               <div className="detail-stat-label">Accuracy</div>
-            </div>            <div className="detail-stat-card">
+            </div>{" "}
+            <div className="detail-stat-card">
               <div className="detail-stat-icon">⚡</div>
               <div className="detail-stat-value">
                 {convertToMPH(
                   selectedSession.averageSpeed ||
-                  selectedSession.average_speed ||
-                  0
+                    selectedSession.average_speed ||
+                    0
                 )}
               </div>
               <div className="detail-stat-label">Avg Speed (mph)</div>
             </div>
-
             <div className="detail-stat-card">
               <div className="detail-stat-icon">💨</div>
               <div className="detail-stat-value">
@@ -230,7 +228,6 @@ function SessionHistory({ sessionHistory }) {
               </div>
               <div className="detail-stat-label">Boost Used</div>
             </div>
-
             <div className="detail-stat-card">
               <div className="detail-stat-icon">⏱️</div>
               <div className="detail-stat-value">
@@ -240,7 +237,6 @@ function SessionHistory({ sessionHistory }) {
               </div>
               <div className="detail-stat-label">Game Time</div>
             </div>
-
             <div className="detail-stat-card">
               <div className="detail-stat-icon">🎮</div>
               <div className="detail-stat-value">
@@ -253,7 +249,6 @@ function SessionHistory({ sessionHistory }) {
               </div>
               <div className="detail-stat-label">Possession</div>
             </div>
-
             <div className="detail-stat-card">
               <div className="detail-stat-icon">🏃</div>
               <div className="detail-stat-value">
@@ -349,7 +344,8 @@ function SessionHistory({ sessionHistory }) {
                 Accuracy{" "}
                 {sortConfig.key === "accuracy" &&
                   (sortConfig.direction === "asc" ? "↑" : "↓")}
-              </th>              <th onClick={() => handleSort("avgSpeed")} className="sortable">
+              </th>{" "}
+              <th onClick={() => handleSort("avgSpeed")} className="sortable">
                 Avg Speed (mph){" "}
                 {sortConfig.key === "avgSpeed" &&
                   (sortConfig.direction === "asc" ? "↑" : "↓")}
@@ -395,9 +391,12 @@ function SessionHistory({ sessionHistory }) {
                     }`}
                   >
                     {getAccuracy(session)}%
-                  </span>                </td>
+                  </span>{" "}
+                </td>
                 <td>
-                  {convertToMPH(session.averageSpeed || session.average_speed || 0)}
+                  {convertToMPH(
+                    session.averageSpeed || session.average_speed || 0
+                  )}
                 </td>
                 <td>
                   {(session.boostUsed || session.boost_used || 0).toFixed(0)}
@@ -463,14 +462,18 @@ function SessionHistory({ sessionHistory }) {
             <span className="summary-value">
               {Math.max(...sessionHistory.map((s) => s.shots || 0))}
             </span>
-          </div>          <div className="summary-item">
+          </div>{" "}
+          <div className="summary-item">
             <span className="summary-label">Highest Avg Speed:</span>
             <span className="summary-value">
-              {convertToMPH(Math.max(
-                ...sessionHistory.map(
-                  (s) => s.averageSpeed || s.average_speed || 0
+              {convertToMPH(
+                Math.max(
+                  ...sessionHistory.map(
+                    (s) => s.averageSpeed || s.average_speed || 0
+                  )
                 )
-              ))} mph
+              )}{" "}
+              mph
             </span>
           </div>
         </div>

@@ -47,11 +47,14 @@ function StatsOverview({ currentStats, allTimeStats }) {
                 <span>Accuracy:</span>
                 <strong className="highlight">{getCurrentAccuracy()}%</strong>
               </div>
-            </div>            <div className="stat-group">
+            </div>{" "}
+            <div className="stat-group">
               <h3>⚡ Speed & Movement</h3>
               <div className="stat-item">
                 <span>Average Speed:</span>
-                <strong>{convertToMPH(currentStats?.averageSpeed || 0)} mph</strong>
+                <strong>
+                  {convertToMPH(currentStats?.averageSpeed || 0)} mph
+                </strong>
               </div>
               <div className="stat-item">
                 <span>Speed Samples:</span>
