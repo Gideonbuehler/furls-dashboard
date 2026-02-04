@@ -185,20 +185,32 @@ function App() {
       <header className="app-header">
         <div className="header-content">
           <h1>
-            <svg className="logo-svg" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+            <svg className="logo-svg" viewBox="0 0 180 40" xmlns="http://www.w3.org/2000/svg">
               <defs>
                 <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
                   <stop offset="0%" style={{stopColor: '#bb86fc', stopOpacity: 1}} />
                   <stop offset="100%" style={{stopColor: '#7b1fa2', stopOpacity: 1}} />
                 </linearGradient>
               </defs>
-              {/* Stylized F letter with speed lines */}
-              <path d="M10 8 L28 8 L28 12 L15 12 L15 18 L25 18 L25 22 L15 22 L15 32 L10 32 Z" 
+              {/* F */}
+              <path d="M5 8 L20 8 L20 12 L10 12 L10 18 L18 18 L18 22 L10 22 L10 32 L5 32 Z" 
                     fill="url(#logoGradient)" />
-              {/* Speed lines */}
-              <line x1="32" y1="12" x2="38" y2="12" stroke="#bb86fc" strokeWidth="2" strokeLinecap="round" opacity="0.8"/>
-              <line x1="30" y1="20" x2="38" y2="20" stroke="#bb86fc" strokeWidth="2" strokeLinecap="round" opacity="0.6"/>
-              <line x1="32" y1="28" x2="38" y2="28" stroke="#bb86fc" strokeWidth="2" strokeLinecap="round" opacity="0.4"/>
+              {/* U */}
+              <path d="M25 8 L30 8 L30 24 Q30 28 34 28 Q38 28 38 24 L38 8 L43 8 L43 24 Q43 32 34 32 Q25 32 25 24 Z" 
+                    fill="url(#logoGradient)" />
+              {/* R */}
+              <path d="M48 8 L58 8 Q63 8 63 13 Q63 16 60 17 L64 32 L59 32 L55 18 L53 18 L53 32 L48 32 Z M53 12 L53 14 L58 14 Q59 14 59 13 Q59 12 58 12 Z" 
+                    fill="url(#logoGradient)" />
+              {/* L */}
+              <path d="M68 8 L73 8 L73 28 L83 28 L83 32 L68 32 Z" 
+                    fill="url(#logoGradient)" />
+              {/* S */}
+              <path d="M88 12 Q88 8 93 8 L100 8 Q105 8 105 12 Q105 15 102 16 Q105 17 105 20 Q105 24 100 24 L93 24 Q88 24 88 20 L92 20 Q92 20 93 20 L100 20 Q101 20 101 19 Q101 18 100 18 L93 18 Q88 18 88 14 Q88 13 93 13 L100 13 Q101 13 101 12 Q101 12 100 12 L93 12 Q92 12 92 12 Z" 
+                    fill="url(#logoGradient)" />
+              {/* Speed lines after S */}
+              <line x1="115" y1="14" x2="175" y2="14" stroke="#bb86fc" strokeWidth="3" strokeLinecap="round" opacity="0.8"/>
+              <line x1="115" y1="20" x2="170" y2="20" stroke="#bb86fc" strokeWidth="3" strokeLinecap="round" opacity="0.6"/>
+              <line x1="115" y1="26" x2="175" y2="26" stroke="#bb86fc" strokeWidth="3" strokeLinecap="round" opacity="0.4"/>
             </svg>
           </h1>
 
