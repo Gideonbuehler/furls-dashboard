@@ -7,6 +7,13 @@ function StatsOverview({ currentStats, allTimeStats }) {
     return isNaN(num) ? "0" : num.toFixed(decimals);
   };
 
+  // Convert Unreal Units/second to MPH
+  // Rocket League: 1 UU/s ≈ 0.02237 MPH
+  const convertToMPH = (unrealSpeed) => {
+    const mph = unrealSpeed * 0.02237;
+    return Math.round(mph);
+  };
+
   const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60);
     const secs = Math.floor(seconds % 60);
@@ -40,12 +47,11 @@ function StatsOverview({ currentStats, allTimeStats }) {
                 <span>Accuracy:</span>
                 <strong className="highlight">{getCurrentAccuracy()}%</strong>
               </div>
-            </div>
-            <div className="stat-group">
+            </div>            <div className="stat-group">
               <h3>⚡ Speed & Movement</h3>
               <div className="stat-item">
                 <span>Average Speed:</span>
-                <strong>{safeToFixed(currentStats?.averageSpeed, 2)}</strong>
+                <strong>{convertToMPH(currentStats?.averageSpeed || 0)} mph</strong>
               </div>
               <div className="stat-item">
                 <span>Speed Samples:</span>

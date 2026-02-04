@@ -21,6 +21,13 @@ function Dashboard({ currentStats, allTimeStats, sessionHistory }) {
     return isNaN(num) ? "0" : num.toFixed(decimals);
   };
 
+  // Convert Unreal Units/second to MPH
+  // Rocket League: 1 UU/s ≈ 0.02237 MPH
+  const convertToMPH = (unrealSpeed) => {
+    const mph = unrealSpeed * 0.02237;
+    return Math.round(mph);
+  };
+
   const getCurrentAccuracy = () => {
     if (!currentStats || !currentStats.shots) return 0;
     return currentStats.shots > 0
@@ -39,14 +46,13 @@ function Dashboard({ currentStats, allTimeStats, sessionHistory }) {
     if (hours > 0) return `${hours}h ${mins}m`;
     return `${mins}m`;
   };
-
   // Prepare chart data from session history
   const chartData = sessionHistory.slice(-20).map((session, index) => ({
     session: index + 1,
     accuracy: session.shots > 0 ? (session.goals / session.shots) * 100 : 0,
     shots: session.shots || 0,
     goals: session.goals || 0,
-    speed: session.averageSpeed || session.average_speed || 0,
+    speed: convertToMPH(session.averageSpeed || session.average_speed || 0),
   }));
 
   // Get most recent session with metadata
@@ -113,16 +119,14 @@ function Dashboard({ currentStats, allTimeStats, sessionHistory }) {
               shots
             </div>
           </div>
-        </div>
-
-        <div className="hero-card speed">
+        </div>        <div className="hero-card speed">
           <div className="hero-icon">⚡</div>
           <div className="hero-content">
             <div className="hero-label">Average Speed</div>
             <div className="hero-value">
-              {currentStats?.averageSpeed?.toFixed(0) || 0}
+              {convertToMPH(currentStats?.averageSpeed || 0)}
             </div>
-            <div className="hero-detail">units per second</div>
+            <div className="hero-detail">mph</div>
           </div>
         </div>
 
@@ -385,15 +389,14 @@ function Dashboard({ currentStats, allTimeStats, sessionHistory }) {
                       fontWeight: 600,
                       marginBottom: "8px",
                     }}
-                  />
-                  <Line
+                  />                  <Line
                     type="monotone"
                     dataKey="speed"
                     stroke="url(#speedGradient)"
                     strokeWidth={3}
                     dot={{ fill: "#bb86fc", strokeWidth: 2, r: 4 }}
                     activeDot={{ r: 6, strokeWidth: 0 }}
-                    name="Speed"
+                    name="Speed (mph)"
                   />
                 </LineChart>
               </ResponsiveContainer>

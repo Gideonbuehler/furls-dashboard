@@ -8,6 +8,13 @@ function SessionHistory({ sessionHistory }) {
     direction: "desc",
   });
 
+  // Convert Unreal Units/second to MPH
+  // Rocket League: 1 UU/s ≈ 0.02237 MPH
+  const convertToMPH = (unrealSpeed) => {
+    const mph = unrealSpeed * 0.02237;
+    return Math.round(mph);
+  };
+
   const handleSort = (key) => {
     let direction = "desc";
     if (sortConfig.key === key && sortConfig.direction === "desc") {
@@ -200,18 +207,16 @@ function SessionHistory({ sessionHistory }) {
                 {getAccuracy(selectedSession)}%
               </div>
               <div className="detail-stat-label">Accuracy</div>
-            </div>
-
-            <div className="detail-stat-card">
+            </div>            <div className="detail-stat-card">
               <div className="detail-stat-icon">⚡</div>
               <div className="detail-stat-value">
-                {(
+                {convertToMPH(
                   selectedSession.averageSpeed ||
                   selectedSession.average_speed ||
                   0
-                ).toFixed(0)}
+                )}
               </div>
-              <div className="detail-stat-label">Avg Speed</div>
+              <div className="detail-stat-label">Avg Speed (mph)</div>
             </div>
 
             <div className="detail-stat-card">
@@ -344,9 +349,8 @@ function SessionHistory({ sessionHistory }) {
                 Accuracy{" "}
                 {sortConfig.key === "accuracy" &&
                   (sortConfig.direction === "asc" ? "↑" : "↓")}
-              </th>
-              <th onClick={() => handleSort("avgSpeed")} className="sortable">
-                Avg Speed{" "}
+              </th>              <th onClick={() => handleSort("avgSpeed")} className="sortable">
+                Avg Speed (mph){" "}
                 {sortConfig.key === "avgSpeed" &&
                   (sortConfig.direction === "asc" ? "↑" : "↓")}
               </th>
@@ -391,12 +395,9 @@ function SessionHistory({ sessionHistory }) {
                     }`}
                   >
                     {getAccuracy(session)}%
-                  </span>
-                </td>
+                  </span>                </td>
                 <td>
-                  {(session.averageSpeed || session.average_speed || 0).toFixed(
-                    0
-                  )}
+                  {convertToMPH(session.averageSpeed || session.average_speed || 0)}
                 </td>
                 <td>
                   {(session.boostUsed || session.boost_used || 0).toFixed(0)}
@@ -462,15 +463,14 @@ function SessionHistory({ sessionHistory }) {
             <span className="summary-value">
               {Math.max(...sessionHistory.map((s) => s.shots || 0))}
             </span>
-          </div>
-          <div className="summary-item">
+          </div>          <div className="summary-item">
             <span className="summary-label">Highest Avg Speed:</span>
             <span className="summary-value">
-              {Math.max(
+              {convertToMPH(Math.max(
                 ...sessionHistory.map(
                   (s) => s.averageSpeed || s.average_speed || 0
                 )
-              ).toFixed(0)}
+              ))} mph
             </span>
           </div>
         </div>
