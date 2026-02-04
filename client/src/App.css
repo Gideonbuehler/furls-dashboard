@@ -37,8 +37,8 @@
 }
 
 .logo-svg {
-  width: 40px;
-  height: 40px;
+  width: 60px;
+  height: 60px;
   filter: drop-shadow(0 0 8px rgba(187, 134, 252, 0.4));
   transition: all 0.3s ease;
 }
