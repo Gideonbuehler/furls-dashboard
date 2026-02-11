@@ -247,6 +247,60 @@ function Heatmap({ heatmapData, currentStats }) {
           width: "100%",
         }}
       >
+        {/* Left Side Stats */}
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: "2rem",
+            minWidth: "120px",
+            justifyContent: "center",
+          }}
+        >
+          <div style={{ textAlign: "center" }}>
+            <div
+              style={{
+                fontSize: "2rem",
+                fontWeight: "bold",
+                color: "#4fc3f7",
+              }}
+            >
+              {stats.shots}
+            </div>
+            <div style={{ fontSize: "0.85rem", color: "#888", marginTop: "0.25rem" }}>
+              Total Shots
+            </div>
+          </div>
+          <div style={{ textAlign: "center" }}>
+            <div
+              style={{
+                fontSize: "2rem",
+                fontWeight: "bold",
+                color: "#66bb6a",
+              }}
+            >
+              {stats.goals}
+            </div>
+            <div style={{ fontSize: "0.85rem", color: "#888", marginTop: "0.25rem" }}>
+              Goals
+            </div>
+          </div>
+          <div style={{ textAlign: "center" }}>
+            <div
+              style={{
+                fontSize: "2rem",
+                fontWeight: "bold",
+                color: "#bb86fc",
+              }}
+            >
+              {stats.accuracy}%
+            </div>
+            <div style={{ fontSize: "0.85rem", color: "#888", marginTop: "0.25rem" }}>
+              Accuracy
+            </div>
+          </div>
+        </div>
+
         {/* Heatmap Section */}
         <div style={{ flex: "0 0 auto", maxWidth: "100%" }}>
           <p
@@ -290,17 +344,17 @@ function Heatmap({ heatmapData, currentStats }) {
               {/* Goal lines - horizontal lines in front of goals */}
               <line
                 x1="10"
-                y1="63"
+                y1="30"
                 x2="390"
-                y2="63"
+                y2="30"
                 stroke="rgba(255,255,255,0.25)"
                 strokeWidth="3"
               />
               <line
                 x1="10"
-                y1="537"
+                y1="570"
                 x2="390"
-                y2="537"
+                y2="570"
                 stroke="rgba(255,255,255,0.25)"
                 strokeWidth="3"
               />
@@ -455,37 +509,58 @@ function Heatmap({ heatmapData, currentStats }) {
             >
               Hot
             </span>
-          </div>
-        </div>
+          </div>        </div>
 
-        {/* Stats Cards Section - Right Side */}
+        {/* Right Side Stats */}
         <div
           style={{
             display: "flex",
             flexDirection: "column",
-            gap: "1rem",
-            minWidth: "250px",
+            gap: "2rem",
+            minWidth: "120px",
+            justifyContent: "center",
           }}
         >
-          <div className="stat-card">
-            <div className="stat-icon">📍</div>
-            <div className="stat-content">
-              <div className="stat-label">TOTAL SHOTS</div>
-              <div className="stat-value">{stats.shots}</div>
+          <div style={{ textAlign: "center" }}>
+            <div
+              style={{
+                fontSize: "2rem",
+                fontWeight: "bold",
+                color: "#ff9800",
+              }}
+            >
+              {stats.shots > 0 ? (stats.goals / stats.shots * 100).toFixed(1) : 0}%
+            </div>
+            <div style={{ fontSize: "0.85rem", color: "#888", marginTop: "0.25rem" }}>
+              Conversion
             </div>
           </div>
-          <div className="stat-card">
-            <div className="stat-icon">⚽</div>
-            <div className="stat-content">
-              <div className="stat-label">GOALS SCORED</div>
-              <div className="stat-value">{stats.goals}</div>
+          <div style={{ textAlign: "center" }}>
+            <div
+              style={{
+                fontSize: "2rem",
+                fontWeight: "bold",
+                color: "#f44336",
+              }}
+            >
+              {stats.shots - stats.goals}
+            </div>
+            <div style={{ fontSize: "0.85rem", color: "#888", marginTop: "0.25rem" }}>
+              Misses
             </div>
           </div>
-          <div className="stat-card highlight">
-            <div className="stat-icon">🎯</div>
-            <div className="stat-content">
-              <div className="stat-label">ACCURACY</div>
-              <div className="stat-value">{stats.accuracy}%</div>
+          <div style={{ textAlign: "center" }}>
+            <div
+              style={{
+                fontSize: "2rem",
+                fontWeight: "bold",
+                color: "#03dac6",
+              }}
+            >
+              {currentStats?.shotsPerMinute?.toFixed(1) || "0.0"}
+            </div>
+            <div style={{ fontSize: "0.85rem", color: "#888", marginTop: "0.25rem" }}>
+              Shots/Min
             </div>
           </div>
         </div>
