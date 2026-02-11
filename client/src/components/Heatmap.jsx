@@ -149,27 +149,58 @@ function Heatmap({ heatmapData, currentStats }) {
         <div className="heatmap-grid-container">
           <h4 style={{ color: '#bb86fc', fontWeight: 'bold', fontSize: '1.1rem', marginBottom: '0.5rem' }}>📍 Shot Heatmap</h4>
           <p style={{ fontSize: "0.95rem", color: "#aaa", marginBottom: "1rem" }}>
-            Rocket League field from above – brighter cells = more shots taken from that location
+            Rocket League field from above – plugin-style colors: blue→red for frequency, red→green for accuracy
           </p>
-          <div className="heatmap-grid" style={{ boxShadow: '0 2px 16px #0008', borderRadius: '12px', overflow: 'hidden', border: '2px solid #bb86fc', background: 'rgba(30,30,50,0.7)' }}>
+          <div className="heatmap-grid" style={{ boxShadow: '0 2px 24px #0008', borderRadius: '16px', overflow: 'hidden', border: '2px solid #bb86fc', background: 'rgba(30,30,50,0.7)', width: 580, height: 580, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
             {heatmapData.shots.map((row, y) => (
               <div key={y} className="heatmap-row" style={{ display: 'flex' }}>
                 {row.map((value, x) => {
                   const maxValue = Math.max(...heatmapData.shots.flat().filter((v) => v > 0));
                   const intensity = maxValue > 0 ? value / maxValue : 0;
-                  const backgroundColor =
-                    intensity > 0
-                      ? `linear-gradient(135deg, rgba(187,134,252,${0.15 + intensity * 0.85}), rgba(123,31,162,${0.12 + intensity * 0.7}))`
-                      : "rgba(40, 40, 60, 0.5)";
+                  // Plugin-style color mapping
+                  function getFrequencyColor(intensity) {
+                    if (intensity < 0.20) {
+                      const t = intensity / 0.20;
+                      return `rgb(${40 + t * 40}, ${120 + t * 100}, ${220 - t * 120})`;
+                    } else if (intensity < 0.40) {
+                      const t = (intensity - 0.20) / 0.20;
+                      return `rgb(${80 + t * 75}, ${220 + t * 35}, ${100 - t * 100})`;
+                    } else if (intensity < 0.60) {
+                      const t = (intensity - 0.40) / 0.20;
+                      return `rgb(${155 + t * 100}, ${255 - t * 90}, 0)`;
+                    } else if (intensity < 0.80) {
+                      const t = (intensity - 0.60) / 0.20;
+                      return `rgb(255, ${165 - t * 165}, 0)`;
+                    } else {
+                      return `rgb(255, 0, 0)`;
+                    }
+                  }
+                  // Accuracy mode color
+                  function getAccuracyColor(acc) {
+                    if (acc < 0.5) {
+                      const t = acc / 0.5;
+                      return `rgb(255, ${t * 255}, 0)`;
+                    } else {
+                      const t = (acc - 0.5) / 0.5;
+                      return `rgb(${255 - t * 255}, 255, 0)`;
+                    }
+                  }
+                  // Calculate accuracy for this cell
+                  const zoneShots = value;
+                  const zoneGoals = heatmapData.goals[y]?.[x] || 0;
+                  const accuracy = zoneShots > 0 ? Math.min(zoneGoals / zoneShots, 1) : 0;
+                  // Choose color mode (frequency or accuracy)
+                  const showAccuracy = false; // Set to true if you want accuracy mode
+                  const cellColor = showAccuracy ? getAccuracyColor(accuracy) : getFrequencyColor(intensity);
                   return (
                     <div
                       key={x}
                       className="heatmap-cell"
                       style={{
-                        background: backgroundColor,
+                        background: cellColor,
                         border: "1px solid rgba(255,255,255,0.08)",
-                        width: 36,
-                        height: 36,
+                        width: 56,
+                        height: 56,
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
@@ -177,8 +208,9 @@ function Heatmap({ heatmapData, currentStats }) {
                         fontSize: value > 0 ? '1.1rem' : '0.9rem',
                         color: value > 0 ? '#fff' : '#888',
                         transition: 'background 0.3s',
-                        boxShadow: intensity > 0 ? '0 0 8px #bb86fc88' : 'none',
-                        borderRadius: '6px',
+                        boxShadow: intensity > 0 ? '0 0 16px #bb86fc88' : 'none',
+                        borderRadius: '8px',
+                        filter: intensity > 0 ? 'blur(0.5px)' : 'none',
                       }}
                       title={`Position (${x}, ${y}): ${value} shots`}
                     >
@@ -191,7 +223,7 @@ function Heatmap({ heatmapData, currentStats }) {
           </div>
           <div className="heatmap-legend" style={{ marginTop: '1rem', display: 'flex', alignItems: 'center', gap: '12px' }}>
             <span style={{ color: '#888', fontSize: '0.95rem' }}>Less Activity</span>
-            <div className="legend-gradient" style={{ width: 120, height: 12, background: 'linear-gradient(90deg, #282828 0%, #bb86fc 100%)', borderRadius: 6 }}></div>
+            <div className="legend-gradient" style={{ width: 180, height: 16, background: 'linear-gradient(90deg, rgb(40,120,220) 0%, rgb(80,220,100) 25%, rgb(155,255,0) 50%, rgb(255,165,0) 75%, rgb(255,0,0) 100%)', borderRadius: 8 }}></div>
             <span style={{ color: '#bb86fc', fontSize: '0.95rem' }}>More Activity</span>
           </div>
         </div>
