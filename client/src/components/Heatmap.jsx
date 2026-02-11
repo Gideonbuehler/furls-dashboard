@@ -1,8 +1,12 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import "./Heatmap.css";
 
 function Heatmap({ heatmapData, currentStats }) {
   const [selectedZone, setSelectedZone] = useState("all");
+  const [hoveredCell, setHoveredCell] = useState(null);
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const canvasRef = useRef(null);
+  const containerRef = useRef(null);
 
   // Define zones
   const zones = [
@@ -84,6 +88,135 @@ function Heatmap({ heatmapData, currentStats }) {
   const stats = getZoneStats();
   const hasData = stats.shots > 0 || stats.goals > 0;
 
+  // Render fluid heatmap on canvas
+  useEffect(() => {
+    if (!canvasRef.current || !heatmapData) return;
+
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext('2d');
+    const width = 400;
+    const height = 600;
+    
+    canvas.width = width;
+    canvas.height = height;
+
+    // Clear canvas
+    ctx.clearRect(0, 0, width, height);
+
+    // Get max value for normalization
+    const maxValue = Math.max(...heatmapData.shots.flat().filter(v => v > 0));
+    if (maxValue === 0) return;
+
+    // Create data points for rendering
+    const dataPoints = [];
+    heatmapData.shots.forEach((row, y) => {
+      row.forEach((value, x) => {
+        if (value > 0) {
+          dataPoints.push({
+            x: (x + 0.5) * (width / row.length),
+            y: (y + 0.5) * (height / heatmapData.shots.length),
+            value: value,
+            intensity: value / maxValue,
+            gridX: x,
+            gridY: y
+          });
+        }
+      });
+    });
+
+    // Function to get color based on intensity
+    const getHeatColor = (intensity) => {
+      const colors = [
+        { pos: 0, r: 40, g: 120, b: 220 },
+        { pos: 0.25, r: 80, g: 220, b: 150 },
+        { pos: 0.5, r: 180, g: 255, b: 80 },
+        { pos: 0.75, r: 255, g: 200, b: 0 },
+        { pos: 1, r: 255, g: 50, b: 50 }
+      ];
+
+      let c1 = colors[0], c2 = colors[1];
+      for (let i = 0; i < colors.length - 1; i++) {
+        if (intensity >= colors[i].pos && intensity <= colors[i + 1].pos) {
+          c1 = colors[i];
+          c2 = colors[i + 1];
+          break;
+        }
+      }
+
+      const t = (intensity - c1.pos) / (c2.pos - c1.pos);
+      const r = Math.round(c1.r + t * (c2.r - c1.r));
+      const g = Math.round(c1.g + t * (c2.g - c1.g));
+      const b = Math.round(c1.b + t * (c2.b - c1.b));
+      
+      return { r, g, b };
+    };
+
+    // Render each data point with radial gradient
+    dataPoints.forEach(point => {
+      const radius = 45 + point.intensity * 35; // Larger radius for more intense points
+      const gradient = ctx.createRadialGradient(
+        point.x, point.y, 0,
+        point.x, point.y, radius
+      );
+
+      const color = getHeatColor(point.intensity);
+      const alpha = 0.3 + point.intensity * 0.5;
+
+      gradient.addColorStop(0, `rgba(${color.r}, ${color.g}, ${color.b}, ${alpha})`);
+      gradient.addColorStop(0.5, `rgba(${color.r}, ${color.g}, ${color.b}, ${alpha * 0.5})`);
+      gradient.addColorStop(1, `rgba(${color.r}, ${color.g}, ${color.b}, 0)`);
+
+      ctx.fillStyle = gradient;
+      ctx.fillRect(point.x - radius, point.y - radius, radius * 2, radius * 2);
+    });
+
+    // Apply smoothing filter
+    ctx.filter = 'blur(8px)';
+    ctx.drawImage(canvas, 0, 0);
+    ctx.filter = 'none';
+
+  }, [heatmapData]);
+
+  // Handle mouse move for hover effects
+  const handleCanvasMouseMove = (e) => {
+    if (!containerRef.current || !heatmapData) return;
+    
+    const rect = containerRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    
+    setMousePos({ x: e.clientX, y: e.clientY });
+
+    // Calculate grid position
+    const gridWidth = heatmapData.shots[0].length;
+    const gridHeight = heatmapData.shots.length;
+    const cellWidth = 400 / gridWidth;
+    const cellHeight = 600 / gridHeight;
+    
+    const gridX = Math.floor(x / cellWidth);
+    const gridY = Math.floor(y / cellHeight);
+    
+    if (gridX >= 0 && gridX < gridWidth && gridY >= 0 && gridY < gridHeight) {
+      const value = heatmapData.shots[gridY][gridX];
+      if (value > 0) {
+        setHoveredCell({ x: gridX, y: gridY, value, screenX: e.clientX, screenY: e.clientY });
+        return;
+      }
+    }
+    
+    setHoveredCell(null);
+  };
+
+  const handleCanvasMouseLeave = () => {
+    setHoveredCell(null);
+  };
+
+  const handleCanvasClick = (e) => {
+    if (hoveredCell) {
+      setSelectedZone(`cell-${hoveredCell.x}-${hoveredCell.y}`);
+    }
+  };
+
   return (
     <div className="heatmap-container">
       {/* Heatmap Grid - TOP SECTION, RECTANGULAR */}
@@ -97,19 +230,23 @@ function Heatmap({ heatmapData, currentStats }) {
           }}
         >
           📍 Shot Heatmap
-        </h4>{" "}
-        <p style={{ fontSize: "0.95rem", color: "#aaa", marginBottom: "1rem" }}>
+        </h4>{" "}        <p style={{ fontSize: "0.95rem", color: "#aaa", marginBottom: "1rem" }}>
           Rocket League field from above – click cells for details
         </p>
         <div
+          ref={containerRef}
           style={{
             position: "relative",
             width: 400,
             height: 600,
             margin: "0 auto",
+            cursor: hoveredCell ? "pointer" : "default",
           }}
+          onMouseMove={handleCanvasMouseMove}
+          onMouseLeave={handleCanvasMouseLeave}
+          onClick={handleCanvasClick}
         >
-          {/* Field markings overlay - like plugin */}
+          {/* Field markings overlay */}
           <svg
             style={{
               position: "absolute",
@@ -117,7 +254,7 @@ function Heatmap({ heatmapData, currentStats }) {
               left: 0,
               width: "100%",
               height: "100%",
-              zIndex: 2,
+              zIndex: 3,
               pointerEvents: "none",
             }}
             viewBox="0 0 400 600"
@@ -161,233 +298,93 @@ function Heatmap({ heatmapData, currentStats }) {
             />
           </svg>
 
-          <div
-            className="heatmap-grid"
+          {/* Canvas for fluid heatmap */}
+          <canvas
+            ref={canvasRef}
             style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              width: "100%",
+              height: "100%",
+              zIndex: 1,
+              borderRadius: "12px",
+            }}
+          />
+
+          {/* Background container */}
+          <div
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
               boxShadow: "0 4px 32px rgba(0,0,0,0.6)",
               borderRadius: "12px",
-              overflow: "visible",
               border: "1px solid rgba(187,134,252,0.3)",
               background: "rgba(10,10,20,0.85)",
               width: 400,
               height: 600,
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "center",
-              alignItems: "center",
-              position: "relative",
-              zIndex: 1,
+              zIndex: 0,
             }}
-          >
-            {heatmapData.shots.map((row, y) => (
+          />
+
+          {/* Hover tooltip */}
+          {hoveredCell && (
+            <div
+              style={{
+                position: "fixed",
+                top: hoveredCell.screenY + 15,
+                left: hoveredCell.screenX + 15,
+                transform: "translateX(-50%)",
+                background: "rgba(15,15,25,0.98)",
+                color: "#fff",
+                borderRadius: "10px",
+                boxShadow:
+                  "0 4px 24px rgba(0,0,0,0.8), 0 0 0 1px rgba(187,134,252,0.5)",
+                padding: "12px 16px",
+                zIndex: 1000,
+                minWidth: "140px",
+                fontSize: "0.9rem",
+                pointerEvents: "none",
+                whiteSpace: "nowrap",
+                backdropFilter: "blur(8px)",
+              }}
+            >
               <div
-                key={y}
-                className="heatmap-row"
-                style={{ display: "flex", gap: 0 }}
+                style={{
+                  fontWeight: "bold",
+                  marginBottom: "6px",
+                  color: "#bb86fc",
+                  fontSize: "0.95rem",
+                }}
               >
-                {row.map((value, x) => {
-                  const maxValue = Math.max(
-                    ...heatmapData.shots.flat().filter((v) => v > 0)
-                  );
-                  const intensity = maxValue > 0 ? value / maxValue : 0;
-
-                  function getFrequencyColor(intensity) {
-                    if (intensity === 0) return "rgba(15,15,30,0.3)";
-                    const colors = [
-                      [40, 120, 220],
-                      [80, 220, 150],
-                      [180, 255, 80],
-                      [255, 200, 0],
-                      [255, 50, 50],
-                    ];
-                    const stops = [0, 0.25, 0.5, 0.75, 1];
-                    let idx = stops.findIndex((s) => intensity <= s);
-                    if (idx === -1) idx = colors.length - 1;
-                    if (idx === 0) {
-                      const t = intensity / stops[0];
-                      return `rgba(${colors[0][0]},${colors[0][1]},${
-                        colors[0][2]
-                      },${0.3 + intensity * 0.6})`;
-                    }
-                    const t =
-                      (intensity - stops[idx - 1]) /
-                      (stops[idx] - stops[idx - 1]);
-                    const c1 = colors[idx - 1],
-                      c2 = colors[idx];
-                    const r = Math.round(c1[0] + t * (c2[0] - c1[0]));
-                    const g = Math.round(c1[1] + t * (c2[1] - c1[1]));
-                    const b = Math.round(c1[2] + t * (c2[2] - c1[2]));
-                    const a = 0.3 + intensity * 0.6;
-                    return `rgba(${r},${g},${b},${a})`;
-                  }
-
-                  const zoneShots = value;
-                  const zoneGoals = heatmapData.goals[y]?.[x] || 0;
-                  const accuracy =
-                    zoneShots > 0 ? Math.min(zoneGoals / zoneShots, 1) : 0;
-                  const cellColor = getFrequencyColor(intensity);
-                  const isSelected = selectedZone === `cell-${x}-${y}`;                  return (
-                    <div
-                      key={x}
-                      className="heatmap-cell"
-                      style={{
-                        border: "none",
-                        width: 36,
-                        height: 56,
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        fontWeight: "bold",
-                        fontSize: value > 0 ? "0.9rem" : "0",
-                        color:
-                          intensity > 0.5 ? "#fff" : "rgba(255,255,255,0.85)",
-                        textShadow:
-                          intensity > 0.5 ? "0 0 6px rgba(0,0,0,0.9)" : "none",
-                        transition: "all 0.2s ease-out",
-                        cursor: value > 0 ? "pointer" : "default",
-                        position: "relative",
-                        outline: isSelected
-                          ? "2px solid rgba(255,255,255,0.9)"
-                          : "none",
-                        outlineOffset: "-2px",
-                        borderRadius: "50%",
-                      }}
-                      title={
-                        value > 0 ? `Position (${x}, ${y}): ${value} shots` : ""
-                      }
-                      onClick={() =>
-                        value > 0 && setSelectedZone(`cell-${x}-${y}`)
-                      }
-                      onMouseEnter={(e) => {
-                        if (value > 0) {
-                          e.currentTarget.style.transform = "scale(1.1)";
-                          e.currentTarget.style.zIndex = "5";
-                          const bgEl = e.currentTarget.querySelector('.cell-bg');
-                          if (bgEl) {
-                            bgEl.style.filter = `blur(${
-                              0.2 + intensity * 0.8
-                            }px) brightness(${1.3 + intensity * 0.2})`;
-                          }
-                        }
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.transform = "scale(1)";
-                        e.currentTarget.style.zIndex = "1";
-                        const bgEl = e.currentTarget.querySelector('.cell-bg');
-                        if (bgEl) {
-                          bgEl.style.filter =
-                            intensity > 0
-                              ? `blur(${0.3 + intensity * 1}px) brightness(${
-                                  1 + intensity * 0.2
-                                })`
-                              : "none";
-                        }
-                      }}
-                    >
-                      <div
-                        className="cell-bg"
-                        style={{
-                          position: "absolute",
-                          top: 0,
-                          left: 0,
-                          right: 0,
-                          bottom: 0,
-                          background: cellColor,
-                          borderRadius: "50%",
-                          boxShadow:
-                            intensity > 0
-                              ? `0 0 ${15 + intensity * 25}px rgba(${
-                                  intensity > 0.5 ? "255,50,50" : "40,120,220"
-                                },${0.3 + intensity * 0.5})`
-                              : "none",
-                          filter:
-                            intensity > 0
-                              ? `blur(${0.3 + intensity * 1}px) brightness(${
-                                  1 + intensity * 0.2
-                                })`
-                              : "none",
-                          transition: "all 0.2s ease-out",
-                        }}
-                      />
-                      {value > 0 && (
-                        <span
-                          className="cell-value"
-                          style={{ position: "relative", zIndex: 10 }}
-                        >
-                          {value}
-                        </span>
-                      )}{" "}                      {isSelected && (
-                        <div
-                          style={{
-                            position: "absolute",
-                            top: y < 3 ? "50px" : "-80px",
-                            left: "50%",
-                            transform: "translateX(-50%)",
-                            background: "rgba(15,15,25,0.98)",
-                            color: "#fff",
-                            borderRadius: "10px",
-                            boxShadow:
-                              "0 4px 24px rgba(0,0,0,0.8), 0 0 0 1px rgba(187,134,252,0.5)",
-                            padding: "12px 16px",
-                            zIndex: 100,
-                            minWidth: "140px",
-                            fontSize: "0.9rem",
-                            pointerEvents: "none",
-                            whiteSpace: "nowrap",
-                            filter: "none",
-                            backdropFilter: "blur(8px)",
-                            willChange: "transform",
-                            isolation: "isolate",
-                          }}
-                        >
-                          <div
-                            style={{
-                              fontWeight: "bold",
-                              marginBottom: "6px",
-                              color: "#bb86fc",
-                              fontSize: "0.95rem",
-                            }}
-                          >
-                            Zone ({x}, {y})
-                          </div>
-                          <div style={{ marginBottom: "2px" }}>
-                            📍 Shots:{" "}
-                            <span
-                              style={{ color: "#4fc3f7", fontWeight: "bold" }}
-                            >
-                              {zoneShots}
-                            </span>
-                          </div>
-                          <div style={{ marginBottom: "2px" }}>
-                            ⚽ Goals:{" "}
-                            <span
-                              style={{ color: "#66bb6a", fontWeight: "bold" }}
-                            >
-                              {zoneGoals}
-                            </span>
-                          </div>
-                          <div>
-                            🎯 Accuracy:{" "}
-                            <span
-                              style={{
-                                color: accuracy > 0.5 ? "#66bb6a" : "#ff9800",
-                                fontWeight: "bold",
-                              }}
-                            >
-                              {zoneShots > 0
-                                ? (accuracy * 100).toFixed(1)
-                                : "0"}
-                              %
-                            </span>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
+                Zone ({hoveredCell.x}, {hoveredCell.y})
               </div>
-            ))}
-          </div>
+              <div style={{ marginBottom: "2px" }}>
+                📍 Shots:{" "}
+                <span style={{ color: "#4fc3f7", fontWeight: "bold" }}>
+                  {hoveredCell.value}
+                </span>
+              </div>
+              <div style={{ marginBottom: "2px" }}>
+                ⚽ Goals:{" "}
+                <span style={{ color: "#66bb6a", fontWeight: "bold" }}>
+                  {heatmapData.goals[hoveredCell.y]?.[hoveredCell.x] || 0}
+                </span>
+              </div>
+              <div>
+                🎯 Accuracy:{" "}
+                <span
+                  style={{
+                    color: (heatmapData.goals[hoveredCell.y]?.[hoveredCell.x] || 0) / hoveredCell.value > 0.5 ? "#66bb6a" : "#ff9800",
+                    fontWeight: "bold",
+                  }}
+                >
+                  {(((heatmapData.goals[hoveredCell.y]?.[hoveredCell.x] || 0) / hoveredCell.value) * 100).toFixed(1)}%
+                </span>
+              </div>
+            </div>
+          )}
         </div>
         <div
           className="heatmap-legend"
