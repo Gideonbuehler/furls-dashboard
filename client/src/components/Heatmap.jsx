@@ -79,16 +79,16 @@ function Heatmap({ heatmapData, currentStats }) {
         <h4 style={{ color: '#bb86fc', fontWeight: 'bold', fontSize: '1.1rem', marginBottom: '0.5rem' }}>📍 Shot Heatmap</h4>        <p style={{ fontSize: "0.95rem", color: "#aaa", marginBottom: "1rem" }}>
           Rocket League field from above – click cells for details
         </p>
-        <div style={{ position: 'relative', width: 500, height: 750, margin: '0 auto' }}>
+        <div style={{ position: 'relative', width: 400, height: 600, margin: '0 auto' }}>
           {/* Field markings overlay - like plugin */}
-          <svg style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 2, pointerEvents: 'none' }} viewBox="0 0 500 750">
+          <svg style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 2, pointerEvents: 'none' }} viewBox="0 0 400 600">
             {/* Goal boxes */}
-            <rect x="185" y="10" width="130" height="70" fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth="2" />
-            <rect x="185" y="670" width="130" height="70" fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth="2" />
+            <rect x="145" y="8" width="110" height="55" fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth="2" />
+            <rect x="145" y="537" width="110" height="55" fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth="2" />
             {/* Center circle */}
-            <circle cx="250" cy="375" r="85" fill="none" stroke="rgba(255,255,255,0.12)" strokeWidth="2" />
+            <circle cx="200" cy="300" r="70" fill="none" stroke="rgba(255,255,255,0.12)" strokeWidth="2" />
             {/* Center line */}
-            <line x1="0" y1="375" x2="500" y2="375" stroke="rgba(255,255,255,0.1)" strokeWidth="2" />
+            <line x1="0" y1="300" x2="400" y2="300" stroke="rgba(255,255,255,0.1)" strokeWidth="2" />
           </svg>
           
           <div className="heatmap-grid" style={{ 
@@ -97,8 +97,8 @@ function Heatmap({ heatmapData, currentStats }) {
             overflow: 'visible', 
             border: '1px solid rgba(187,134,252,0.3)', 
             background: 'rgba(10,10,20,0.85)', 
-            width: 500, 
-            height: 750, 
+            width: 400, 
+            height: 600, 
             display: 'flex', 
             flexDirection: 'column', 
             justifyContent: 'center', 
@@ -139,40 +139,40 @@ function Heatmap({ heatmapData, currentStats }) {
                   
                   return (
                     <div
-                      key={x}
-                      className="heatmap-cell"                      style={{
+                      key={x}                      className="heatmap-cell"                      style={{
                         background: cellColor,
                         border: 'none',
-                        width: 45,
-                        height: 70,
+                        width: 36,
+                        height: 56,
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
                         fontWeight: 'bold',
-                        fontSize: value > 0 ? '0.95rem' : '0',
-                        color: intensity > 0.5 ? '#fff' : 'rgba(255,255,255,0.8)',
-                        textShadow: intensity > 0.5 ? '0 0 8px rgba(0,0,0,0.8)' : 'none',
+                        fontSize: value > 0 ? '0.9rem' : '0',
+                        color: intensity > 0.5 ? '#fff' : 'rgba(255,255,255,0.85)',
+                        textShadow: intensity > 0.5 ? '0 0 6px rgba(0,0,0,0.9)' : 'none',
                         transition: 'all 0.2s ease-out',
-                        boxShadow: intensity > 0 ? `0 0 ${20 + intensity * 30}px rgba(${intensity > 0.5 ? '255,50,50' : '40,120,220'},${0.3 + intensity * 0.5})` : 'none',
+                        boxShadow: intensity > 0 ? `0 0 ${15 + intensity * 25}px rgba(${intensity > 0.5 ? '255,50,50' : '40,120,220'},${0.3 + intensity * 0.5})` : 'none',
                         cursor: value > 0 ? 'pointer' : 'default',
                         position: 'relative',
-                        filter: intensity > 0 ? `blur(${1 + intensity * 2}px) brightness(${1 + intensity * 0.3})` : 'none',
+                        filter: intensity > 0 ? `blur(${0.3 + intensity * 1}px) brightness(${1 + intensity * 0.2})` : 'none',
                         outline: isSelected ? '2px solid rgba(255,255,255,0.9)' : 'none',
                         outlineOffset: '-2px',
+                        borderRadius: '50%',
                       }}
                       title={value > 0 ? `Position (${x}, ${y}): ${value} shots` : ''}
                       onClick={() => value > 0 && setSelectedZone(`cell-${x}-${y}`)}
                       onMouseEnter={(e) => {
                         if (value > 0) {
-                          e.currentTarget.style.transform = 'scale(1.08)';
+                          e.currentTarget.style.transform = 'scale(1.1)';
                           e.currentTarget.style.zIndex = '5';
-                          e.currentTarget.style.filter = `blur(${0.5 + intensity * 1.5}px) brightness(${1.2 + intensity * 0.3})`;
+                          e.currentTarget.style.filter = `blur(${0.2 + intensity * 0.8}px) brightness(${1.3 + intensity * 0.2})`;
                         }
                       }}
                       onMouseLeave={(e) => {
                         e.currentTarget.style.transform = 'scale(1)';
                         e.currentTarget.style.zIndex = '1';
-                        e.currentTarget.style.filter = intensity > 0 ? `blur(${1 + intensity * 2}px) brightness(${1 + intensity * 0.3})` : 'none';
+                        e.currentTarget.style.filter = intensity > 0 ? `blur(${0.3 + intensity * 1}px) brightness(${1 + intensity * 0.2})` : 'none';
                       }}
                     >
                       {value > 0 && <span className="cell-value" style={{ position: 'relative', zIndex: 10 }}>{value}</span>}
