@@ -149,18 +149,16 @@ function Heatmap({ heatmapData, currentStats }) {
       const b = Math.round(c1.b + t * (c2.b - c1.b));
       
       return { r, g, b };
-    };
-
-    // Render each data point with radial gradient
+    };    // Render each data point with radial gradient
     dataPoints.forEach(point => {
-      const radius = 45 + point.intensity * 35; // Larger radius for more intense points
+      const radius = 25 + point.intensity * 20; // Smaller radius for more refined points
       const gradient = ctx.createRadialGradient(
         point.x, point.y, 0,
         point.x, point.y, radius
       );
 
       const color = getHeatColor(point.intensity);
-      const alpha = 0.3 + point.intensity * 0.5;
+      const alpha = 0.4 + point.intensity * 0.5;
 
       gradient.addColorStop(0, `rgba(${color.r}, ${color.g}, ${color.b}, ${alpha})`);
       gradient.addColorStop(0.5, `rgba(${color.r}, ${color.g}, ${color.b}, ${alpha * 0.5})`);
@@ -215,37 +213,31 @@ function Heatmap({ heatmapData, currentStats }) {
     if (hoveredCell) {
       setSelectedZone(`cell-${hoveredCell.x}-${hoveredCell.y}`);
     }
-  };
-
-  return (
+  };  return (
     <div className="heatmap-container">
-      {/* Heatmap Grid - TOP SECTION, RECTANGULAR */}
-      <div className="heatmap-grid-container" style={{ marginBottom: "2rem" }}>
-        <h4
-          style={{
-            color: "#bb86fc",
-            fontWeight: "bold",
-            fontSize: "1.1rem",
-            marginBottom: "0.5rem",
-          }}
-        >
-          📍 Shot Heatmap
-        </h4>{" "}        <p style={{ fontSize: "0.95rem", color: "#aaa", marginBottom: "1rem" }}>
-          Rocket League field from above – click cells for details
-        </p>
-        <div
-          ref={containerRef}
-          style={{
-            position: "relative",
-            width: 400,
-            height: 600,
-            margin: "0 auto",
-            cursor: hoveredCell ? "pointer" : "default",
-          }}
-          onMouseMove={handleCanvasMouseMove}
-          onMouseLeave={handleCanvasMouseLeave}
-          onClick={handleCanvasClick}
-        >
+      <h2 style={{ color: "#bb86fc", marginBottom: "2rem", textAlign: "center" }}>🔥 Shot Heatmap</h2>
+      
+      {/* Main Layout: Heatmap + Stats Cards Side by Side */}
+      <div style={{ display: "flex", gap: "2rem", alignItems: "flex-start", justifyContent: "center", flexWrap: "wrap" }}>
+        
+        {/* Heatmap Section */}
+        <div style={{ flex: "0 0 auto" }}>
+          <p style={{ fontSize: "0.95rem", color: "#aaa", marginBottom: "1rem", textAlign: "center" }}>
+            Rocket League field from above – hover for details
+          </p>
+          <div
+            ref={containerRef}
+            style={{
+              position: "relative",
+              width: 400,
+              height: 600,
+              margin: "0 auto",
+              cursor: hoveredCell ? "pointer" : "default",
+            }}
+            onMouseMove={handleCanvasMouseMove}
+            onMouseLeave={handleCanvasMouseLeave}
+            onClick={handleCanvasClick}
+          >
           {/* Field markings overlay */}
           <svg
             style={{
@@ -384,8 +376,7 @@ function Heatmap({ heatmapData, currentStats }) {
                 </span>
               </div>
             </div>
-          )}
-        </div>
+          )}        </div>
         <div
           className="heatmap-legend"
           style={{
@@ -418,83 +409,31 @@ function Heatmap({ heatmapData, currentStats }) {
             Hot
           </span>
         </div>
-      </div>
-
-      {/* Shot Analysis Section - BELOW HEATMAP */}
-      <div className="heatmap-header">
-        <h2>🔥 Shot Analysis by Zone</h2>
-        {!hasData && (
-          <div
-            className="no-data-banner"
-            style={{
-              padding: "10px",
-              background: "rgba(255, 193, 7, 0.1)",
-              border: "1px solid rgba(255, 193, 7, 0.3)",
-              borderRadius: "8px",
-              margin: "10px 0",
-              color: "#ffc107",
-            }}
-          >
-            <p style={{ margin: 0 }}>
-              ⚠️ No shot data recorded yet. Play some Rocket League to see your
-              heatmap!
-            </p>
-          </div>
-        )}
-        <div className="zone-selector">
-          <label htmlFor="zone-select">Select Zone:</label>
-          <select
-            id="zone-select"
-            value={selectedZone}
-            onChange={(e) => setSelectedZone(e.target.value)}
-            className="zone-select"
-          >
-            {zones.map((zone) => (
-              <option key={zone.id} value={zone.id}>
-                {zone.name}
-              </option>
-            ))}
-          </select>
         </div>
-      </div>
 
-      <div className="heatmap-content">
-        <div className="zone-info">
-          <h3>{zones.find((z) => z.id === selectedZone)?.name}</h3>
-          <p className="zone-description">
-            {zones.find((z) => z.id === selectedZone)?.description}
-          </p>
-        </div>
-        <div className="zone-stats">
+        {/* Stats Cards Section - Right Side */}
+        <div style={{ display: "flex", flexDirection: "column", gap: "1rem", minWidth: "250px" }}>
           <div className="stat-card">
             <div className="stat-icon">📍</div>
             <div className="stat-content">
-              <div className="stat-label">Total Shots</div>
+              <div className="stat-label">TOTAL SHOTS</div>
               <div className="stat-value">{stats.shots}</div>
             </div>
           </div>
           <div className="stat-card">
             <div className="stat-icon">⚽</div>
             <div className="stat-content">
-              <div className="stat-label">Goals Scored</div>
+              <div className="stat-label">GOALS SCORED</div>
               <div className="stat-value">{stats.goals}</div>
             </div>
           </div>
           <div className="stat-card highlight">
             <div className="stat-icon">🎯</div>
             <div className="stat-content">
-              <div className="stat-label">Accuracy</div>
+              <div className="stat-label">ACCURACY</div>
               <div className="stat-value">{stats.accuracy}%</div>
             </div>
           </div>
-        </div>
-        <div className="zone-tips">
-          <h4>💡 Tips for This Zone</h4>
-          <ul>
-            <li>Practice power shots from this area</li>
-            <li>Work on shot placement and accuracy</li>
-            <li>Try different angles and techniques</li>
-          </ul>
         </div>
       </div>
     </div>
