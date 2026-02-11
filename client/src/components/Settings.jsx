@@ -161,7 +161,7 @@ function Settings() {
                 <div className="step-content">
                   <h5>Verify Connection</h5>
                   <p>
-                    Play a freeplay session in Rocket League. Your stats will
+                    Queue a match. Your stats will
                     automatically upload when you exit the match!
                   </p>
                   <p className="success-note">
