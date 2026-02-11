@@ -79,17 +79,16 @@ function Heatmap({ heatmapData, currentStats }) {
         <h4 style={{ color: '#bb86fc', fontWeight: 'bold', fontSize: '1.1rem', marginBottom: '0.5rem' }}>📍 Shot Heatmap</h4>
         <p style={{ fontSize: "0.95rem", color: "#aaa", marginBottom: "1rem" }}>
           Rocket League field from above – click cells for details
-        </p>
-        <div style={{ position: 'relative', width: 800, height: 480, margin: '0 auto' }}>
+        </p>        <div style={{ position: 'relative', width: 900, height: 360, margin: '0 auto' }}>
           {/* Field markings overlay - like plugin */}
-          <svg style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 2, pointerEvents: 'none' }} viewBox="0 0 800 480">
+          <svg style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 2, pointerEvents: 'none' }} viewBox="0 0 900 360">
             {/* Goal boxes */}
-            <rect x="340" y="10" width="120" height="60" fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth="2" />
-            <rect x="340" y="410" width="120" height="60" fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth="2" />
+            <rect x="385" y="5" width="130" height="45" fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth="2" />
+            <rect x="385" y="310" width="130" height="45" fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth="2" />
             {/* Center circle */}
-            <circle cx="400" cy="240" r="80" fill="none" stroke="rgba(255,255,255,0.12)" strokeWidth="2" />
+            <circle cx="450" cy="180" r="70" fill="none" stroke="rgba(255,255,255,0.12)" strokeWidth="2" />
             {/* Center line */}
-            <line x1="0" y1="240" x2="800" y2="240" stroke="rgba(255,255,255,0.1)" strokeWidth="2" />
+            <line x1="0" y1="180" x2="900" y2="180" stroke="rgba(255,255,255,0.1)" strokeWidth="2" />
           </svg>
           
           <div className="heatmap-grid" style={{ 
@@ -98,8 +97,8 @@ function Heatmap({ heatmapData, currentStats }) {
             overflow: 'visible', 
             border: '1px solid rgba(187,134,252,0.3)', 
             background: 'rgba(10,10,20,0.85)', 
-            width: 800, 
-            height: 480, 
+            width: 900, 
+            height: 360, 
             display: 'flex', 
             flexDirection: 'column', 
             justifyContent: 'center', 
@@ -141,12 +140,11 @@ function Heatmap({ heatmapData, currentStats }) {
                   return (
                     <div
                       key={x}
-                      className="heatmap-cell"
-                      style={{
+                      className="heatmap-cell"                      style={{
                         background: cellColor,
                         border: 'none',
-                        width: 72,
-                        height: 42,
+                        width: 85,
+                        height: 32,
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
