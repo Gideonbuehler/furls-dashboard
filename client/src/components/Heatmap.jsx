@@ -343,20 +343,20 @@ function Heatmap({ heatmapData, currentStats }) {
               viewBox="0 0 400 600"            >
               {/* Goal lines - horizontal lines in front of goals */}
               <line
-                x1="10"
-                y1="30"
-                x2="390"
-                y2="30"
-                stroke="rgba(255,255,255,0.25)"
-                strokeWidth="3"
+                x1="100"
+                y1="15"
+                x2="300"
+                y2="15"
+                stroke="rgba(255,255,255,0.3)"
+                strokeWidth="4"
               />
               <line
-                x1="10"
-                y1="570"
-                x2="390"
-                y2="570"
-                stroke="rgba(255,255,255,0.25)"
-                strokeWidth="3"
+                x1="100"
+                y1="585"
+                x2="300"
+                y2="585"
+                stroke="rgba(255,255,255,0.3)"
+                strokeWidth="4"
               />
               {/* Center circle */}
               <circle
