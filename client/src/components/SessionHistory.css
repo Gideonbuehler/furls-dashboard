@@ -53,6 +53,13 @@
   color: #66bb6a;
 }
 
+/* Sort arrow styling */
+.sort-arrow {
+  color: #f44336;
+  font-size: 0.85em;
+  margin-left: 0.3rem;
+}
+
 .sessions-table td {
   padding: 1rem;
   border-bottom: 1px solid #333;

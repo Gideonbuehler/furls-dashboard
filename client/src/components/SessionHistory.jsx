@@ -7,26 +7,9 @@ function SessionHistory({ sessionHistory }) {
     key: null,
     direction: "desc",
   });
-
   // Convert Unreal Units/second to MPH
   // Rocket League: 1 UU/s ≈ 0.02237 MPH
-  con              </th>{" "}
-              <th onClick={() => handleSort("boost")} className="sortable">
-                Boost Used{" "}
-                {sortConfig.key === "boost" && (
-                  <span className="sort-arrow">
-                    {sortConfig.direction === "asc" ? "▲" : "▼"}
-                  </span>
-                )}
-              </th>{" "}
-              <th onClick={() => handleSort("possession")} className="sortable">
-                Possession{" "}
-                {sortConfig.key === "possession" && (
-                  <span className="sort-arrow">
-                    {sortConfig.direction === "asc" ? "▲" : "▼"}
-                  </span>
-                )}
-              </th>oMPH = (unrealSpeed) => {
+  const convertToMPH = (unrealSpeed) => {
     const mph = unrealSpeed * 0.02237;
     return Math.round(mph);
   };
@@ -382,16 +365,21 @@ function SessionHistory({ sessionHistory }) {
                     {sortConfig.direction === "asc" ? "▲" : "▼"}
                   </span>
                 )}
-              </th>
-              <th onClick={() => handleSort("boost")} className="sortable">
+              </th>              <th onClick={() => handleSort("boost")} className="sortable">
                 Boost Used{" "}
-                {sortConfig.key === "boost" &&
-                  (sortConfig.direction === "asc" ? "↑" : "↓")}
+                {sortConfig.key === "boost" && (
+                  <span className="sort-arrow">
+                    {sortConfig.direction === "asc" ? "▲" : "▼"}
+                  </span>
+                )}
               </th>{" "}
               <th onClick={() => handleSort("possession")} className="sortable">
                 Possession{" "}
-                {sortConfig.key === "possession" &&
-                  (sortConfig.direction === "asc" ? "↑" : "↓")}
+                {sortConfig.key === "possession" && (
+                  <span className="sort-arrow">
+                    {sortConfig.direction === "asc" ? "▲" : "▼"}
+                  </span>
+                )}
               </th>
               <th>Playlist</th>
               <th>MMR Δ</th>
