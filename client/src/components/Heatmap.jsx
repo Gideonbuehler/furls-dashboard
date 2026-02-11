@@ -237,8 +237,7 @@ function Heatmap({ heatmapData, currentStats }) {
             onMouseMove={handleCanvasMouseMove}
             onMouseLeave={handleCanvasMouseLeave}
             onClick={handleCanvasClick}
-          >
-          {/* Field markings overlay */}
+          >          {/* Field markings overlay */}
           <svg
             style={{
               position: "absolute",
@@ -251,24 +250,22 @@ function Heatmap({ heatmapData, currentStats }) {
             }}
             viewBox="0 0 400 600"
           >
-            {/* Goal boxes */}
-            <rect
-              x="145"
-              y="8"
-              width="110"
-              height="55"
-              fill="none"
-              stroke="rgba(255,255,255,0.15)"
-              strokeWidth="2"
+            {/* Goal lines - horizontal lines in front of goals */}
+            <line
+              x1="145"
+              y1="63"
+              x2="255"
+              y2="63"
+              stroke="rgba(255,255,255,0.25)"
+              strokeWidth="3"
             />
-            <rect
-              x="145"
-              y="537"
-              width="110"
-              height="55"
-              fill="none"
-              stroke="rgba(255,255,255,0.15)"
-              strokeWidth="2"
+            <line
+              x1="145"
+              y1="537"
+              x2="255"
+              y2="537"
+              stroke="rgba(255,255,255,0.25)"
+              strokeWidth="3"
             />
             {/* Center circle */}
             <circle
