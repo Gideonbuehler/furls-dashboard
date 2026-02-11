@@ -175,8 +175,7 @@ function Heatmap({ heatmapData, currentStats }) {
                         e.currentTarget.style.filter = intensity > 0 ? `blur(${0.3 + intensity * 1}px) brightness(${1 + intensity * 0.2})` : 'none';
                       }}
                     >
-                      {value > 0 && <span className="cell-value" style={{ position: 'relative', zIndex: 10 }}>{value}</span>}
-                      {isSelected && (
+                      {value > 0 && <span className="cell-value" style={{ position: 'relative', zIndex: 10 }}>{value}</span>}                      {isSelected && (
                         <div style={{
                           position: 'absolute',
                           top: y < 3 ? '50px' : '-80px',
@@ -192,6 +191,8 @@ function Heatmap({ heatmapData, currentStats }) {
                           fontSize: '0.9rem',
                           pointerEvents: 'none',
                           whiteSpace: 'nowrap',
+                          filter: 'none',
+                          backdropFilter: 'blur(8px)',
                         }}>
                           <div style={{ fontWeight: 'bold', marginBottom: '6px', color: '#bb86fc', fontSize: '0.95rem' }}>Zone ({x}, {y})</div>
                           <div style={{ marginBottom: '2px' }}>📍 Shots: <span style={{ color: '#4fc3f7', fontWeight: 'bold' }}>{zoneShots}</span></div>
