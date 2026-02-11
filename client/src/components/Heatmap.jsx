@@ -32,6 +32,9 @@ function Heatmap({ heatmapData, currentStats }) {
     );
   }
 
+  const stats = getZoneStats();
+  const hasData = stats.shots > 0 || stats.goals > 0;
+
   // Debug: Show the entire heatmapData object
   return (
     <div>
