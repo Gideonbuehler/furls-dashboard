@@ -32,6 +32,32 @@ function Heatmap({ heatmapData, currentStats }) {
     );
   }
 
+  // Calculate stats for selected zone
+  const getZoneStats = () => {
+    const data = heatmapData.shots;
+    const goalData = heatmapData.goals;
+
+    // Simple aggregation - sum all values
+    let totalShots = 0;
+    let totalGoals = 0;
+
+    data.forEach((row, y) => {
+      row.forEach((shots, x) => {
+        totalShots += shots || 0;
+        totalGoals += goalData[y]?.[x] || 0;
+      });
+    });
+
+    const accuracy =
+      totalShots > 0 ? ((totalGoals / totalShots) * 100).toFixed(1) : 0;
+
+    return {
+      shots: totalShots,
+      goals: totalGoals,
+      accuracy,
+    };
+  };
+
   const stats = getZoneStats();
   const hasData = stats.shots > 0 || stats.goals > 0;
 
