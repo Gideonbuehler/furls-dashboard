@@ -10,7 +10,23 @@ function SessionHistory({ sessionHistory }) {
 
   // Convert Unreal Units/second to MPH
   // Rocket League: 1 UU/s ≈ 0.02237 MPH
-  const convertToMPH = (unrealSpeed) => {
+  con              </th>{" "}
+              <th onClick={() => handleSort("boost")} className="sortable">
+                Boost Used{" "}
+                {sortConfig.key === "boost" && (
+                  <span className="sort-arrow">
+                    {sortConfig.direction === "asc" ? "▲" : "▼"}
+                  </span>
+                )}
+              </th>{" "}
+              <th onClick={() => handleSort("possession")} className="sortable">
+                Possession{" "}
+                {sortConfig.key === "possession" && (
+                  <span className="sort-arrow">
+                    {sortConfig.direction === "asc" ? "▲" : "▼"}
+                  </span>
+                )}
+              </th>oMPH = (unrealSpeed) => {
     const mph = unrealSpeed * 0.02237;
     return Math.round(mph);
   };
@@ -317,38 +333,55 @@ function SessionHistory({ sessionHistory }) {
       </p>{" "}
       <div className="sessions-table-container">
         <table className="sessions-table">
-          <thead>
-            <tr>
+          <thead>            <tr>
               <th>#</th>
               <th onClick={() => handleSort("date")} className="sortable">
                 Date{" "}
-                {sortConfig.key === "date" &&
-                  (sortConfig.direction === "asc" ? "↑" : "↓")}
+                {sortConfig.key === "date" && (
+                  <span className="sort-arrow">
+                    {sortConfig.direction === "asc" ? "▲" : "▼"}
+                  </span>
+                )}
               </th>
               <th onClick={() => handleSort("duration")} className="sortable">
                 Duration{" "}
-                {sortConfig.key === "duration" &&
-                  (sortConfig.direction === "asc" ? "↑" : "↓")}
+                {sortConfig.key === "duration" && (
+                  <span className="sort-arrow">
+                    {sortConfig.direction === "asc" ? "▲" : "▼"}
+                  </span>
+                )}
               </th>
               <th onClick={() => handleSort("shots")} className="sortable">
                 Shots{" "}
-                {sortConfig.key === "shots" &&
-                  (sortConfig.direction === "asc" ? "↑" : "↓")}
+                {sortConfig.key === "shots" && (
+                  <span className="sort-arrow">
+                    {sortConfig.direction === "asc" ? "▲" : "▼"}
+                  </span>
+                )}
               </th>
               <th onClick={() => handleSort("goals")} className="sortable">
                 Goals{" "}
-                {sortConfig.key === "goals" &&
-                  (sortConfig.direction === "asc" ? "↑" : "↓")}
+                {sortConfig.key === "goals" && (
+                  <span className="sort-arrow">
+                    {sortConfig.direction === "asc" ? "▲" : "▼"}
+                  </span>
+                )}
               </th>
               <th onClick={() => handleSort("accuracy")} className="sortable">
                 Accuracy{" "}
-                {sortConfig.key === "accuracy" &&
-                  (sortConfig.direction === "asc" ? "↑" : "↓")}
+                {sortConfig.key === "accuracy" && (
+                  <span className="sort-arrow">
+                    {sortConfig.direction === "asc" ? "▲" : "▼"}
+                  </span>
+                )}
               </th>{" "}
               <th onClick={() => handleSort("avgSpeed")} className="sortable">
                 Avg Speed (mph){" "}
-                {sortConfig.key === "avgSpeed" &&
-                  (sortConfig.direction === "asc" ? "↑" : "↓")}
+                {sortConfig.key === "avgSpeed" && (
+                  <span className="sort-arrow">
+                    {sortConfig.direction === "asc" ? "▲" : "▼"}
+                  </span>
+                )}
               </th>
               <th onClick={() => handleSort("boost")} className="sortable">
                 Boost Used{" "}
