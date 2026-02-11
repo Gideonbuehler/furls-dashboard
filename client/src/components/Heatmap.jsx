@@ -157,32 +157,36 @@ function Heatmap({ heatmapData, currentStats }) {
                 {row.map((value, x) => {
                   const maxValue = Math.max(...heatmapData.shots.flat().filter((v) => v > 0));
                   const intensity = maxValue > 0 ? value / maxValue : 0;
-                  // Plugin-style color mapping
+                  // Sleek heatmap color: interpolate with alpha and radial gradient
                   function getFrequencyColor(intensity) {
-                    if (intensity < 0.20) {
-                      const t = intensity / 0.20;
-                      return `rgb(${40 + t * 40}, ${120 + t * 100}, ${220 - t * 120})`;
-                    } else if (intensity < 0.40) {
-                      const t = (intensity - 0.20) / 0.20;
-                      return `rgb(${80 + t * 75}, ${220 + t * 35}, ${100 - t * 100})`;
-                    } else if (intensity < 0.60) {
-                      const t = (intensity - 0.40) / 0.20;
-                      return `rgb(${155 + t * 100}, ${255 - t * 90}, 0)`;
-                    } else if (intensity < 0.80) {
-                      const t = (intensity - 0.60) / 0.20;
-                      return `rgb(255, ${165 - t * 165}, 0)`;
-                    } else {
-                      return `rgb(255, 0, 0)`;
-                    }
+                    // Use a smooth gradient with alpha for heatmap effect
+                    const colors = [
+                      [40, 120, 220],   // blue
+                      [80, 220, 100],   // cyan/green
+                      [155, 255, 0],    // yellow
+                      [255, 165, 0],    // orange
+                      [255, 0, 0]       // red
+                    ];
+                    const stops = [0, 0.25, 0.5, 0.75, 1];
+                    let idx = stops.findIndex(s => intensity <= s);
+                    if (idx === -1) idx = colors.length - 1;
+                    if (idx === 0) return `rgba(${colors[0][0]},${colors[0][1]},${colors[0][2]},${0.15 + intensity * 0.85})`;
+                    const t = (intensity - stops[idx-1]) / (stops[idx] - stops[idx-1]);
+                    const c1 = colors[idx-1], c2 = colors[idx];
+                    const r = Math.round(c1[0] + t * (c2[0] - c1[0]));
+                    const g = Math.round(c1[1] + t * (c2[1] - c1[1]));
+                    const b = Math.round(c1[2] + t * (c2[2] - c1[2]));
+                    const a = 0.15 + intensity * 0.85;
+                    return `radial-gradient(circle, rgba(${r},${g},${b},${a}) 70%, rgba(${r},${g},${b},0.05) 100%)`;
                   }
                   // Accuracy mode color
                   function getAccuracyColor(acc) {
                     if (acc < 0.5) {
                       const t = acc / 0.5;
-                      return `rgb(255, ${t * 255}, 0)`;
+                      return `rgba(255, ${Math.round(t * 255)}, 0, 0.7)`;
                     } else {
                       const t = (acc - 0.5) / 0.5;
-                      return `rgb(${255 - t * 255}, 255, 0)`;
+                      return `rgba(${Math.round(255 - t * 255)}, 255, 0, 0.7)`;
                     }
                   }
                   // Calculate accuracy for this cell
@@ -192,13 +196,15 @@ function Heatmap({ heatmapData, currentStats }) {
                   // Choose color mode (frequency or accuracy)
                   const showAccuracy = false; // Set to true if you want accuracy mode
                   const cellColor = showAccuracy ? getAccuracyColor(accuracy) : getFrequencyColor(intensity);
+                  // Show data popup if selected
+                  const isSelected = selectedZone === `cell-${x}-${y}`;
                   return (
                     <div
                       key={x}
                       className="heatmap-cell"
                       style={{
                         background: cellColor,
-                        border: "1px solid rgba(255,255,255,0.08)",
+                        border: isSelected ? "2px solid #fff" : "1px solid rgba(255,255,255,0.08)",
                         width: 56,
                         height: 56,
                         display: 'flex',
@@ -207,14 +213,40 @@ function Heatmap({ heatmapData, currentStats }) {
                         fontWeight: 'bold',
                         fontSize: value > 0 ? '1.1rem' : '0.9rem',
                         color: value > 0 ? '#fff' : '#888',
-                        transition: 'background 0.3s',
+                        transition: 'background 0.3s, border 0.2s',
                         boxShadow: intensity > 0 ? '0 0 16px #bb86fc88' : 'none',
                         borderRadius: '8px',
                         filter: intensity > 0 ? 'blur(0.5px)' : 'none',
+                        cursor: 'pointer',
+                        position: 'relative',
                       }}
                       title={`Position (${x}, ${y}): ${value} shots`}
+                      onClick={() => setSelectedZone(`cell-${x}-${y}`)}
                     >
                       {value > 0 && <span className="cell-value">{value}</span>}
+                      {isSelected && (
+                        <div style={{
+                          position: 'absolute',
+                          top: '-60px',
+                          left: '50%',
+                          transform: 'translateX(-50%)',
+                          background: 'rgba(30,30,50,0.95)',
+                          color: '#fff',
+                          borderRadius: '8px',
+                          boxShadow: '0 2px 12px #0008',
+                          padding: '8px 16px',
+                          zIndex: 10,
+                          minWidth: '120px',
+                          fontSize: '0.95rem',
+                          border: '1px solid #bb86fc',
+                          pointerEvents: 'none',
+                        }}>
+                          <div><b>Zone ({x},{y})</b></div>
+                          <div>Shots: {zoneShots}</div>
+                          <div>Goals: {zoneGoals}</div>
+                          <div>Accuracy: {zoneShots > 0 ? (accuracy * 100).toFixed(1) : '0'}%</div>
+                        </div>
+                      )}
                     </div>
                   );
                 })}
