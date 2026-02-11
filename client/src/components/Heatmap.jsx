@@ -76,19 +76,19 @@ function Heatmap({ heatmapData, currentStats }) {
     <div className="heatmap-container">
       {/* Heatmap Grid - TOP SECTION, RECTANGULAR */}
       <div className="heatmap-grid-container" style={{ marginBottom: '2rem' }}>
-        <h4 style={{ color: '#bb86fc', fontWeight: 'bold', fontSize: '1.1rem', marginBottom: '0.5rem' }}>📍 Shot Heatmap</h4>
-        <p style={{ fontSize: "0.95rem", color: "#aaa", marginBottom: "1rem" }}>
+        <h4 style={{ color: '#bb86fc', fontWeight: 'bold', fontSize: '1.1rem', marginBottom: '0.5rem' }}>📍 Shot Heatmap</h4>        <p style={{ fontSize: "0.95rem", color: "#aaa", marginBottom: "1rem" }}>
           Rocket League field from above – click cells for details
-        </p>        <div style={{ position: 'relative', width: 900, height: 360, margin: '0 auto' }}>
+        </p>
+        <div style={{ position: 'relative', width: 500, height: 750, margin: '0 auto' }}>
           {/* Field markings overlay - like plugin */}
-          <svg style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 2, pointerEvents: 'none' }} viewBox="0 0 900 360">
+          <svg style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 2, pointerEvents: 'none' }} viewBox="0 0 500 750">
             {/* Goal boxes */}
-            <rect x="385" y="5" width="130" height="45" fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth="2" />
-            <rect x="385" y="310" width="130" height="45" fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth="2" />
+            <rect x="185" y="10" width="130" height="70" fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth="2" />
+            <rect x="185" y="670" width="130" height="70" fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth="2" />
             {/* Center circle */}
-            <circle cx="450" cy="180" r="70" fill="none" stroke="rgba(255,255,255,0.12)" strokeWidth="2" />
+            <circle cx="250" cy="375" r="85" fill="none" stroke="rgba(255,255,255,0.12)" strokeWidth="2" />
             {/* Center line */}
-            <line x1="0" y1="180" x2="900" y2="180" stroke="rgba(255,255,255,0.1)" strokeWidth="2" />
+            <line x1="0" y1="375" x2="500" y2="375" stroke="rgba(255,255,255,0.1)" strokeWidth="2" />
           </svg>
           
           <div className="heatmap-grid" style={{ 
@@ -97,8 +97,8 @@ function Heatmap({ heatmapData, currentStats }) {
             overflow: 'visible', 
             border: '1px solid rgba(187,134,252,0.3)', 
             background: 'rgba(10,10,20,0.85)', 
-            width: 900, 
-            height: 360, 
+            width: 500, 
+            height: 750, 
             display: 'flex', 
             flexDirection: 'column', 
             justifyContent: 'center', 
@@ -143,8 +143,8 @@ function Heatmap({ heatmapData, currentStats }) {
                       className="heatmap-cell"                      style={{
                         background: cellColor,
                         border: 'none',
-                        width: 85,
-                        height: 32,
+                        width: 45,
+                        height: 70,
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
