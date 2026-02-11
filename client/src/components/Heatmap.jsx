@@ -4,6 +4,17 @@ import "./Heatmap.css";
 function Heatmap({ heatmapData, currentStats }) {
   const [selectedZone, setSelectedZone] = useState("all");
 
+  // Define zones
+  const zones = [
+    { id: "all", name: "All Field", description: "Entire field" },
+    { id: "attacking-third", name: "Attacking Third", description: "Near opponent goal" },
+    { id: "midfield", name: "Midfield", description: "Middle of the field" },
+    { id: "defensive-third", name: "Defensive Third", description: "Near your goal" },
+    { id: "left-wing", name: "Left Wing", description: "Left side of field" },
+    { id: "center", name: "Center", description: "Center of field" },
+    { id: "right-wing", name: "Right Wing", description: "Right side of field" },
+  ];
+
   // Debug: Log heatmap data
   console.log("Heatmap data received:", heatmapData);
   console.log("Heatmap has shots array:", heatmapData?.shots);
