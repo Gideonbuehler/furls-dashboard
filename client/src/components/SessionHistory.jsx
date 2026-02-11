@@ -316,7 +316,9 @@ function SessionHistory({ sessionHistory }) {
       </p>{" "}
       <div className="sessions-table-container">
         <table className="sessions-table">
-          <thead>            <tr>
+          <thead>
+            {" "}
+            <tr>
               <th>#</th>
               <th onClick={() => handleSort("date")} className="sortable">
                 Date{" "}
@@ -365,7 +367,8 @@ function SessionHistory({ sessionHistory }) {
                     {sortConfig.direction === "asc" ? "▲" : "▼"}
                   </span>
                 )}
-              </th>              <th onClick={() => handleSort("boost")} className="sortable">
+              </th>{" "}
+              <th onClick={() => handleSort("boost")} className="sortable">
                 Boost Used{" "}
                 {sortConfig.key === "boost" && (
                   <span className="sort-arrow">

@@ -39,28 +39,36 @@ function StatsOverview({ currentStats, allTimeStats }) {
                 <div className="stat-icon-large">⚽</div>
                 <div className="stat-content">
                   <div className="stat-label">Goals</div>
-                  <div className="stat-value-large">{currentStats.goals || 0}</div>
+                  <div className="stat-value-large">
+                    {currentStats.goals || 0}
+                  </div>
                 </div>
               </div>
               <div className="stat-card highlight-card">
                 <div className="stat-icon-large">📍</div>
                 <div className="stat-content">
                   <div className="stat-label">Shots</div>
-                  <div className="stat-value-large">{currentStats.shots || 0}</div>
+                  <div className="stat-value-large">
+                    {currentStats.shots || 0}
+                  </div>
                 </div>
               </div>
               <div className="stat-card highlight-card">
                 <div className="stat-icon-large">🎯</div>
                 <div className="stat-content">
                   <div className="stat-label">Accuracy</div>
-                  <div className="stat-value-large">{getCurrentAccuracy()}%</div>
+                  <div className="stat-value-large">
+                    {getCurrentAccuracy()}%
+                  </div>
                 </div>
               </div>
               <div className="stat-card highlight-card">
                 <div className="stat-icon-large">⏱️</div>
                 <div className="stat-content">
                   <div className="stat-label">Game Time</div>
-                  <div className="stat-value-large">{formatTime(currentStats?.gameTime || 0)}</div>
+                  <div className="stat-value-large">
+                    {formatTime(currentStats?.gameTime || 0)}
+                  </div>
                 </div>
               </div>
             </div>
@@ -72,7 +80,9 @@ function StatsOverview({ currentStats, allTimeStats }) {
                 <h3>⚡ Speed & Movement</h3>
                 <div className="stat-item">
                   <span>Average Speed:</span>
-                  <strong>{convertToMPH(currentStats?.averageSpeed || 0)} mph</strong>
+                  <strong>
+                    {convertToMPH(currentStats?.averageSpeed || 0)} mph
+                  </strong>
                 </div>
                 <div className="stat-item">
                   <span>Speed Samples:</span>
@@ -96,9 +106,12 @@ function StatsOverview({ currentStats, allTimeStats }) {
                   <strong>
                     {currentStats?.boostCollected > 0
                       ? safeToFixed(
-                          (currentStats.boostUsed / currentStats.boostCollected) * 100
+                          (currentStats.boostUsed /
+                            currentStats.boostCollected) *
+                            100
                         )
-                      : 0}%
+                      : 0}
+                    %
                   </strong>
                 </div>
               </div>
@@ -112,11 +125,15 @@ function StatsOverview({ currentStats, allTimeStats }) {
                 </div>
                 <div className="stat-item">
                   <span>Team Possession:</span>
-                  <strong>{safeToFixed(currentStats?.teamPossessionTime)}s</strong>
+                  <strong>
+                    {safeToFixed(currentStats?.teamPossessionTime)}s
+                  </strong>
                 </div>
                 <div className="stat-item">
                   <span>Opponent Possession:</span>
-                  <strong>{safeToFixed(currentStats?.opponentPossessionTime)}s</strong>
+                  <strong>
+                    {safeToFixed(currentStats?.opponentPossessionTime)}s
+                  </strong>
                 </div>
               </div>
             </div>
@@ -126,7 +143,8 @@ function StatsOverview({ currentStats, allTimeStats }) {
             <p>No current session data available</p>
           </div>
         )}
-      </section>{" "}      {allTimeStats && (
+      </section>{" "}
+      {allTimeStats && (
         <section className="stats-section all-time-section">
           <h2>🏆 All-Time Statistics</h2>
           <div className="all-time-grid-reorganized">
@@ -137,7 +155,9 @@ function StatsOverview({ currentStats, allTimeStats }) {
                 <div className="summary-content">
                   <div className="summary-label">Total Sessions</div>
                   <div className="summary-value-xl">
-                    {allTimeStats.totalSessions || allTimeStats.total_sessions || 0}
+                    {allTimeStats.totalSessions ||
+                      allTimeStats.total_sessions ||
+                      0}
                   </div>
                 </div>
               </div>
@@ -181,13 +201,17 @@ function StatsOverview({ currentStats, allTimeStats }) {
                 <div className="summary-value">
                   {safeToFixed(
                     allTimeStats?.avgAccuracy || allTimeStats?.avg_accuracy || 0
-                  )}%
+                  )}
+                  %
                 </div>
               </div>
               <div className="summary-card">
                 <div className="summary-label">Average Speed</div>
                 <div className="summary-value">
-                  {convertToMPH(allTimeStats?.avgSpeed || allTimeStats?.avg_speed || 0)} mph
+                  {convertToMPH(
+                    allTimeStats?.avgSpeed || allTimeStats?.avg_speed || 0
+                  )}{" "}
+                  mph
                 </div>
               </div>
               <div className="summary-card">

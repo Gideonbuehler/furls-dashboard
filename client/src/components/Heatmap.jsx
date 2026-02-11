@@ -150,7 +150,7 @@ function Heatmap({ heatmapData, currentStats }) {
       const b = Math.round(c1.b + t * (c2.b - c1.b));
 
       return { r, g, b };
-    };    // Render each data point with radial gradient
+    }; // Render each data point with radial gradient
     dataPoints.forEach((point) => {
       const radius = 12 + point.intensity * 10; // Half the previous size for more refined points
       const gradient = ctx.createRadialGradient(
@@ -236,7 +236,8 @@ function Heatmap({ heatmapData, currentStats }) {
         style={{ color: "#bb86fc", marginBottom: "2rem", textAlign: "center" }}
       >
         🔥 Shot Heatmap
-      </h2>      {/* Main Layout: Heatmap + Stats Cards Side by Side */}
+      </h2>{" "}
+      {/* Main Layout: Heatmap + Stats Cards Side by Side */}
       <div
         style={{
           display: "flex",
@@ -267,7 +268,13 @@ function Heatmap({ heatmapData, currentStats }) {
             >
               {stats.shots}
             </div>
-            <div style={{ fontSize: "0.85rem", color: "#888", marginTop: "0.25rem" }}>
+            <div
+              style={{
+                fontSize: "0.85rem",
+                color: "#888",
+                marginTop: "0.25rem",
+              }}
+            >
               Total Shots
             </div>
           </div>
@@ -281,7 +288,13 @@ function Heatmap({ heatmapData, currentStats }) {
             >
               {stats.goals}
             </div>
-            <div style={{ fontSize: "0.85rem", color: "#888", marginTop: "0.25rem" }}>
+            <div
+              style={{
+                fontSize: "0.85rem",
+                color: "#888",
+                marginTop: "0.25rem",
+              }}
+            >
               Goals
             </div>
           </div>
@@ -295,7 +308,13 @@ function Heatmap({ heatmapData, currentStats }) {
             >
               {stats.accuracy}%
             </div>
-            <div style={{ fontSize: "0.85rem", color: "#888", marginTop: "0.25rem" }}>
+            <div
+              style={{
+                fontSize: "0.85rem",
+                color: "#888",
+                marginTop: "0.25rem",
+              }}
+            >
               Accuracy
             </div>
           </div>
@@ -340,7 +359,8 @@ function Heatmap({ heatmapData, currentStats }) {
                 zIndex: 3,
                 pointerEvents: "none",
               }}
-              viewBox="0 0 400 600"            >
+              viewBox="0 0 400 600"
+            >
               {/* Goal lines - horizontal lines in front of goals */}
               <line
                 x1="120"
@@ -389,7 +409,8 @@ function Heatmap({ heatmapData, currentStats }) {
                 zIndex: 1,
                 borderRadius: "12px",
               }}
-            />            {/* Background container */}
+            />{" "}
+            {/* Background container */}
             <div
               style={{
                 position: "absolute",
@@ -509,7 +530,8 @@ function Heatmap({ heatmapData, currentStats }) {
             >
               Hot
             </span>
-          </div>        </div>
+          </div>{" "}
+        </div>
 
         {/* Right Side Stats */}
         <div
@@ -529,9 +551,18 @@ function Heatmap({ heatmapData, currentStats }) {
                 color: "#ff9800",
               }}
             >
-              {stats.shots > 0 ? (stats.goals / stats.shots * 100).toFixed(1) : 0}%
+              {stats.shots > 0
+                ? ((stats.goals / stats.shots) * 100).toFixed(1)
+                : 0}
+              %
             </div>
-            <div style={{ fontSize: "0.85rem", color: "#888", marginTop: "0.25rem" }}>
+            <div
+              style={{
+                fontSize: "0.85rem",
+                color: "#888",
+                marginTop: "0.25rem",
+              }}
+            >
               Conversion
             </div>
           </div>
@@ -545,7 +576,13 @@ function Heatmap({ heatmapData, currentStats }) {
             >
               {stats.shots - stats.goals}
             </div>
-            <div style={{ fontSize: "0.85rem", color: "#888", marginTop: "0.25rem" }}>
+            <div
+              style={{
+                fontSize: "0.85rem",
+                color: "#888",
+                marginTop: "0.25rem",
+              }}
+            >
               Misses
             </div>
           </div>
@@ -559,7 +596,13 @@ function Heatmap({ heatmapData, currentStats }) {
             >
               {currentStats?.shotsPerMinute?.toFixed(1) || "0.0"}
             </div>
-            <div style={{ fontSize: "0.85rem", color: "#888", marginTop: "0.25rem" }}>
+            <div
+              style={{
+                fontSize: "0.85rem",
+                color: "#888",
+                marginTop: "0.25rem",
+              }}
+            >
               Shots/Min
             </div>
           </div>

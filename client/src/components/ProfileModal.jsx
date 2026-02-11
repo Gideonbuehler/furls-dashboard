@@ -198,18 +198,10 @@ function ProfileModal({ isOpen, onClose, user }) {
           </button>
         </div>
 
-        <div className="modal-body">          {error && (
-            <div className="alert alert-error">
-              {error}
-            </div>
-          )}
-
-          {success && (
-            <div className="alert alert-success">
-              {success}
-            </div>
-          )}
-
+        <div className="modal-body">
+          {" "}
+          {error && <div className="alert alert-error">{error}</div>}
+          {success && <div className="alert alert-success">{success}</div>}
           <form onSubmit={handleProfileUpdate} className="profile-form">
             <div className="form-group">
               <label htmlFor="displayName">Display Name</label>
@@ -266,7 +258,8 @@ function ProfileModal({ isOpen, onClose, user }) {
                         .toUpperCase()}
                     </div>
                   )}
-                </div>                <div className="upload-controls">
+                </div>{" "}
+                <div className="upload-controls">
                   <label className="file-upload-btn">
                     Choose Image
                     <input
@@ -288,7 +281,6 @@ function ProfileModal({ isOpen, onClose, user }) {
                     </button>
                   )}
                 </div>
-
                 <span className="form-hint">
                   Max 5MB • JPG, PNG, GIF • Square images work best
                 </span>
@@ -312,11 +304,11 @@ function ProfileModal({ isOpen, onClose, user }) {
               <span className="form-hint">
                 Paste a URL to your profile picture
               </span>
-            </div>            <button type="submit" className="btn-save" disabled={loading}>
+            </div>{" "}
+            <button type="submit" className="btn-save" disabled={loading}>
               {loading ? "Saving..." : "Save Changes"}
             </button>
           </form>
-
           <div className="privacy-section">
             <h3>Privacy Settings</h3>
             <div className="privacy-controls">
