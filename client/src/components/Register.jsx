@@ -56,18 +56,63 @@ function Register({ onRegister }) {
       <div className="auth-card">
         <div className="auth-header">
           <div className="logo-container">
-            <svg className="logo-svg" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+            <svg
+              className="logo-svg"
+              viewBox="0 0 40 40"
+              xmlns="http://www.w3.org/2000/svg"
+            >
               <defs>
-                <linearGradient id="registerLogoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" style={{stopColor: '#bb86fc', stopOpacity: 1}} />
-                  <stop offset="100%" style={{stopColor: '#7b1fa2', stopOpacity: 1}} />
+                <linearGradient
+                  id="registerLogoGradient"
+                  x1="0%"
+                  y1="0%"
+                  x2="100%"
+                  y2="100%"
+                >
+                  <stop
+                    offset="0%"
+                    style={{ stopColor: "#bb86fc", stopOpacity: 1 }}
+                  />
+                  <stop
+                    offset="100%"
+                    style={{ stopColor: "#7b1fa2", stopOpacity: 1 }}
+                  />
                 </linearGradient>
               </defs>
-              <path d="M10 8 L28 8 L28 12 L15 12 L15 18 L25 18 L25 22 L15 22 L15 32 L10 32 Z" 
-                    fill="url(#registerLogoGradient)" />
-              <line x1="32" y1="12" x2="38" y2="12" stroke="#bb86fc" strokeWidth="2" strokeLinecap="round" opacity="0.8"/>
-              <line x1="30" y1="20" x2="38" y2="20" stroke="#bb86fc" strokeWidth="2" strokeLinecap="round" opacity="0.6"/>
-              <line x1="32" y1="28" x2="38" y2="28" stroke="#bb86fc" strokeWidth="2" strokeLinecap="round" opacity="0.4"/>
+              <path
+                d="M10 8 L28 8 L28 12 L15 12 L15 18 L25 18 L25 22 L15 22 L15 32 L10 32 Z"
+                fill="url(#registerLogoGradient)"
+              />
+              <line
+                x1="32"
+                y1="12"
+                x2="38"
+                y2="12"
+                stroke="#bb86fc"
+                strokeWidth="2"
+                strokeLinecap="round"
+                opacity="0.8"
+              />
+              <line
+                x1="30"
+                y1="20"
+                x2="38"
+                y2="20"
+                stroke="#bb86fc"
+                strokeWidth="2"
+                strokeLinecap="round"
+                opacity="0.6"
+              />
+              <line
+                x1="32"
+                y1="28"
+                x2="38"
+                y2="28"
+                stroke="#bb86fc"
+                strokeWidth="2"
+                strokeLinecap="round"
+                opacity="0.4"
+              />
             </svg>
             <h1 className="logo-text">FURLS</h1>
           </div>

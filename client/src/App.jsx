@@ -185,26 +185,72 @@ function App() {
       <header className="app-header">
         <div className="header-content">
           <h1>
-            <svg className="logo-svg" viewBox="0 0 210 40" xmlns="http://www.w3.org/2000/svg">
+            <svg
+              className="logo-svg"
+              viewBox="0 0 210 40"
+              xmlns="http://www.w3.org/2000/svg"
+            >
               <defs>
-                <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" style={{stopColor: '#bb86fc', stopOpacity: 1}} />
-                  <stop offset="100%" style={{stopColor: '#7b1fa2', stopOpacity: 1}} />
+                <linearGradient
+                  id="logoGradient"
+                  x1="0%"
+                  y1="0%"
+                  x2="100%"
+                  y2="100%"
+                >
+                  <stop
+                    offset="0%"
+                    style={{ stopColor: "#bb86fc", stopOpacity: 1 }}
+                  />
+                  <stop
+                    offset="100%"
+                    style={{ stopColor: "#7b1fa2", stopOpacity: 1 }}
+                  />
                 </linearGradient>
               </defs>
               {/* FURLS Text */}
-              <text x="5" y="28" 
-                    fontFamily="Arial, sans-serif" 
-                    fontSize="28" 
-                    fontWeight="bold" 
-                    fill="url(#logoGradient)"
-                    letterSpacing="2">
+              <text
+                x="5"
+                y="28"
+                fontFamily="Arial, sans-serif"
+                fontSize="28"
+                fontWeight="bold"
+                fill="url(#logoGradient)"
+                letterSpacing="2"
+              >
                 FURLS
               </text>
               {/* Speed lines after S */}
-              <line x1="145" y1="12" x2="200" y2="12" stroke="#bb86fc" strokeWidth="4" strokeLinecap="round" opacity="0.8"/>
-              <line x1="145" y1="20" x2="190" y2="20" stroke="#bb86fc" strokeWidth="4" strokeLinecap="round" opacity="0.6"/>
-              <line x1="145" y1="28" x2="195" y2="28" stroke="#bb86fc" strokeWidth="4" strokeLinecap="round" opacity="0.4"/>
+              <line
+                x1="145"
+                y1="12"
+                x2="200"
+                y2="12"
+                stroke="#bb86fc"
+                strokeWidth="4"
+                strokeLinecap="round"
+                opacity="0.8"
+              />
+              <line
+                x1="145"
+                y1="20"
+                x2="190"
+                y2="20"
+                stroke="#bb86fc"
+                strokeWidth="4"
+                strokeLinecap="round"
+                opacity="0.6"
+              />
+              <line
+                x1="145"
+                y1="28"
+                x2="195"
+                y2="28"
+                stroke="#bb86fc"
+                strokeWidth="4"
+                strokeLinecap="round"
+                opacity="0.4"
+              />
             </svg>
           </h1>
 

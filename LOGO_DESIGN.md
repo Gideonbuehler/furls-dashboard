@@ -1,6 +1,7 @@
 # FURLS Logo Design
 
 ## Overview
+
 The FURLS dashboard now features a **professional SVG-based logo** without emojis, featuring a stylized "F" lettermark with speed lines.
 
 ---
@@ -8,18 +9,21 @@ The FURLS dashboard now features a **professional SVG-based logo** without emoji
 ## Design Elements
 
 ### 1. **Lettermark "F"**
+
 - Bold, geometric "F" shape
 - Represents "FURLS" brand
 - Filled with gradient (purple to dark purple)
 - Modern, technical aesthetic
 
 ### 2. **Speed Lines**
+
 - Three horizontal lines on the right
 - Decreasing opacity (0.8, 0.6, 0.4)
 - Represents speed, motion, training
 - Rocket League theme (fast-paced gameplay)
 
 ### 3. **Gradient Colors**
+
 - **Primary**: `#bb86fc` (light purple)
 - **Secondary**: `#7b1fa2` (dark purple)
 - Matches dashboard color scheme
@@ -30,25 +34,60 @@ The FURLS dashboard now features a **professional SVG-based logo** without emoji
 ## Logo Specifications
 
 ### SVG Code
+
 ```jsx
-<svg className="logo-svg" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+<svg
+  className="logo-svg"
+  viewBox="0 0 40 40"
+  xmlns="http://www.w3.org/2000/svg"
+>
   <defs>
     <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style={{stopColor: '#bb86fc', stopOpacity: 1}} />
-      <stop offset="100%" style={{stopColor: '#7b1fa2', stopOpacity: 1}} />
+      <stop offset="0%" style={{ stopColor: "#bb86fc", stopOpacity: 1 }} />
+      <stop offset="100%" style={{ stopColor: "#7b1fa2", stopOpacity: 1 }} />
     </linearGradient>
   </defs>
   {/* Stylized F letter */}
-  <path d="M10 8 L28 8 L28 12 L15 12 L15 18 L25 18 L25 22 L15 22 L15 32 L10 32 Z" 
-        fill="url(#logoGradient)" />
+  <path
+    d="M10 8 L28 8 L28 12 L15 12 L15 18 L25 18 L25 22 L15 22 L15 32 L10 32 Z"
+    fill="url(#logoGradient)"
+  />
   {/* Speed lines */}
-  <line x1="32" y1="12" x2="38" y2="12" stroke="#bb86fc" strokeWidth="2" strokeLinecap="round" opacity="0.8"/>
-  <line x1="30" y1="20" x2="38" y2="20" stroke="#bb86fc" strokeWidth="2" strokeLinecap="round" opacity="0.6"/>
-  <line x1="32" y1="28" x2="38" y2="28" stroke="#bb86fc" strokeWidth="2" strokeLinecap="round" opacity="0.4"/>
+  <line
+    x1="32"
+    y1="12"
+    x2="38"
+    y2="12"
+    stroke="#bb86fc"
+    strokeWidth="2"
+    strokeLinecap="round"
+    opacity="0.8"
+  />
+  <line
+    x1="30"
+    y1="20"
+    x2="38"
+    y2="20"
+    stroke="#bb86fc"
+    strokeWidth="2"
+    strokeLinecap="round"
+    opacity="0.6"
+  />
+  <line
+    x1="32"
+    y1="28"
+    x2="38"
+    y2="28"
+    stroke="#bb86fc"
+    strokeWidth="2"
+    strokeLinecap="round"
+    opacity="0.4"
+  />
 </svg>
 ```
 
 ### Sizes
+
 - **Header**: 40x40px
 - **Auth Pages**: 48x48px
 - **Favicon** (future): 32x32px, 16x16px
@@ -58,6 +97,7 @@ The FURLS dashboard now features a **professional SVG-based logo** without emoji
 ## Typography
 
 ### "FURLS" Text
+
 - **Font Weight**: 700 (Bold)
 - **Letter Spacing**: 0.05em
 - **Gradient**: Linear gradient from `#bb86fc` to `#e0b3ff`
@@ -68,6 +108,7 @@ The FURLS dashboard now features a **professional SVG-based logo** without emoji
 ## Usage
 
 ### 1. **Main Header** (App.jsx)
+
 ```jsx
 <h1>
   <div className="logo-container">
@@ -80,6 +121,7 @@ The FURLS dashboard now features a **professional SVG-based logo** without emoji
 ```
 
 ### 2. **Login Page** (Login.jsx)
+
 ```jsx
 <div className="auth-header">
   <div className="logo-container">
@@ -93,6 +135,7 @@ The FURLS dashboard now features a **professional SVG-based logo** without emoji
 ```
 
 ### 3. **Register Page** (Register.jsx)
+
 ```jsx
 <div className="auth-header">
   <div className="logo-container">
@@ -110,6 +153,7 @@ The FURLS dashboard now features a **professional SVG-based logo** without emoji
 ## CSS Styling
 
 ### App.css
+
 ```css
 .logo-container {
   display: flex;
@@ -141,6 +185,7 @@ The FURLS dashboard now features a **professional SVG-based logo** without emoji
 ```
 
 ### Auth.css
+
 ```css
 .auth-header .logo-container {
   display: flex;
@@ -168,7 +213,9 @@ The FURLS dashboard now features a **professional SVG-based logo** without emoji
 ## Interactive Effects
 
 ### Hover Effects
+
 1. **Header Logo**
+
    - Glow increases: `drop-shadow(0 0 8px → 12px)`
    - Slight lift: `translateY(-2px)`
 
@@ -177,6 +224,7 @@ The FURLS dashboard now features a **professional SVG-based logo** without emoji
    - Scale up: `scale(1.05)`
 
 ### Transitions
+
 - Duration: `0.3s`
 - Easing: `ease`
 - Smooth, professional feel
@@ -188,16 +236,19 @@ The FURLS dashboard now features a **professional SVG-based logo** without emoji
 ### Why This Design?
 
 1. **Professional Look**
+
    - No emojis (🚗 removed)
    - Clean, modern SVG graphics
    - Industry-standard design
 
 2. **Brand Identity**
+
    - "F" lettermark is memorable
    - Speed lines communicate purpose
    - Consistent with training/performance theme
 
 3. **Technical Sophistication**
+
    - SVG scalable to any size
    - Gradient shows polish
    - Works on all devices
@@ -212,6 +263,7 @@ The FURLS dashboard now features a **professional SVG-based logo** without emoji
 ## Comparison: Before vs After
 
 ### Before ❌
+
 - Emoji: 🚗 (car emoji)
 - Inconsistent across browsers
 - Not professional
@@ -219,6 +271,7 @@ The FURLS dashboard now features a **professional SVG-based logo** without emoji
 - Low quality on hi-DPI screens
 
 ### After ✅
+
 - SVG lettermark with speed lines
 - Identical rendering everywhere
 - Professional appearance
@@ -230,6 +283,7 @@ The FURLS dashboard now features a **professional SVG-based logo** without emoji
 ## Future Enhancements
 
 ### Possible Additions
+
 - [ ] Animated speed lines on hover
 - [ ] Different logo variants (icon-only, horizontal, vertical)
 - [ ] Dark/light mode variations
@@ -238,6 +292,7 @@ The FURLS dashboard now features a **professional SVG-based logo** without emoji
 - [ ] Monochrome version for specific contexts
 
 ### Export Formats
+
 - [ ] PNG exports (16x16, 32x32, 64x64, 128x128, 256x256)
 - [ ] ICO favicon
 - [ ] Apple touch icon
@@ -258,6 +313,7 @@ The FURLS dashboard now features a **professional SVG-based logo** without emoji
 ## Testing Checklist
 
 ### Visual Tests
+
 - [ ] Logo displays correctly in header
 - [ ] Logo displays correctly on login page
 - [ ] Logo displays correctly on register page
@@ -266,12 +322,14 @@ The FURLS dashboard now features a **professional SVG-based logo** without emoji
 - [ ] Speed lines visible at correct opacity
 
 ### Browser Compatibility
+
 - [ ] Chrome/Edge (Chromium)
 - [ ] Firefox
 - [ ] Safari
 - [ ] Mobile browsers
 
 ### Responsive Design
+
 - [ ] Desktop (1920x1080)
 - [ ] Tablet (768x1024)
 - [ ] Mobile (375x667)
@@ -284,6 +342,7 @@ The FURLS dashboard now features a **professional SVG-based logo** without emoji
 **Status**: ✅ **COMPLETE**
 
 The FURLS logo has been upgraded from an emoji (🚗) to a professional SVG lettermark with speed lines. The design is:
+
 - Modern and technical
 - Scalable and high-quality
 - Consistent across all pages
