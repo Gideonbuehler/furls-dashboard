@@ -80,110 +80,138 @@ function Heatmap({ heatmapData, currentStats }) {
         <p style={{ fontSize: "0.95rem", color: "#aaa", marginBottom: "1rem" }}>
           Rocket League field from above – click cells for details
         </p>
-        <div className="heatmap-grid" style={{ 
-          boxShadow: '0 2px 24px #0008', 
-          borderRadius: '16px', 
-          overflow: 'visible', 
-          border: '2px solid #bb86fc', 
-          background: 'rgba(30,30,50,0.7)', 
-          width: 800, 
-          height: 480, 
-          display: 'flex', 
-          flexDirection: 'column', 
-          justifyContent: 'center', 
-          alignItems: 'center',
-          margin: '0 auto'
-        }}>
-          {heatmapData.shots.map((row, y) => (
-            <div key={y} className="heatmap-row" style={{ display: 'flex' }}>
-              {row.map((value, x) => {
-                const maxValue = Math.max(...heatmapData.shots.flat().filter((v) => v > 0));
-                const intensity = maxValue > 0 ? value / maxValue : 0;
-                function getFrequencyColor(intensity) {
-                  const colors = [[40, 120, 220], [80, 220, 100], [155, 255, 0], [255, 165, 0], [255, 0, 0]];
-                  const stops = [0, 0.25, 0.5, 0.75, 1];
-                  let idx = stops.findIndex(s => intensity <= s);
-                  if (idx === -1) idx = colors.length - 1;
-                  if (idx === 0) return `rgba(${colors[0][0]},${colors[0][1]},${colors[0][2]},${0.15 + intensity * 0.85})`;
-                  const t = (intensity - stops[idx-1]) / (stops[idx] - stops[idx-1]);
-                  const c1 = colors[idx-1], c2 = colors[idx];
-                  const r = Math.round(c1[0] + t * (c2[0] - c1[0]));
-                  const g = Math.round(c1[1] + t * (c2[1] - c1[1]));
-                  const b = Math.round(c1[2] + t * (c2[2] - c1[2]));
-                  const a = 0.15 + intensity * 0.85;
-                  return `radial-gradient(circle, rgba(${r},${g},${b},${a}) 70%, rgba(${r},${g},${b},0.05) 100%)`;
-                }
-                const zoneShots = value;
-                const zoneGoals = heatmapData.goals[y]?.[x] || 0;
-                const accuracy = zoneShots > 0 ? Math.min(zoneGoals / zoneShots, 1) : 0;
-                const cellColor = getFrequencyColor(intensity);
-                const isSelected = selectedZone === `cell-${x}-${y}`;
-                return (
-                  <div
-                    key={x}
-                    className="heatmap-cell"
-                    style={{
-                      background: cellColor,
-                      border: isSelected ? "2px solid #fff" : "1px solid rgba(255,255,255,0.08)",
-                      width: 72,
-                      height: 42,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      fontWeight: 'bold',
-                      fontSize: value > 0 ? '1rem' : '0.8rem',
-                      color: value > 0 ? '#fff' : '#888',
-                      transition: 'all 0.3s',
-                      boxShadow: intensity > 0 ? '0 0 16px #bb86fc88' : 'none',
-                      borderRadius: '6px',
-                      filter: intensity > 0 ? 'blur(0.5px)' : 'none',
-                      cursor: 'pointer',
-                      position: 'relative',
-                    }}
-                    title={`Position (${x}, ${y}): ${value} shots`}
-                    onClick={() => setSelectedZone(`cell-${x}-${y}`)}
-                    onMouseEnter={(e) => {
-                      if (value > 0) e.currentTarget.style.transform = 'scale(1.05)';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.transform = 'scale(1)';
-                    }}
-                  >
-                    {value > 0 && <span className="cell-value">{value}</span>}
-                    {isSelected && (
-                      <div style={{
-                        position: 'absolute',
-                        top: '-70px',
-                        left: '50%',
-                        transform: 'translateX(-50%)',
-                        background: 'rgba(30,30,50,0.95)',
-                        color: '#fff',
-                        borderRadius: '8px',
-                        boxShadow: '0 2px 12px #0008',
-                        padding: '10px 14px',
-                        zIndex: 10,
-                        minWidth: '130px',
-                        fontSize: '0.9rem',
-                        border: '1px solid #bb86fc',
-                        pointerEvents: 'none',
-                        whiteSpace: 'nowrap',
-                      }}>
-                        <div style={{ fontWeight: 'bold', marginBottom: '4px' }}>Zone ({x},{y})</div>
-                        <div>Shots: {zoneShots}</div>
-                        <div>Goals: {zoneGoals}</div>
-                        <div>Accuracy: {zoneShots > 0 ? (accuracy * 100).toFixed(1) : '0'}%</div>
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          ))}
+        <div style={{ position: 'relative', width: 800, height: 480, margin: '0 auto' }}>
+          {/* Field markings overlay - like plugin */}
+          <svg style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 2, pointerEvents: 'none' }} viewBox="0 0 800 480">
+            {/* Goal boxes */}
+            <rect x="340" y="10" width="120" height="60" fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth="2" />
+            <rect x="340" y="410" width="120" height="60" fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth="2" />
+            {/* Center circle */}
+            <circle cx="400" cy="240" r="80" fill="none" stroke="rgba(255,255,255,0.12)" strokeWidth="2" />
+            {/* Center line */}
+            <line x1="0" y1="240" x2="800" y2="240" stroke="rgba(255,255,255,0.1)" strokeWidth="2" />
+          </svg>
+          
+          <div className="heatmap-grid" style={{ 
+            boxShadow: '0 4px 32px rgba(0,0,0,0.6)', 
+            borderRadius: '12px', 
+            overflow: 'visible', 
+            border: '1px solid rgba(187,134,252,0.3)', 
+            background: 'rgba(10,10,20,0.85)', 
+            width: 800, 
+            height: 480, 
+            display: 'flex', 
+            flexDirection: 'column', 
+            justifyContent: 'center', 
+            alignItems: 'center',
+            position: 'relative',
+            zIndex: 1
+          }}>
+            {heatmapData.shots.map((row, y) => (
+              <div key={y} className="heatmap-row" style={{ display: 'flex', gap: 0 }}>
+                {row.map((value, x) => {
+                  const maxValue = Math.max(...heatmapData.shots.flat().filter((v) => v > 0));
+                  const intensity = maxValue > 0 ? value / maxValue : 0;
+                  
+                  function getFrequencyColor(intensity) {
+                    if (intensity === 0) return 'rgba(15,15,30,0.3)';
+                    const colors = [[40, 120, 220], [80, 220, 150], [180, 255, 80], [255, 200, 0], [255, 50, 50]];
+                    const stops = [0, 0.25, 0.5, 0.75, 1];
+                    let idx = stops.findIndex(s => intensity <= s);
+                    if (idx === -1) idx = colors.length - 1;
+                    if (idx === 0) {
+                      const t = intensity / stops[0];
+                      return `rgba(${colors[0][0]},${colors[0][1]},${colors[0][2]},${0.3 + intensity * 0.6})`;
+                    }
+                    const t = (intensity - stops[idx-1]) / (stops[idx] - stops[idx-1]);
+                    const c1 = colors[idx-1], c2 = colors[idx];
+                    const r = Math.round(c1[0] + t * (c2[0] - c1[0]));
+                    const g = Math.round(c1[1] + t * (c2[1] - c1[1]));
+                    const b = Math.round(c1[2] + t * (c2[2] - c1[2]));
+                    const a = 0.3 + intensity * 0.6;
+                    return `rgba(${r},${g},${b},${a})`;
+                  }
+                  
+                  const zoneShots = value;
+                  const zoneGoals = heatmapData.goals[y]?.[x] || 0;
+                  const accuracy = zoneShots > 0 ? Math.min(zoneGoals / zoneShots, 1) : 0;
+                  const cellColor = getFrequencyColor(intensity);
+                  const isSelected = selectedZone === `cell-${x}-${y}`;
+                  
+                  return (
+                    <div
+                      key={x}
+                      className="heatmap-cell"
+                      style={{
+                        background: cellColor,
+                        border: 'none',
+                        width: 72,
+                        height: 42,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontWeight: 'bold',
+                        fontSize: value > 0 ? '0.95rem' : '0',
+                        color: intensity > 0.5 ? '#fff' : 'rgba(255,255,255,0.8)',
+                        textShadow: intensity > 0.5 ? '0 0 8px rgba(0,0,0,0.8)' : 'none',
+                        transition: 'all 0.2s ease-out',
+                        boxShadow: intensity > 0 ? `0 0 ${20 + intensity * 30}px rgba(${intensity > 0.5 ? '255,50,50' : '40,120,220'},${0.3 + intensity * 0.5})` : 'none',
+                        cursor: value > 0 ? 'pointer' : 'default',
+                        position: 'relative',
+                        filter: intensity > 0 ? `blur(${1 + intensity * 2}px) brightness(${1 + intensity * 0.3})` : 'none',
+                        outline: isSelected ? '2px solid rgba(255,255,255,0.9)' : 'none',
+                        outlineOffset: '-2px',
+                      }}
+                      title={value > 0 ? `Position (${x}, ${y}): ${value} shots` : ''}
+                      onClick={() => value > 0 && setSelectedZone(`cell-${x}-${y}`)}
+                      onMouseEnter={(e) => {
+                        if (value > 0) {
+                          e.currentTarget.style.transform = 'scale(1.08)';
+                          e.currentTarget.style.zIndex = '5';
+                          e.currentTarget.style.filter = `blur(${0.5 + intensity * 1.5}px) brightness(${1.2 + intensity * 0.3})`;
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.transform = 'scale(1)';
+                        e.currentTarget.style.zIndex = '1';
+                        e.currentTarget.style.filter = intensity > 0 ? `blur(${1 + intensity * 2}px) brightness(${1 + intensity * 0.3})` : 'none';
+                      }}
+                    >
+                      {value > 0 && <span className="cell-value" style={{ position: 'relative', zIndex: 10 }}>{value}</span>}
+                      {isSelected && (
+                        <div style={{
+                          position: 'absolute',
+                          top: y < 3 ? '50px' : '-80px',
+                          left: '50%',
+                          transform: 'translateX(-50%)',
+                          background: 'rgba(15,15,25,0.98)',
+                          color: '#fff',
+                          borderRadius: '10px',
+                          boxShadow: '0 4px 24px rgba(0,0,0,0.8), 0 0 0 1px rgba(187,134,252,0.5)',
+                          padding: '12px 16px',
+                          zIndex: 100,
+                          minWidth: '140px',
+                          fontSize: '0.9rem',
+                          pointerEvents: 'none',
+                          whiteSpace: 'nowrap',
+                        }}>
+                          <div style={{ fontWeight: 'bold', marginBottom: '6px', color: '#bb86fc', fontSize: '0.95rem' }}>Zone ({x}, {y})</div>
+                          <div style={{ marginBottom: '2px' }}>📍 Shots: <span style={{ color: '#4fc3f7', fontWeight: 'bold' }}>{zoneShots}</span></div>
+                          <div style={{ marginBottom: '2px' }}>⚽ Goals: <span style={{ color: '#66bb6a', fontWeight: 'bold' }}>{zoneGoals}</span></div>
+                          <div>🎯 Accuracy: <span style={{ color: accuracy > 0.5 ? '#66bb6a' : '#ff9800', fontWeight: 'bold' }}>{zoneShots > 0 ? (accuracy * 100).toFixed(1) : '0'}%</span></div>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            ))}
+          </div>
         </div>
-        <div className="heatmap-legend" style={{ marginTop: '1rem', display: 'flex', alignItems: 'center', gap: '12px', justifyContent: 'center' }}>
-          <span style={{ color: '#888', fontSize: '0.95rem' }}>Less Activity</span>
-          <div className="legend-gradient" style={{ width: 200, height: 16, background: 'linear-gradient(90deg, rgb(40,120,220) 0%, rgb(80,220,100) 25%, rgb(155,255,0) 50%, rgb(255,165,0) 75%, rgb(255,0,0) 100%)', borderRadius: 8 }}></div>
-          <span style={{ color: '#bb86fc', fontSize: '0.95rem' }}>More Activity</span>
+        <div className="heatmap-legend" style={{ marginTop: '1.5rem', display: 'flex', alignItems: 'center', gap: '12px', justifyContent: 'center' }}>
+          <span style={{ color: '#888', fontSize: '0.9rem', fontWeight: '500' }}>Cold</span>
+          <div className="legend-gradient" style={{ width: 220, height: 20, background: 'linear-gradient(90deg, rgba(40,120,220,0.4) 0%, rgba(80,220,150,0.6) 25%, rgba(180,255,80,0.7) 50%, rgba(255,200,0,0.8) 75%, rgba(255,50,50,0.9) 100%)', borderRadius: 10, boxShadow: '0 2px 8px rgba(0,0,0,0.3)' }}></div>
+          <span style={{ color: '#bb86fc', fontSize: '0.9rem', fontWeight: '500' }}>Hot</span>
         </div>
       </div>
 
