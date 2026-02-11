@@ -188,28 +188,24 @@ function ProfileModal({ isOpen, onClose, user }) {
   };
 
   if (!isOpen) return null;
-
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
-          <h2>👤 Edit Profile</h2>
+          <h2>Edit Profile</h2>
           <button className="modal-close" onClick={onClose}>
             ×
           </button>
         </div>
 
-        <div className="modal-body">
-          {error && (
+        <div className="modal-body">          {error && (
             <div className="alert alert-error">
-              <span className="alert-icon">⚠️</span>
               {error}
             </div>
           )}
 
           {success && (
             <div className="alert alert-success">
-              <span className="alert-icon">✅</span>
               {success}
             </div>
           )}
@@ -270,11 +266,9 @@ function ProfileModal({ isOpen, onClose, user }) {
                         .toUpperCase()}
                     </div>
                   )}
-                </div>
-
-                <div className="upload-controls">
+                </div>                <div className="upload-controls">
                   <label className="file-upload-btn">
-                    📁 Choose Image
+                    Choose Image
                     <input
                       type="file"
                       accept="image/*"
@@ -290,7 +284,7 @@ function ProfileModal({ isOpen, onClose, user }) {
                       onClick={handleImageUpload}
                       disabled={uploading}
                     >
-                      {uploading ? "⏳ Uploading..." : "✅ Upload Image"}
+                      {uploading ? "Uploading..." : "Upload"}
                     </button>
                   )}
                 </div>
@@ -318,14 +312,13 @@ function ProfileModal({ isOpen, onClose, user }) {
               <span className="form-hint">
                 Paste a URL to your profile picture
               </span>
-            </div>
-            <button type="submit" className="btn-save" disabled={loading}>
-              {loading ? "💾 Saving..." : "💾 Save Profile"}
+            </div>            <button type="submit" className="btn-save" disabled={loading}>
+              {loading ? "Saving..." : "Save Changes"}
             </button>
           </form>
 
           <div className="privacy-section">
-            <h3>👁️ Privacy Settings</h3>
+            <h3>Privacy Settings</h3>
             <div className="privacy-controls">
               <label className="privacy-option">
                 <input
@@ -358,8 +351,7 @@ function ProfileModal({ isOpen, onClose, user }) {
                   }
                 />
                 <span className="option-label">
-                  <strong>Friends Only</strong> - Only friends can view your
-                  profile
+                  <strong>Friends Only</strong> - Only friends can view
                 </span>
               </label>
               <label className="privacy-option">
@@ -385,7 +377,7 @@ function ProfileModal({ isOpen, onClose, user }) {
               onClick={handlePrivacyUpdate}
               disabled={loading}
             >
-              {loading ? "💾 Saving..." : "💾 Save Privacy Settings"}
+              {loading ? "Saving..." : "Update Privacy"}
             </button>
           </div>
         </div>
