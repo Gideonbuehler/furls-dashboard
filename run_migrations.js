@@ -1,18 +1,18 @@
-const sqlite3 = require('sqlite3').verbose();
-const path = require('path');
+const sqlite3 = require("sqlite3").verbose();
+const path = require("path");
 
-const dbPath = path.join(__dirname, 'server', 'furls.db');
+const dbPath = path.join(__dirname, "server", "furls.db");
 console.log(`Opening database: ${dbPath}\n`);
 
 const db = new sqlite3.Database(dbPath, (err) => {
   if (err) {
-    console.error('❌ Failed to open database:', err.message);
+    console.error("❌ Failed to open database:", err.message);
     process.exit(1);
   }
-  console.log('✅ Database opened successfully\n');
+  console.log("✅ Database opened successfully\n");
 });
 
-console.log('=== Running Playlist/MMR Column Migrations ===\n');
+console.log("=== Running Playlist/MMR Column Migrations ===\n");
 
 // Check current table structure
 db.all("PRAGMA table_info(sessions)", [], (err, columns) => {
@@ -23,7 +23,7 @@ db.all("PRAGMA table_info(sessions)", [], (err, columns) => {
   }
 
   const columnNames = columns.map((col) => col.name);
-  console.log(`Current columns: ${columnNames.join(', ')}\n`);
+  console.log(`Current columns: ${columnNames.join(", ")}\n`);
 
   let migrationsRun = 0;
   let migrationsNeeded = 0;
@@ -47,15 +47,18 @@ db.all("PRAGMA table_info(sessions)", [], (err, columns) => {
   // Check and add is_ranked column
   if (!columnNames.includes("is_ranked")) {
     migrationsNeeded++;
-    db.run("ALTER TABLE sessions ADD COLUMN is_ranked INTEGER DEFAULT 0", (err) => {
-      if (err) {
-        console.error("❌ Error adding is_ranked column:", err);
-      } else {
-        console.log("✅ Added is_ranked column to sessions table");
-        migrationsRun++;
+    db.run(
+      "ALTER TABLE sessions ADD COLUMN is_ranked INTEGER DEFAULT 0",
+      (err) => {
+        if (err) {
+          console.error("❌ Error adding is_ranked column:", err);
+        } else {
+          console.log("✅ Added is_ranked column to sessions table");
+          migrationsRun++;
+        }
+        checkComplete();
       }
-      checkComplete();
-    });
+    );
   } else {
     console.log("✓ is_ranked column already exists");
   }
@@ -94,8 +97,10 @@ db.all("PRAGMA table_info(sessions)", [], (err, columns) => {
 
   function checkComplete() {
     if (migrationsRun === migrationsNeeded) {
-      console.log(`\n✅ All migrations complete (${migrationsRun} columns added)`);
-      
+      console.log(
+        `\n✅ All migrations complete (${migrationsRun} columns added)`
+      );
+
       // Verify the changes
       db.all("PRAGMA table_info(sessions)", [], (err, updatedColumns) => {
         if (err) {
@@ -103,24 +108,30 @@ db.all("PRAGMA table_info(sessions)", [], (err, columns) => {
           db.close();
           return;
         }
-        
-        console.log('\n=== Verification ===');
-        const hasPlaylist = updatedColumns.some(c => c.name === 'playlist');
-        const hasIsRanked = updatedColumns.some(c => c.name === 'is_ranked');
-        const hasMmr = updatedColumns.some(c => c.name === 'mmr');
-        const hasMmrChange = updatedColumns.some(c => c.name === 'mmr_change');
-        
-        console.log(`  playlist: ${hasPlaylist ? '✅ EXISTS' : '❌ MISSING'}`);
-        console.log(`  is_ranked: ${hasIsRanked ? '✅ EXISTS' : '❌ MISSING'}`);
-        console.log(`  mmr: ${hasMmr ? '✅ EXISTS' : '❌ MISSING'}`);
-        console.log(`  mmr_change: ${hasMmrChange ? '✅ EXISTS' : '❌ MISSING'}`);
-        
+
+        console.log("\n=== Verification ===");
+        const hasPlaylist = updatedColumns.some((c) => c.name === "playlist");
+        const hasIsRanked = updatedColumns.some((c) => c.name === "is_ranked");
+        const hasMmr = updatedColumns.some((c) => c.name === "mmr");
+        const hasMmrChange = updatedColumns.some(
+          (c) => c.name === "mmr_change"
+        );
+
+        console.log(`  playlist: ${hasPlaylist ? "✅ EXISTS" : "❌ MISSING"}`);
+        console.log(`  is_ranked: ${hasIsRanked ? "✅ EXISTS" : "❌ MISSING"}`);
+        console.log(`  mmr: ${hasMmr ? "✅ EXISTS" : "❌ MISSING"}`);
+        console.log(
+          `  mmr_change: ${hasMmrChange ? "✅ EXISTS" : "❌ MISSING"}`
+        );
+
         if (hasPlaylist && hasIsRanked && hasMmr && hasMmrChange) {
-          console.log('\n🎉 SUCCESS! Database is ready to receive playlist/MMR data');
+          console.log(
+            "\n🎉 SUCCESS! Database is ready to receive playlist/MMR data"
+          );
         } else {
-          console.log('\n⚠️  WARNING: Some columns may be missing');
+          console.log("\n⚠️  WARNING: Some columns may be missing");
         }
-        
+
         db.close();
       });
     }
@@ -128,7 +139,7 @@ db.all("PRAGMA table_info(sessions)", [], (err, columns) => {
 
   // If no migrations needed, close immediately
   if (migrationsNeeded === 0) {
-    console.log('\n✅ All columns already exist - no migrations needed');
+    console.log("\n✅ All columns already exist - no migrations needed");
     db.close();
   }
 });
