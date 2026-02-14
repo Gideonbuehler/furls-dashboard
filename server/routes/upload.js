@@ -41,14 +41,64 @@ const authenticateApiKey = async (req, res, next) => {
   }
 };
 
+// Downsample a large heatmap grid (e.g. 50x62) to a 10x10 grid for the dashboard
+function downsampleGrid(grid, targetWidth = 10, targetHeight = 10, scaleFactor = 1) {
+  if (!grid || !Array.isArray(grid) || grid.length === 0) return null;
+
+  const srcHeight = grid.length;
+  const srcWidth = grid[0].length;
+
+  // If already 10x10, just apply scale factor
+  if (srcHeight === targetHeight && srcWidth === targetWidth) {
+    if (scaleFactor === 1) return grid;
+    return grid.map(row => row.map(v => Math.round((v || 0) / scaleFactor)));
+  }
+
+  const result = Array.from({ length: targetHeight }, () => Array(targetWidth).fill(0));
+  const yRatio = srcHeight / targetHeight;
+  const xRatio = srcWidth / targetWidth;
+
+  for (let ty = 0; ty < targetHeight; ty++) {
+    for (let tx = 0; tx < targetWidth; tx++) {
+      let sum = 0;
+      const yStart = Math.floor(ty * yRatio);
+      const yEnd = Math.floor((ty + 1) * yRatio);
+      const xStart = Math.floor(tx * xRatio);
+      const xEnd = Math.floor((tx + 1) * xRatio);
+
+      for (let sy = yStart; sy < yEnd; sy++) {
+        for (let sx = xStart; sx < xEnd; sx++) {
+          if (grid[sy] && grid[sy][sx] != null) {
+            sum += grid[sy][sx];
+          }
+        }
+      }
+      result[ty][tx] = Math.round(sum / scaleFactor);
+    }
+  }
+  return result;
+}
+
 // Upload stats from plugin
 router.post("/upload", authenticateApiKey, async (req, res) => {
   const stats = req.body;
   const userId = req.user.id;
   const username = req.user.username;
 
+  // Flexible field name support for playlist/MMR
+  const playlist = stats.playlist || stats.playlistName || stats.playlist_name || null;
+  const isRanked = stats.isRanked || stats.is_ranked || stats.ranked || false;
+  // Use explicit null checks — 0 is a valid MMR/mmrChange value!
+  const rawMmr = stats.mmr ?? stats.currentMMR ?? stats.current_mmr ?? null;
+  const rawMmrChange = stats.mmrChange ?? stats.mmr_change ?? stats.mmrDelta ?? null;
+  const mmr = rawMmr !== null && rawMmr !== undefined ? parseFloat(rawMmr) : null;
+  const mmrChange = rawMmrChange !== null && rawMmrChange !== undefined ? parseFloat(rawMmrChange) : null;
+
   console.log(
     `[UPLOAD START] User: ${username}, Shots: ${stats.shots}, Goals: ${stats.goals}, GameTime: ${stats.gameTime}s`
+  );
+  console.log(
+    `[UPLOAD META] Playlist: ${playlist}, Ranked: ${isRanked}, MMR: ${mmr}, MMR Change: ${mmrChange}`
   );
 
   try {
@@ -58,7 +108,24 @@ router.post("/upload", authenticateApiKey, async (req, res) => {
       return res
         .status(400)
         .json({ error: "Missing required fields: shots and goals" });
-    } // Save session
+    }
+
+    // Process heatmap data — downsample from plugin's 50x62 grid to dashboard's 10x10
+    // Plugin sends shotHeatmap values as multiples of 5 (5.0 per shot), so divide by 5
+    let shotHeatmap = stats.shotHeatmap || stats.shotGrid || [];
+    let goalHeatmap = stats.goalHeatmap || stats.goalGrid || [];
+
+    if (Array.isArray(shotHeatmap) && shotHeatmap.length > 10) {
+      // Plugin sends 50x62 grid with values as multiples of 5
+      console.log(`[UPLOAD HEATMAP] Downsampling shot heatmap from ${shotHeatmap.length}x${shotHeatmap[0]?.length || 0} to 10x10`);
+      shotHeatmap = downsampleGrid(shotHeatmap, 10, 10, 5);
+    }
+    if (Array.isArray(goalHeatmap) && goalHeatmap.length > 10) {
+      console.log(`[UPLOAD HEATMAP] Downsampling goal heatmap from ${goalHeatmap.length}x${goalHeatmap[0]?.length || 0} to 10x10`);
+      goalHeatmap = downsampleGrid(goalHeatmap, 10, 10, 1);
+    }
+
+    // Save session
     const result = await dbAsync.run(
       `INSERT INTO sessions (
         user_id, timestamp, shots, goals, average_speed,
@@ -79,12 +146,12 @@ router.post("/upload", authenticateApiKey, async (req, res) => {
         stats.possessionTime || 0,
         stats.teamPossessionTime || 0,
         stats.opponentPossessionTime || 0,
-        JSON.stringify(stats.shotHeatmap || []),
-        JSON.stringify(stats.goalHeatmap || []),
-        stats.playlist || null,
-        stats.isRanked ? 1 : 0,
-        stats.mmr || null,
-        stats.mmrChange || null,
+        JSON.stringify(shotHeatmap),
+        JSON.stringify(goalHeatmap),
+        playlist,
+        isRanked ? 1 : 0,
+        mmr,
+        mmrChange,
       ]
     );
 
@@ -100,7 +167,7 @@ router.post("/upload", authenticateApiKey, async (req, res) => {
     );
 
     console.log(
-      `[UPLOAD SUCCESS] User: ${username} (ID: ${userId}) - Session #${result.lastID} - ${stats.shots} shots, ${stats.goals} goals`
+      `[UPLOAD SUCCESS] User: ${username} (ID: ${userId}) - Session #${result.lastID} - ${stats.shots} shots, ${stats.goals} goals, Playlist: ${playlist}, MMR: ${mmr} (${mmrChange >= 0 ? '+' : ''}${mmrChange})`
     );
     res.json({
       success: true,
