@@ -149,10 +149,10 @@ function Heatmap({ heatmapData, currentStats }) {
       const g = Math.round(c1.g + t * (c2.g - c1.g));
       const b = Math.round(c1.b + t * (c2.b - c1.b));
 
-      return { r, g, b };
-    }; // Render each data point with radial gradient
+      return { r, g, b };    }; // Render heatmap with large overlapping radial gradients for a true fluid look
+    // Pass 1: Wide soft glow layer — creates the broad color blending
     dataPoints.forEach((point) => {
-      const radius = 12 + point.intensity * 10; // Half the previous size for more refined points
+      const radius = 55 + point.intensity * 35; // Large radius so neighbors overlap heavily
       const gradient = ctx.createRadialGradient(
         point.x,
         point.y,
@@ -163,24 +163,57 @@ function Heatmap({ heatmapData, currentStats }) {
       );
 
       const color = getHeatColor(point.intensity);
-      const alpha = 0.4 + point.intensity * 0.5;
+      const alpha = 0.25 + point.intensity * 0.3;
 
       gradient.addColorStop(
         0,
         `rgba(${color.r}, ${color.g}, ${color.b}, ${alpha})`
       );
       gradient.addColorStop(
-        0.5,
-        `rgba(${color.r}, ${color.g}, ${color.b}, ${alpha * 0.5})`
+        0.4,
+        `rgba(${color.r}, ${color.g}, ${color.b}, ${alpha * 0.4})`
       );
       gradient.addColorStop(1, `rgba(${color.r}, ${color.g}, ${color.b}, 0)`);
 
       ctx.fillStyle = gradient;
-      ctx.fillRect(point.x - radius, point.y - radius, radius * 2, radius * 2);
+      ctx.beginPath();
+      ctx.arc(point.x, point.y, radius, 0, Math.PI * 2);
+      ctx.fill();
     });
 
-    // Apply smoothing filter
-    ctx.filter = "blur(8px)";
+    // Pass 2: Tighter bright center — adds hot-spot definition
+    dataPoints.forEach((point) => {
+      const radius = 25 + point.intensity * 20;
+      const gradient = ctx.createRadialGradient(
+        point.x,
+        point.y,
+        0,
+        point.x,
+        point.y,
+        radius
+      );
+
+      const color = getHeatColor(point.intensity);
+      const alpha = 0.3 + point.intensity * 0.45;
+
+      gradient.addColorStop(
+        0,
+        `rgba(${color.r}, ${color.g}, ${color.b}, ${alpha})`
+      );
+      gradient.addColorStop(
+        0.6,
+        `rgba(${color.r}, ${color.g}, ${color.b}, ${alpha * 0.2})`
+      );
+      gradient.addColorStop(1, `rgba(${color.r}, ${color.g}, ${color.b}, 0)`);
+
+      ctx.fillStyle = gradient;
+      ctx.beginPath();
+      ctx.arc(point.x, point.y, radius, 0, Math.PI * 2);
+      ctx.fill();
+    });
+
+    // Apply smoothing filter — heavier blur for seamless blending
+    ctx.filter = "blur(14px)";
     ctx.drawImage(canvas, 0, 0);
     ctx.filter = "none";
   }, [heatmapData]);
