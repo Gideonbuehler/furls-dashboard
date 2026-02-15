@@ -22,7 +22,6 @@ function Dashboard({ currentStats, allTimeStats, sessionHistory }) {
   };
 
   // Convert Unreal Units/second to MPH
-  // Rocket League: 1 UU/s ≈ 0.02237 MPH
   const convertToMPH = (unrealSpeed) => {
     const mph = unrealSpeed * 0.02237;
     return Math.round(mph);
@@ -40,12 +39,14 @@ function Dashboard({ currentStats, allTimeStats, sessionHistory }) {
     const secs = Math.floor(seconds % 60);
     return `${mins}:${secs.toString().padStart(2, "0")}`;
   };
+
   const formatPlayTime = (seconds) => {
     const hours = Math.floor(seconds / 3600);
     const mins = Math.floor((seconds % 3600) / 60);
     if (hours > 0) return `${hours}h ${mins}m`;
     return `${mins}m`;
   };
+
   // Prepare chart data from session history
   const chartData = sessionHistory.slice(-20).map((session, index) => ({
     session: index + 1,
@@ -61,44 +62,67 @@ function Dashboard({ currentStats, allTimeStats, sessionHistory }) {
     latestSession &&
     (latestSession.playlist || latestSession.is_ranked || latestSession.mmr);
 
+  // Recharts tooltip style
+  const tooltipStyle = {
+    backgroundColor: "rgba(10, 13, 18, 0.96)",
+    border: "1px solid rgba(74, 158, 255, 0.35)",
+    borderRadius: "0",
+    padding: "10px 14px",
+    boxShadow: "0 0 20px rgba(74, 158, 255, 0.1)",
+  };
+  const tooltipLabelStyle = {
+    color: "#fff",
+    fontFamily: "'Orbitron', sans-serif",
+    fontSize: "0.7rem",
+    fontWeight: 700,
+    letterSpacing: "0.1em",
+    marginBottom: "6px",
+  };
+
   return (
-    <div className="dashboard-modern">
-      {/* Match Metadata Banner - Shows if we have playlist/MMR info */}
+    <div className="dashboard-terminal">
+      {/* Corner decorations */}
+      <div className="corner-decor top-left" />
+      <div className="corner-decor bottom-right" />
+
+      {/* Header */}
+      <div className="terminal-header">
+        <h1>DASHBOARD</h1>
+        <div className="terminal-subtitle">// LIVE SESSION DATA //</div>
+      </div>
+
+      {/* Match Metadata Banner */}
       {hasMatchMetadata && (
-        <div className="match-metadata-banner">
+        <div className="match-details-header">
           {latestSession.playlist && (
-            <div className="metadata-item">
-              <span className="metadata-icon">🎮</span>
-              <span className="metadata-label">Playlist:</span>
-              <span className="metadata-value">{latestSession.playlist}</span>
+            <div className="meta-badge">
+              <span className="meta-icon">PLAYLIST</span>
+              <span className="meta-val">{latestSession.playlist}</span>
             </div>
           )}
           {latestSession.is_ranked === 1 && (
-            <div className="metadata-item ranked">
-              <span className="metadata-icon">🏆</span>
-              <span className="metadata-value">Ranked</span>
+            <div className="meta-badge ranked-badge">
+              <span className="meta-icon">MODE</span>
+              <span className="meta-val">RANKED</span>
             </div>
           )}
           {latestSession.mmr !== null && latestSession.mmr !== undefined && (
-            <div className="metadata-item">
-              <span className="metadata-icon">📊</span>
-              <span className="metadata-label">MMR:</span>
-              <span className="metadata-value">
-                {Math.round(latestSession.mmr)}
-              </span>
+            <div className="meta-badge">
+              <span className="meta-icon">MMR</span>
+              <span className="meta-val">{Math.round(latestSession.mmr)}</span>
             </div>
           )}
           {latestSession.mmr_change !== null &&
             latestSession.mmr_change !== undefined && (
               <div
-                className={`metadata-item mmr-change ${
-                  latestSession.mmr_change >= 0 ? "positive" : "negative"
+                className={`meta-badge ${
+                  latestSession.mmr_change >= 0
+                    ? "mmr-positive"
+                    : "mmr-negative"
                 }`}
               >
-                <span className="metadata-icon">
-                  {latestSession.mmr_change >= 0 ? "📈" : "📉"}
-                </span>
-                <span className="metadata-value">
+                <span className="meta-icon">DELTA</span>
+                <span className="meta-val">
                   {latestSession.mmr_change >= 0 ? "+" : ""}
                   {Math.round(latestSession.mmr_change)}
                 </span>
@@ -107,311 +131,322 @@ function Dashboard({ currentStats, allTimeStats, sessionHistory }) {
         </div>
       )}
 
-      {/* Hero Stats - Top Section */}
-      <div className="hero-stats">
-        <div className="hero-card accuracy">
-          <div className="hero-icon">🎯</div>
-          <div className="hero-content">
-            <div className="hero-label">Shot Accuracy</div>
-            <div className="hero-value">{getCurrentAccuracy()}%</div>
-            <div className="hero-detail">
-              {currentStats?.goals || 0} goals from {currentStats?.shots || 0}{" "}
-              shots
-            </div>
-          </div>
-        </div>{" "}
-        <div className="hero-card speed">
-          <div className="hero-icon">⚡</div>
-          <div className="hero-content">
-            <div className="hero-label">Average Speed</div>
-            <div className="hero-value">
-              {convertToMPH(currentStats?.averageSpeed || 0)}
-            </div>
-            <div className="hero-detail">mph</div>
+      {/* Hero Stats — 4 match-stat-cards */}
+      <h2 className="section-title">Current Session</h2>
+      <div className="match-stats-grid">
+        <div className="match-stat-card">
+          <span className="card-icon">SYS.01</span>
+          <div className="card-title">Shot Accuracy</div>
+          <div className="card-value">{getCurrentAccuracy()}%</div>
+          <div className="card-subtext">
+            {currentStats?.goals || 0} goals from {currentStats?.shots || 0}{" "}
+            shots
           </div>
         </div>
-        <div className="hero-card boost">
-          <div className="hero-icon">🔋</div>
-          <div className="hero-content">
-            <div className="hero-label">Boost Usage</div>
-            <div className="hero-value">
-              {currentStats?.boostUsed?.toFixed(0) || 0}
-            </div>
-            <div className="hero-detail">
-              {currentStats?.boostCollected?.toFixed(0) || 0} collected
-            </div>
+
+        <div className="match-stat-card">
+          <span className="card-icon">SYS.02</span>
+          <div className="card-title">Average Speed</div>
+          <div className="card-value">
+            {convertToMPH(currentStats?.averageSpeed || 0)}
+          </div>
+          <div className="card-subtext">mph</div>
+        </div>
+
+        <div className="match-stat-card">
+          <span className="card-icon">SYS.03</span>
+          <div className="card-title">Boost Usage</div>
+          <div className="card-value">
+            {currentStats?.boostUsed?.toFixed(0) || 0}
+          </div>
+          <div className="card-subtext">
+            {currentStats?.boostCollected?.toFixed(0) || 0} collected
           </div>
         </div>
-        <div className="hero-card time">
-          <div className="hero-icon">⏱️</div>
-          <div className="hero-content">
-            <div className="hero-label">Session Time</div>
-            <div className="hero-value">
-              {formatTime(currentStats?.gameTime || 0)}
-            </div>
-            <div className="hero-detail">
-              {currentStats?.possessionTime?.toFixed(1) || 0}s possession
-            </div>
+
+        <div className="match-stat-card">
+          <span className="card-icon">SYS.04</span>
+          <div className="card-title">Session Time</div>
+          <div className="card-value">
+            {formatTime(currentStats?.gameTime || 0)}
+          </div>
+          <div className="card-subtext">
+            {currentStats?.possessionTime?.toFixed(1) || 0}s possession
           </div>
         </div>
       </div>
 
-      {/* All-Time Quick Stats */}
+      {/* All-Time Summary Stats */}
       {allTimeStats && (
-        <div className="quick-stats-bar">
-          <div className="quick-stat">
-            <span className="quick-label">Sessions</span>
-            <span className="quick-value">
-              {allTimeStats.totalSessions || allTimeStats.total_sessions || 0}
-            </span>
+        <>
+          <h2 className="section-title">All-Time Summary</h2>
+          <div className="match-summary-stats">
+            <div className="summary-stat-item">
+              <div className="sum-label">Sessions</div>
+              <div className="sum-value">
+                {allTimeStats.totalSessions || allTimeStats.total_sessions || 0}
+              </div>
+            </div>
+            <div className="summary-stat-item">
+              <div className="sum-label">Shots</div>
+              <div className="sum-value">
+                {allTimeStats.totalShots || allTimeStats.total_shots || 0}
+              </div>
+            </div>
+            <div className="summary-stat-item">
+              <div className="sum-label">Goals</div>
+              <div className="sum-value">
+                {allTimeStats.totalGoals || allTimeStats.total_goals || 0}
+              </div>
+            </div>
+            <div className="summary-stat-item">
+              <div className="sum-label">Accuracy</div>
+              <div className="sum-value">
+                {safeToFixed(
+                  allTimeStats?.avgAccuracy || allTimeStats?.avg_accuracy || 0
+                )}
+                %
+              </div>
+            </div>
+            <div className="summary-stat-item">
+              <div className="sum-label">Playtime</div>
+              <div className="sum-value">
+                {formatPlayTime(
+                  allTimeStats.totalPlayTime ||
+                    allTimeStats.total_play_time ||
+                    0
+                )}
+              </div>
+            </div>
           </div>
-          <div className="quick-stat-divider"></div>
-          <div className="quick-stat">
-            <span className="quick-label">Shots</span>
-            <span className="quick-value">
-              {allTimeStats.totalShots || allTimeStats.total_shots || 0}
-            </span>
-          </div>
-          <div className="quick-stat-divider"></div>
-          <div className="quick-stat">
-            <span className="quick-label">Goals</span>
-            <span className="quick-value">
-              {allTimeStats.totalGoals || allTimeStats.total_goals || 0}
-            </span>
-          </div>
-          <div className="quick-stat-divider"></div>
-          <div className="quick-stat">
-            <span className="quick-label">All-Time Accuracy</span>
-            <span className="quick-value">
-              {safeToFixed(
-                allTimeStats?.avgAccuracy || allTimeStats?.avg_accuracy || 0
-              )}
-              %
-            </span>
-          </div>
-          <div className="quick-stat-divider"></div>
-          <div className="quick-stat">
-            <span className="quick-label">Total Playtime</span>
-            <span className="quick-value">
-              {formatPlayTime(
-                allTimeStats.totalPlayTime || allTimeStats.total_play_time || 0
-              )}
-            </span>
-          </div>
-        </div>
+        </>
       )}
 
       {/* Charts Section */}
       {chartData.length > 0 ? (
-        <div className="charts-grid">
-          <div className="chart-card">
-            <div className="chart-header">
-              <h3 className="chart-title">
-                <span className="chart-icon">📊</span>
-                Accuracy Trend
-              </h3>
-              <span className="chart-subtitle">Last 20 sessions</span>
+        <>
+          <h2 className="section-title">Performance Analysis</h2>
+          <div className="charts-terminal-grid">
+            {/* Accuracy Trend */}
+            <div className="chart-terminal-card">
+              <div className="chart-terminal-header">
+                <h3 className="chart-terminal-title">Accuracy Trend</h3>
+                <span className="chart-terminal-sub">Last 20 sessions</span>
+              </div>
+              <div className="chart-terminal-body">
+                <ResponsiveContainer width="100%" height={280}>
+                  <AreaChart data={chartData}>
+                    <defs>
+                      <linearGradient
+                        id="accuracyGradient"
+                        x1="0"
+                        y1="0"
+                        x2="0"
+                        y2="1"
+                      >
+                        <stop
+                          offset="5%"
+                          stopColor="#4a9eff"
+                          stopOpacity={0.25}
+                        />
+                        <stop
+                          offset="95%"
+                          stopColor="#4a9eff"
+                          stopOpacity={0}
+                        />
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid
+                      strokeDasharray="3 3"
+                      stroke="rgba(74, 158, 255, 0.08)"
+                      vertical={false}
+                    />
+                    <XAxis
+                      dataKey="session"
+                      stroke="rgba(255, 255, 255, 0.15)"
+                      tick={{
+                        fill: "rgba(255, 255, 255, 0.35)",
+                        fontSize: 11,
+                        fontFamily: "'Rajdhani', sans-serif",
+                      }}
+                      axisLine={{ stroke: "rgba(74, 158, 255, 0.15)" }}
+                    />
+                    <YAxis
+                      stroke="rgba(255, 255, 255, 0.15)"
+                      tick={{
+                        fill: "rgba(255, 255, 255, 0.35)",
+                        fontSize: 11,
+                        fontFamily: "'Rajdhani', sans-serif",
+                      }}
+                      axisLine={{ stroke: "rgba(74, 158, 255, 0.15)" }}
+                    />
+                    <Tooltip
+                      contentStyle={tooltipStyle}
+                      labelStyle={tooltipLabelStyle}
+                      itemStyle={{
+                        color: "#4a9eff",
+                        fontFamily: "'Rajdhani', sans-serif",
+                        fontSize: "0.85rem",
+                      }}
+                    />
+                    <Area
+                      type="monotone"
+                      dataKey="accuracy"
+                      stroke="#4a9eff"
+                      strokeWidth={2}
+                      fill="url(#accuracyGradient)"
+                      name="Accuracy %"
+                      dot={{
+                        fill: "#4a9eff",
+                        strokeWidth: 0,
+                        r: 3,
+                      }}
+                      activeDot={{ r: 5, strokeWidth: 0, fill: "#4a9eff" }}
+                    />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </div>
             </div>
-            <div className="chart-body">
-              <ResponsiveContainer width="100%" height={280}>
-                <AreaChart data={chartData}>
-                  <defs>
-                    <linearGradient
-                      id="accuracyGradient"
-                      x1="0"
-                      y1="0"
-                      x2="0"
-                      y2="1"
-                    >
-                      <stop offset="5%" stopColor="#1de9b6" stopOpacity={0.3} />
-                      <stop offset="95%" stopColor="#1de9b6" stopOpacity={0} />
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid
-                    strokeDasharray="3 3"
-                    stroke="rgba(255, 255, 255, 0.05)"
-                    vertical={false}
-                  />
-                  <XAxis
-                    dataKey="session"
-                    stroke="rgba(255, 255, 255, 0.3)"
-                    tick={{ fill: "rgba(255, 255, 255, 0.5)", fontSize: 12 }}
-                    axisLine={{ stroke: "rgba(255, 255, 255, 0.1)" }}
-                  />
-                  <YAxis
-                    stroke="rgba(255, 255, 255, 0.3)"
-                    tick={{ fill: "rgba(255, 255, 255, 0.5)", fontSize: 12 }}
-                    axisLine={{ stroke: "rgba(255, 255, 255, 0.1)" }}
-                  />
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: "rgba(15, 15, 15, 0.98)",
-                      border: "1px solid rgba(29, 233, 182, 0.3)",
-                      borderRadius: "12px",
-                      padding: "12px",
-                      boxShadow: "0 8px 32px rgba(0, 0, 0, 0.4)",
-                    }}
-                    labelStyle={{
-                      color: "#fff",
-                      fontWeight: 600,
-                      marginBottom: "8px",
-                    }}
-                    itemStyle={{ color: "#1de9b6", fontSize: "14px" }}
-                  />
-                  <Area
-                    type="monotone"
-                    dataKey="accuracy"
-                    stroke="#1de9b6"
-                    strokeWidth={3}
-                    fill="url(#accuracyGradient)"
-                    name="Accuracy %"
-                    dot={{ fill: "#1de9b6", strokeWidth: 2, r: 4 }}
-                    activeDot={{ r: 6, strokeWidth: 0 }}
-                  />
-                </AreaChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
 
-          <div className="chart-card">
-            <div className="chart-header">
-              <h3 className="chart-title">
-                <span className="chart-icon">⚽</span>
-                Performance Breakdown
-              </h3>
-              <span className="chart-subtitle">Shots vs Goals</span>
+            {/* Shots vs Goals */}
+            <div className="chart-terminal-card">
+              <div className="chart-terminal-header">
+                <h3 className="chart-terminal-title">Performance Breakdown</h3>
+                <span className="chart-terminal-sub">Shots vs Goals</span>
+              </div>
+              <div className="chart-terminal-body">
+                <ResponsiveContainer width="100%" height={280}>
+                  <BarChart data={chartData}>
+                    <CartesianGrid
+                      strokeDasharray="3 3"
+                      stroke="rgba(255, 77, 125, 0.08)"
+                      vertical={false}
+                    />
+                    <XAxis
+                      dataKey="session"
+                      stroke="rgba(255, 255, 255, 0.15)"
+                      tick={{
+                        fill: "rgba(255, 255, 255, 0.35)",
+                        fontSize: 11,
+                        fontFamily: "'Rajdhani', sans-serif",
+                      }}
+                      axisLine={{ stroke: "rgba(255, 77, 125, 0.15)" }}
+                    />
+                    <YAxis
+                      stroke="rgba(255, 255, 255, 0.15)"
+                      tick={{
+                        fill: "rgba(255, 255, 255, 0.35)",
+                        fontSize: 11,
+                        fontFamily: "'Rajdhani', sans-serif",
+                      }}
+                      axisLine={{ stroke: "rgba(255, 77, 125, 0.15)" }}
+                    />
+                    <Tooltip
+                      contentStyle={tooltipStyle}
+                      labelStyle={tooltipLabelStyle}
+                      cursor={{ fill: "rgba(255, 77, 125, 0.06)" }}
+                    />
+                    <Legend
+                      wrapperStyle={{
+                        paddingTop: "16px",
+                        fontFamily: "'Rajdhani', sans-serif",
+                        fontSize: "0.8rem",
+                        letterSpacing: "0.05em",
+                      }}
+                      iconType="square"
+                    />
+                    <Bar
+                      dataKey="shots"
+                      fill="rgba(74, 158, 255, 0.7)"
+                      radius={[2, 2, 0, 0]}
+                      name="Shots"
+                    />
+                    <Bar
+                      dataKey="goals"
+                      fill="rgba(255, 77, 125, 0.7)"
+                      radius={[2, 2, 0, 0]}
+                      name="Goals"
+                    />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
             </div>
-            <div className="chart-body">
-              <ResponsiveContainer width="100%" height={280}>
-                <BarChart data={chartData}>
-                  <CartesianGrid
-                    strokeDasharray="3 3"
-                    stroke="rgba(255, 255, 255, 0.05)"
-                    vertical={false}
-                  />
-                  <XAxis
-                    dataKey="session"
-                    stroke="rgba(255, 255, 255, 0.3)"
-                    tick={{ fill: "rgba(255, 255, 255, 0.5)", fontSize: 12 }}
-                    axisLine={{ stroke: "rgba(255, 255, 255, 0.1)" }}
-                  />
-                  <YAxis
-                    stroke="rgba(255, 255, 255, 0.3)"
-                    tick={{ fill: "rgba(255, 255, 255, 0.5)", fontSize: 12 }}
-                    axisLine={{ stroke: "rgba(255, 255, 255, 0.1)" }}
-                  />
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: "rgba(15, 15, 15, 0.98)",
-                      border: "1px solid rgba(139, 92, 246, 0.3)",
-                      borderRadius: "12px",
-                      padding: "12px",
-                      boxShadow: "0 8px 32px rgba(0, 0, 0, 0.4)",
-                    }}
-                    labelStyle={{
-                      color: "#fff",
-                      fontWeight: 600,
-                      marginBottom: "8px",
-                    }}
-                    cursor={{ fill: "rgba(139, 92, 246, 0.1)" }}
-                  />
-                  <Legend
-                    wrapperStyle={{ paddingTop: "20px" }}
-                    iconType="circle"
-                  />
-                  <Bar
-                    dataKey="shots"
-                    fill="rgba(100, 181, 246, 0.8)"
-                    radius={[8, 8, 0, 0]}
-                    name="Shots"
-                  />
-                  <Bar
-                    dataKey="goals"
-                    fill="rgba(255, 213, 79, 0.8)"
-                    radius={[8, 8, 0, 0]}
-                    name="Goals"
-                  />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
 
-          <div className="chart-card full-width">
-            <div className="chart-header">
-              <h3 className="chart-title">
-                <span className="chart-icon">🚀</span>
-                Speed Analysis
-              </h3>
-              <span className="chart-subtitle">Average speed per session</span>
-            </div>
-            <div className="chart-body">
-              <ResponsiveContainer width="100%" height={280}>
-                <LineChart data={chartData}>
-                  <defs>
-                    <linearGradient
-                      id="speedGradient"
-                      x1="0"
-                      y1="0"
-                      x2="1"
-                      y2="0"
-                    >
-                      <stop offset="0%" stopColor="#bb86fc" />
-                      <stop offset="100%" stopColor="#64b5f6" />
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid
-                    strokeDasharray="3 3"
-                    stroke="rgba(255, 255, 255, 0.05)"
-                    vertical={false}
-                  />
-                  <XAxis
-                    dataKey="session"
-                    stroke="rgba(255, 255, 255, 0.3)"
-                    tick={{ fill: "rgba(255, 255, 255, 0.5)", fontSize: 12 }}
-                    axisLine={{ stroke: "rgba(255, 255, 255, 0.1)" }}
-                  />
-                  <YAxis
-                    stroke="rgba(255, 255, 255, 0.3)"
-                    tick={{ fill: "rgba(255, 255, 255, 0.5)", fontSize: 12 }}
-                    axisLine={{ stroke: "rgba(255, 255, 255, 0.1)" }}
-                  />
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: "rgba(15, 15, 15, 0.98)",
-                      border: "1px solid rgba(139, 92, 246, 0.3)",
-                      borderRadius: "12px",
-                      padding: "12px",
-                      boxShadow: "0 8px 32px rgba(0, 0, 0, 0.4)",
-                    }}
-                    labelStyle={{
-                      color: "#fff",
-                      fontWeight: 600,
-                      marginBottom: "8px",
-                    }}
-                  />{" "}
-                  <Line
-                    type="monotone"
-                    dataKey="speed"
-                    stroke="url(#speedGradient)"
-                    strokeWidth={3}
-                    dot={{ fill: "#bb86fc", strokeWidth: 2, r: 4 }}
-                    activeDot={{ r: 6, strokeWidth: 0 }}
-                    name="Speed (mph)"
-                  />
-                </LineChart>
-              </ResponsiveContainer>
+            {/* Speed Analysis — Full Width */}
+            <div className="chart-terminal-card full-width">
+              <div className="chart-terminal-header">
+                <h3 className="chart-terminal-title">Speed Analysis</h3>
+                <span className="chart-terminal-sub">
+                  Avg speed per session
+                </span>
+              </div>
+              <div className="chart-terminal-body">
+                <ResponsiveContainer width="100%" height={280}>
+                  <LineChart data={chartData}>
+                    <defs>
+                      <linearGradient
+                        id="speedGradient"
+                        x1="0"
+                        y1="0"
+                        x2="1"
+                        y2="0"
+                      >
+                        <stop offset="0%" stopColor="#9d5bd2" />
+                        <stop offset="100%" stopColor="#4a9eff" />
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid
+                      strokeDasharray="3 3"
+                      stroke="rgba(157, 91, 210, 0.08)"
+                      vertical={false}
+                    />
+                    <XAxis
+                      dataKey="session"
+                      stroke="rgba(255, 255, 255, 0.15)"
+                      tick={{
+                        fill: "rgba(255, 255, 255, 0.35)",
+                        fontSize: 11,
+                        fontFamily: "'Rajdhani', sans-serif",
+                      }}
+                      axisLine={{ stroke: "rgba(157, 91, 210, 0.15)" }}
+                    />
+                    <YAxis
+                      stroke="rgba(255, 255, 255, 0.15)"
+                      tick={{
+                        fill: "rgba(255, 255, 255, 0.35)",
+                        fontSize: 11,
+                        fontFamily: "'Rajdhani', sans-serif",
+                      }}
+                      axisLine={{ stroke: "rgba(157, 91, 210, 0.15)" }}
+                    />
+                    <Tooltip
+                      contentStyle={tooltipStyle}
+                      labelStyle={tooltipLabelStyle}
+                    />
+                    <Line
+                      type="monotone"
+                      dataKey="speed"
+                      stroke="url(#speedGradient)"
+                      strokeWidth={2}
+                      dot={{
+                        fill: "#9d5bd2",
+                        strokeWidth: 0,
+                        r: 3,
+                      }}
+                      activeDot={{ r: 5, strokeWidth: 0, fill: "#9d5bd2" }}
+                      name="Speed (mph)"
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
             </div>
           </div>
-        </div>
+        </>
       ) : (
-        <div className="empty-state-modern">
-          <div className="empty-icon">📊</div>
-          <h3>No Session Data Yet</h3>
-          <p>
-            Start playing Rocket League to see your stats and progression here!
-          </p>
-          <p className="empty-hint">
-            Make sure the FURLS plugin is installed and configured correctly.
+        <div className="no-data-terminal">
+          <p>// NO SESSION DATA AVAILABLE //</p>
+          <p className="dim">
+            Start playing Rocket League to populate the terminal.
           </p>
         </div>
       )}

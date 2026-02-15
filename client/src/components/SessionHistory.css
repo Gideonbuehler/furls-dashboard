@@ -230,14 +230,7 @@
   color: rgba(255, 255, 255, 0.2);
 }
 
-/* ── Summary Stats (bottom cards) ── */
-.summary-stats-container {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 16px;
-}
-
-/* Reuse stat-block style from StatsOverview */
+/* Reuse stat-block style from StatsOverview (detail view) */
 .history-terminal .stat-block {
   background: linear-gradient(135deg, rgba(15, 20, 25, 0.85), rgba(10, 13, 18, 0.92));
   border-left: 4px solid var(--cyber-blue);
@@ -441,18 +434,10 @@
   .detail-grid {
     grid-template-columns: repeat(2, 1fr);
   }
-
-  .summary-stats-container {
-    grid-template-columns: repeat(2, 1fr);
-  }
 }
 
 @media (max-width: 768px) {
   .detail-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .summary-stats-container {
     grid-template-columns: 1fr;
   }
 

@@ -354,46 +354,7 @@ function SessionHistory({ sessionHistory }) {
               );
             })}
           </tbody>
-        </table>
-      </div>
-
-      {/* Summary */}
-      <h2 className="section-title">Summary Statistics</h2>
-      <div className="summary-stats-container">
-        <div className="stat-block small">
-          <div className="t-stat-label">Best Accuracy</div>
-          <div className="t-stat-value">
-            {Math.max(
-              ...sessionHistory.map((s) => parseFloat(getAccuracy(s)))
-            ).toFixed(1)}%
-          </div>
-        </div>
-        <div className="stat-block small">
-          <div className="t-stat-label">Most Goals</div>
-          <div className="t-stat-value">
-            {Math.max(...sessionHistory.map((s) => s.goals || 0))}
-          </div>
-        </div>
-        <div className="stat-block small">
-          <div className="t-stat-label">Most Shots</div>
-          <div className="t-stat-value">
-            {Math.max(...sessionHistory.map((s) => s.shots || 0))}
-          </div>
-        </div>
-        <div className="stat-block small">
-          <div className="t-stat-label">Top Speed</div>
-          <div className="t-stat-value">
-            {convertToMPH(
-              Math.max(
-                ...sessionHistory.map(
-                  (s) => s.averageSpeed || s.average_speed || 0
-                )
-              )
-            )}
-            <span className="stat-unit">mph</span>
-          </div>
-        </div>
-      </div>
+        </table>      </div>
     </div>
   );
 }
