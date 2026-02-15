@@ -575,8 +575,7 @@ function Heatmap({ heatmapData, currentStats }) {
             minWidth: "120px",
             justifyContent: "center",
           }}
-        >
-          <div style={{ textAlign: "center" }}>
+        >          <div style={{ textAlign: "center" }}>
             <div
               style={{
                 fontSize: "2rem",
@@ -584,10 +583,9 @@ function Heatmap({ heatmapData, currentStats }) {
                 color: "#ff9800",
               }}
             >
-              {stats.shots > 0
-                ? ((stats.goals / stats.shots) * 100).toFixed(1)
+              {currentStats?.averageSpeed
+                ? Math.round(currentStats.averageSpeed * 0.02237)
                 : 0}
-              %
             </div>
             <div
               style={{
@@ -596,7 +594,7 @@ function Heatmap({ heatmapData, currentStats }) {
                 marginTop: "0.25rem",
               }}
             >
-              Conversion
+              Avg Speed (mph)
             </div>
           </div>
           <div style={{ textAlign: "center" }}>
