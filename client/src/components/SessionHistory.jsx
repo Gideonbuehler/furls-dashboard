@@ -7,8 +7,7 @@ function SessionHistory({ sessionHistory }) {
     key: null,
     direction: "desc",
   });
-  // Convert Unreal Units/second to MPH
-  // Rocket League: 1 UU/s ≈ 0.02237 MPH
+
   const convertToMPH = (unrealSpeed) => {
     const mph = unrealSpeed * 0.02237;
     return Math.round(mph);
@@ -93,214 +92,125 @@ function SessionHistory({ sessionHistory }) {
       : 0;
   };
 
+  const getAccuracyClass = (acc) => {
+    const val = parseFloat(acc);
+    if (val >= 50) return "excellent";
+    if (val >= 35) return "good";
+    if (val >= 20) return "average";
+    return "poor";
+  };
+
   if (!sessionHistory || sessionHistory.length === 0) {
     return (
-      <div className="session-history">
-        <h2>📈 Session History</h2>
-        <div className="no-data">
-          <p>No session history available yet.</p>
-          <p>Complete a training session to see your history!</p>
+      <div className="history-terminal">
+        <div className="terminal-header">
+          <h1>SESSION LOG</h1>
+          <div className="terminal-subtitle">// NO DATA FOUND //</div>
+        </div>
+        <div className="no-data-terminal">
+          <p>// NO SESSION HISTORY AVAILABLE //</p>
+          <p className="dim">Complete a match to populate the log.</p>
         </div>
       </div>
     );
   }
 
-  // If a session is selected, show detailed view
+  // Session detail view
   if (selectedSession) {
     return (
-      <div className="session-history">
+      <div className="history-terminal">
         <button
-          className="back-button"
+          className="back-btn"
           onClick={() => setSelectedSession(null)}
-          style={{
-            marginBottom: "1rem",
-            padding: "0.75rem 1.5rem",
-            background: "rgba(139, 92, 246, 0.2)",
-            border: "2px solid #bb86fc",
-            borderRadius: "12px",
-            color: "#bb86fc",
-            cursor: "pointer",
-            fontWeight: "600",
-            fontSize: "1rem",
-          }}
         >
-          ← Back to History
-        </button>{" "}
-        <div className="session-detail-container">
-          <div className="session-detail-header">
-            <h2>📊 Session Details</h2>
-            <p className="session-date">
-              {formatDate(selectedSession.timestamp)}
-            </p>
+          ◀ BACK TO LOG
+        </button>
+
+        <div className="detail-header">
+          <h2 className="section-title">Session Details</h2>
+          <div className="detail-date">{formatDate(selectedSession.timestamp)}</div>
+        </div>
+
+        {/* Match Metadata */}
+        {(selectedSession.playlist ||
+          selectedSession.is_ranked ||
+          selectedSession.mmr) && (
+          <div className="detail-metadata">
+            {selectedSession.playlist && (
+              <div className="meta-badge">
+                <span className="meta-label">Playlist</span>
+                <span className="meta-value">{selectedSession.playlist}</span>
+              </div>
+            )}
+            {selectedSession.is_ranked === 1 && (
+              <div className="meta-badge ranked">
+                <span className="meta-value">RANKED</span>
+              </div>
+            )}
+            {selectedSession.mmr !== null &&
+              selectedSession.mmr !== undefined && (
+              <div className="meta-badge">
+                <span className="meta-label">MMR</span>
+                <span className="meta-value">{Math.round(selectedSession.mmr)}</span>
+              </div>
+            )}
+            {selectedSession.mmr_change !== null &&
+              selectedSession.mmr_change !== undefined && (
+              <div className={`meta-badge ${selectedSession.mmr_change >= 0 ? "positive" : "negative"}`}>
+                <span className="meta-value">
+                  {selectedSession.mmr_change >= 0 ? "+" : ""}
+                  {Math.round(selectedSession.mmr_change)} MMR
+                </span>
+              </div>
+            )}
           </div>
+        )}
 
-          {/* Match Metadata Section */}
-          {(selectedSession.playlist ||
-            selectedSession.is_ranked ||
-            selectedSession.mmr) && (
-            <div className="session-metadata-section">
-              {selectedSession.playlist && (
-                <div className="session-metadata-badge">
-                  <span className="badge-icon">🎮</span>
-                  <span className="badge-label">Playlist:</span>
-                  <span className="badge-value">
-                    {selectedSession.playlist}
-                  </span>
-                </div>
-              )}
-              {selectedSession.is_ranked === 1 && (
-                <div className="session-metadata-badge ranked">
-                  <span className="badge-icon">🏆</span>
-                  <span className="badge-value">Ranked Match</span>
-                </div>
-              )}
-              {selectedSession.mmr !== null &&
-                selectedSession.mmr !== undefined && (
-                  <div className="session-metadata-badge">
-                    <span className="badge-icon">📊</span>
-                    <span className="badge-label">MMR:</span>
-                    <span className="badge-value">
-                      {Math.round(selectedSession.mmr)}
-                    </span>
-                  </div>
-                )}
-              {selectedSession.mmr_change !== null &&
-                selectedSession.mmr_change !== undefined && (
-                  <div
-                    className={`session-metadata-badge mmr-change ${
-                      selectedSession.mmr_change >= 0 ? "positive" : "negative"
-                    }`}
-                  >
-                    <span className="badge-icon">
-                      {selectedSession.mmr_change >= 0 ? "📈" : "📉"}
-                    </span>
-                    <span className="badge-value">
-                      {selectedSession.mmr_change >= 0 ? "+" : ""}
-                      {Math.round(selectedSession.mmr_change)} MMR
-                    </span>
-                  </div>
-                )}
-            </div>
-          )}
-
-          <div className="detail-stats-grid">
-            <div className="detail-stat-card">
-              <div className="detail-stat-icon">🚀</div>
-              <div className="detail-stat-value">
-                {selectedSession.shots || 0}
-              </div>
-              <div className="detail-stat-label">Total Shots</div>
-            </div>
-            <div className="detail-stat-card">
-              <div className="detail-stat-icon">⚽</div>
-              <div className="detail-stat-value">
-                {selectedSession.goals || 0}
-              </div>
-              <div className="detail-stat-label">Goals Scored</div>
-            </div>
-            <div className="detail-stat-card">
-              <div className="detail-stat-icon">🎯</div>
-              <div className="detail-stat-value">
-                {getAccuracy(selectedSession)}%
-              </div>
-              <div className="detail-stat-label">Accuracy</div>
-            </div>{" "}
-            <div className="detail-stat-card">
-              <div className="detail-stat-icon">⚡</div>
-              <div className="detail-stat-value">
-                {convertToMPH(
-                  selectedSession.averageSpeed ||
-                    selectedSession.average_speed ||
-                    0
-                )}
-              </div>
-              <div className="detail-stat-label">Avg Speed (mph)</div>
-            </div>
-            <div className="detail-stat-card">
-              <div className="detail-stat-icon">💨</div>
-              <div className="detail-stat-value">
-                {(
-                  selectedSession.boostUsed ||
-                  selectedSession.boost_used ||
-                  0
-                ).toFixed(0)}
-              </div>
-              <div className="detail-stat-label">Boost Used</div>
-            </div>
-            <div className="detail-stat-card">
-              <div className="detail-stat-icon">⏱️</div>
-              <div className="detail-stat-value">
-                {formatTime(
-                  selectedSession.gameTime || selectedSession.game_time || 0
-                )}
-              </div>
-              <div className="detail-stat-label">Game Time</div>
-            </div>
-            <div className="detail-stat-card">
-              <div className="detail-stat-icon">🎮</div>
-              <div className="detail-stat-value">
-                {(
-                  selectedSession.possessionTime ||
-                  selectedSession.possession_time ||
-                  0
-                ).toFixed(1)}
-                s
-              </div>
-              <div className="detail-stat-label">Possession</div>
-            </div>
-            <div className="detail-stat-card">
-              <div className="detail-stat-icon">🏃</div>
-              <div className="detail-stat-value">
-                {(
-                  selectedSession.averageSpeed ||
-                  selectedSession.average_speed ||
-                  0
-                ).toFixed(1)}
-              </div>
-              <div className="detail-stat-label">Speed (km/h)</div>
+        <div className="detail-grid">
+          <div className="stat-block medium">
+            <div className="t-stat-label">Total Shots</div>
+            <div className="t-stat-value">{selectedSession.shots || 0}</div>
+          </div>
+          <div className="stat-block medium">
+            <div className="t-stat-label">Goals Scored</div>
+            <div className="t-stat-value">{selectedSession.goals || 0}</div>
+          </div>
+          <div className="stat-block medium">
+            <div className="t-stat-label">Accuracy</div>
+            <div className="t-stat-value">{getAccuracy(selectedSession)}%</div>
+          </div>
+          <div className="stat-block medium">
+            <div className="t-stat-label">Avg Speed</div>
+            <div className="t-stat-value">
+              {convertToMPH(selectedSession.averageSpeed || selectedSession.average_speed || 0)}
+              <span className="stat-unit">mph</span>
             </div>
           </div>
-
-          {/* Additional details if available */}
-          <div className="session-additional-info">
-            <h3>📈 Session Performance</h3>
-            <div className="performance-details">
-              <div className="performance-item">
-                <span className="performance-label">Session ID:</span>
-                <span className="performance-value">
-                  {selectedSession.id || "N/A"}
-                </span>
-              </div>
-              <div className="performance-item">
-                <span className="performance-label">Timestamp:</span>
-                <span className="performance-value">
-                  {formatDate(selectedSession.timestamp)}
-                </span>
-              </div>
-              <div className="performance-item">
-                <span className="performance-label">Goals per Minute:</span>
-                <span className="performance-value">
-                  {(
-                    (selectedSession.goals || 0) /
-                    ((selectedSession.gameTime ||
-                      selectedSession.game_time ||
-                      1) /
-                      60)
-                  ).toFixed(2)}
-                </span>
-              </div>
-              <div className="performance-item">
-                <span className="performance-label">Shots per Minute:</span>
-                <span className="performance-value">
-                  {(
-                    (selectedSession.shots || 0) /
-                    ((selectedSession.gameTime ||
-                      selectedSession.game_time ||
-                      1) /
-                      60)
-                  ).toFixed(2)}
-                </span>
-              </div>
+          <div className="stat-block medium">
+            <div className="t-stat-label">Boost Used</div>
+            <div className="t-stat-value">
+              {(selectedSession.boostUsed || selectedSession.boost_used || 0).toFixed(0)}
+            </div>
+          </div>
+          <div className="stat-block medium">
+            <div className="t-stat-label">Game Time</div>
+            <div className="t-stat-value">
+              {formatTime(selectedSession.gameTime || selectedSession.game_time || 0)}
+            </div>
+          </div>
+          <div className="stat-block medium">
+            <div className="t-stat-label">Possession</div>
+            <div className="t-stat-value">
+              {(selectedSession.possessionTime || selectedSession.possession_time || 0).toFixed(1)}
+              <span className="stat-unit">s</span>
+            </div>
+          </div>
+          <div className="stat-block medium">
+            <div className="t-stat-label">Goals / Min</div>
+            <div className="t-stat-value">
+              {((selectedSession.goals || 0) /
+                ((selectedSession.gameTime || selectedSession.game_time || 1) / 60)
+              ).toFixed(2)}
             </div>
           </div>
         </div>
@@ -308,20 +218,23 @@ function SessionHistory({ sessionHistory }) {
     );
   }
 
+  // Main table view
   return (
-    <div className="session-history">
-      <h2>📈 Session History</h2>
-      <p className="history-info">
-        Showing {sessionHistory.length} most recent sessions
-      </p>{" "}
-      <div className="sessions-table-container">
-        <table className="sessions-table">
+    <div className="history-terminal">
+      <div className="terminal-header">
+        <h1>SESSION LOG</h1>
+        <div className="terminal-subtitle">
+          // {sessionHistory.length} SESSIONS RECORDED //
+        </div>
+      </div>
+
+      <div className="history-table-wrapper">
+        <table className="history-table">
           <thead>
-            {" "}
             <tr>
               <th>#</th>
               <th onClick={() => handleSort("date")} className="sortable">
-                Date{" "}
+                Date
                 {sortConfig.key === "date" && (
                   <span className="sort-arrow">
                     {sortConfig.direction === "asc" ? "▲" : "▼"}
@@ -329,7 +242,7 @@ function SessionHistory({ sessionHistory }) {
                 )}
               </th>
               <th onClick={() => handleSort("duration")} className="sortable">
-                Duration{" "}
+                Duration
                 {sortConfig.key === "duration" && (
                   <span className="sort-arrow">
                     {sortConfig.direction === "asc" ? "▲" : "▼"}
@@ -337,7 +250,7 @@ function SessionHistory({ sessionHistory }) {
                 )}
               </th>
               <th onClick={() => handleSort("shots")} className="sortable">
-                Shots{" "}
+                Shots
                 {sortConfig.key === "shots" && (
                   <span className="sort-arrow">
                     {sortConfig.direction === "asc" ? "▲" : "▼"}
@@ -345,7 +258,7 @@ function SessionHistory({ sessionHistory }) {
                 )}
               </th>
               <th onClick={() => handleSort("goals")} className="sortable">
-                Goals{" "}
+                Goals
                 {sortConfig.key === "goals" && (
                   <span className="sort-arrow">
                     {sortConfig.direction === "asc" ? "▲" : "▼"}
@@ -353,31 +266,31 @@ function SessionHistory({ sessionHistory }) {
                 )}
               </th>
               <th onClick={() => handleSort("accuracy")} className="sortable">
-                Accuracy{" "}
+                Accuracy
                 {sortConfig.key === "accuracy" && (
                   <span className="sort-arrow">
                     {sortConfig.direction === "asc" ? "▲" : "▼"}
                   </span>
                 )}
-              </th>{" "}
+              </th>
               <th onClick={() => handleSort("avgSpeed")} className="sortable">
-                Avg Speed (mph){" "}
+                Avg Speed (mph)
                 {sortConfig.key === "avgSpeed" && (
                   <span className="sort-arrow">
                     {sortConfig.direction === "asc" ? "▲" : "▼"}
                   </span>
                 )}
-              </th>{" "}
+              </th>
               <th onClick={() => handleSort("boost")} className="sortable">
-                Boost Used{" "}
+                Boost Used
                 {sortConfig.key === "boost" && (
                   <span className="sort-arrow">
                     {sortConfig.direction === "asc" ? "▲" : "▼"}
                   </span>
                 )}
-              </th>{" "}
+              </th>
               <th onClick={() => handleSort("possession")} className="sortable">
-                Possession{" "}
+                Possession
                 {sortConfig.key === "possession" && (
                   <span className="sort-arrow">
                     {sortConfig.direction === "asc" ? "▲" : "▼"}
@@ -387,118 +300,97 @@ function SessionHistory({ sessionHistory }) {
               <th>Playlist</th>
               <th>MMR Δ</th>
             </tr>
-          </thead>{" "}
+          </thead>
           <tbody>
-            {" "}
-            {getSortedSessions().map((session, index) => (
-              <tr
-                key={session.id || index}
-                className="session-row clickable"
-                onClick={() => setSelectedSession(session)}
-                style={{ cursor: "pointer" }}
-              >
-                <td>{index + 1}</td>
-                <td>{formatDate(session.timestamp)}</td>
-                <td>
-                  {formatTime(session.gameTime || session.game_time || 0)}
-                </td>
-                <td>{session.shots || 0}</td>
-                <td>{session.goals || 0}</td>
-                <td>
-                  <span
-                    className={`accuracy ${
-                      getAccuracy(session) >= 50
-                        ? "good"
-                        : getAccuracy(session) >= 30
-                        ? "medium"
-                        : "low"
-                    }`}
-                  >
-                    {getAccuracy(session)}%
-                  </span>{" "}
-                </td>
-                <td>
-                  {convertToMPH(
-                    session.averageSpeed || session.average_speed || 0
-                  )}
-                </td>
-                <td>
-                  {(session.boostUsed || session.boost_used || 0).toFixed(0)}
-                </td>{" "}
-                <td>
-                  {(
-                    session.possessionTime ||
-                    session.possession_time ||
-                    0
-                  ).toFixed(1)}
-                  s
-                </td>
-                <td>
-                  {session.playlist ? (
-                    <span className="playlist-badge">
-                      {session.is_ranked === 1 && "🏆 "}
-                      {session.playlist}
+            {getSortedSessions().map((session, index) => {
+              const acc = getAccuracy(session);
+              return (
+                <tr
+                  key={session.id || index}
+                  className="history-row"
+                  onClick={() => setSelectedSession(session)}
+                >
+                  <td><span className="row-number">{index + 1}</span></td>
+                  <td><span className="date-cell">{formatDate(session.timestamp)}</span></td>
+                  <td>{formatTime(session.gameTime || session.game_time || 0)}</td>
+                  <td>{session.shots || 0}</td>
+                  <td>{session.goals || 0}</td>
+                  <td>
+                    <span className={`accuracy-badge ${getAccuracyClass(acc)}`}>
+                      {acc}%
                     </span>
-                  ) : (
-                    <span className="text-muted">-</span>
-                  )}
-                </td>
-                <td>
-                  {session.mmr_change !== null &&
-                  session.mmr_change !== undefined ? (
-                    <span
-                      className={`mmr-delta ${
-                        session.mmr_change >= 0 ? "positive" : "negative"
-                      }`}
-                    >
-                      {session.mmr_change >= 0 ? "+" : ""}
-                      {Math.round(session.mmr_change)}
-                    </span>
-                  ) : (
-                    <span className="text-muted">-</span>
-                  )}
-                </td>
-              </tr>
-            ))}
+                  </td>
+                  <td>{convertToMPH(session.averageSpeed || session.average_speed || 0)}</td>
+                  <td>{(session.boostUsed || session.boost_used || 0).toFixed(0)}</td>
+                  <td>
+                    {(session.possessionTime || session.possession_time || 0).toFixed(1)}s
+                  </td>
+                  <td>
+                    {session.playlist ? (
+                      <span className="playlist-badge">
+                        {session.is_ranked === 1 && "🏆 "}
+                        {session.playlist}
+                      </span>
+                    ) : (
+                      <span className="text-muted">-</span>
+                    )}
+                  </td>
+                  <td>
+                    {session.mmr_change !== null &&
+                    session.mmr_change !== undefined ? (
+                      <span
+                        className={`mmr-change ${
+                          session.mmr_change >= 0 ? "positive" : "negative"
+                        }`}
+                      >
+                        {session.mmr_change >= 0 ? "+" : ""}
+                        {Math.round(session.mmr_change)}
+                      </span>
+                    ) : (
+                      <span className="text-muted">-</span>
+                    )}
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>
-      <div className="history-summary">
-        <h3>Summary Statistics</h3>
-        <div className="summary-grid">
-          <div className="summary-item">
-            <span className="summary-label">Best Accuracy:</span>
-            <span className="summary-value">
-              {Math.max(
-                ...sessionHistory.map((s) => parseFloat(getAccuracy(s)))
-              ).toFixed(1)}
-              %
-            </span>
+
+      {/* Summary */}
+      <h2 className="section-title">Summary Statistics</h2>
+      <div className="summary-stats-container">
+        <div className="stat-block small">
+          <div className="t-stat-label">Best Accuracy</div>
+          <div className="t-stat-value">
+            {Math.max(
+              ...sessionHistory.map((s) => parseFloat(getAccuracy(s)))
+            ).toFixed(1)}%
           </div>
-          <div className="summary-item">
-            <span className="summary-label">Most Goals in Session:</span>
-            <span className="summary-value">
-              {Math.max(...sessionHistory.map((s) => s.goals || 0))}
-            </span>
-          </div>{" "}
-          <div className="summary-item">
-            <span className="summary-label">Most Shots in Session:</span>
-            <span className="summary-value">
-              {Math.max(...sessionHistory.map((s) => s.shots || 0))}
-            </span>
-          </div>{" "}
-          <div className="summary-item">
-            <span className="summary-label">Highest Avg Speed:</span>
-            <span className="summary-value">
-              {convertToMPH(
-                Math.max(
-                  ...sessionHistory.map(
-                    (s) => s.averageSpeed || s.average_speed || 0
-                  )
+        </div>
+        <div className="stat-block small">
+          <div className="t-stat-label">Most Goals</div>
+          <div className="t-stat-value">
+            {Math.max(...sessionHistory.map((s) => s.goals || 0))}
+          </div>
+        </div>
+        <div className="stat-block small">
+          <div className="t-stat-label">Most Shots</div>
+          <div className="t-stat-value">
+            {Math.max(...sessionHistory.map((s) => s.shots || 0))}
+          </div>
+        </div>
+        <div className="stat-block small">
+          <div className="t-stat-label">Top Speed</div>
+          <div className="t-stat-value">
+            {convertToMPH(
+              Math.max(
+                ...sessionHistory.map(
+                  (s) => s.averageSpeed || s.average_speed || 0
                 )
-              )}{" "}
-              mph
-            </span>
+              )
+            )}
+            <span className="stat-unit">mph</span>
           </div>
         </div>
       </div>

@@ -55,37 +55,7 @@ function StatsOverview({ currentStats, allTimeStats }) {
       <div className="terminal-header">
         <h1>STATS TERMINAL</h1>
         <div className="terminal-subtitle">// FURLS DATA ACCESS //</div>
-      </div>
-
-      {/* Featured Stat — Shot Accuracy */}
-      <div className="featured-stat">
-        <div className="featured-main">
-          <div className="t-stat-label">SHOT ACCURACY RATE</div>
-          <div className="featured-value">{getCurrentAccuracy()}%</div>
-          <div className="featured-subtext">
-            {currentStats
-              ? `${currentStats.goals || 0} goals from ${
-                  currentStats.shots || 0
-                } shots`
-              : "No session data"}
-          </div>
-        </div>
-        <div className="featured-side">
-          {currentStats && (
-            <div className="rank-badge">
-              {getCurrentAccuracy() >= 60
-                ? "ELITE"
-                : getCurrentAccuracy() >= 40
-                ? "SOLID"
-                : getCurrentAccuracy() >= 20
-                ? "WARMING UP"
-                : "ROOKIE"}
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Current Session Stats Grid */}
+      </div>      {/* Current Session Stats Grid */}
       <h2 className="section-title">Current Session</h2>
       {currentStats ? (
         <div className="stats-container">
