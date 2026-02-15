@@ -1,14 +1,11 @@
 import "./StatsOverview.css";
 
 function StatsOverview({ currentStats, allTimeStats }) {
-  // Safe number formatter - ensures value is a number before calling toFixed
   const safeToFixed = (value, decimals = 1) => {
     const num = Number(value);
     return isNaN(num) ? "0" : num.toFixed(decimals);
   };
 
-  // Convert Unreal Units/second to MPH
-  // Rocket League: 1 UU/s ≈ 0.02237 MPH
   const convertToMPH = (unrealSpeed) => {
     const mph = unrealSpeed * 0.02237;
     return Math.round(mph);
@@ -26,245 +23,296 @@ function StatsOverview({ currentStats, allTimeStats }) {
       ? ((currentStats.goals / currentStats.shots) * 100).toFixed(1)
       : 0;
   };
+
+  const getBoostEfficiency = () => {
+    if (!currentStats?.boostCollected || currentStats.boostCollected === 0)
+      return 0;
+    return safeToFixed(
+      (currentStats.boostUsed / currentStats.boostCollected) * 100
+    );
+  };
+
+  // All-time derived stats
+  const totalSessions =
+    allTimeStats?.totalSessions || allTimeStats?.total_sessions || 0;
+  const totalGoals =
+    allTimeStats?.totalGoals || allTimeStats?.total_goals || 0;
+  const totalShots =
+    allTimeStats?.totalShots || allTimeStats?.total_shots || 0;
+  const totalPlayTime =
+    allTimeStats?.totalPlayTime || allTimeStats?.total_play_time || 0;
+  const avgAccuracy =
+    allTimeStats?.avgAccuracy || allTimeStats?.avg_accuracy || 0;
+  const avgSpeed = allTimeStats?.avgSpeed || allTimeStats?.avg_speed || 0;
+
   return (
-    <div className="stats-overview">
-      {/* Current Session Stats - Reorganized Grid Layout */}
-      <section className="stats-section">
-        <h2>📊 Current Session Stats</h2>
-        {currentStats ? (
-          <div className="stats-grid-layout">
-            {/* Key Metrics - Top Row */}
-            <div className="key-metrics-row">
-              <div className="stat-card highlight-card">
-                <div className="stat-icon-large">⚽</div>
-                <div className="stat-content">
-                  <div className="stat-label">Goals</div>
-                  <div className="stat-value-large">
-                    {currentStats.goals || 0}
-                  </div>
-                </div>
-              </div>
-              <div className="stat-card highlight-card">
-                <div className="stat-icon-large">📍</div>
-                <div className="stat-content">
-                  <div className="stat-label">Shots</div>
-                  <div className="stat-value-large">
-                    {currentStats.shots || 0}
-                  </div>
-                </div>
-              </div>
-              <div className="stat-card highlight-card">
-                <div className="stat-icon-large">🎯</div>
-                <div className="stat-content">
-                  <div className="stat-label">Accuracy</div>
-                  <div className="stat-value-large">
-                    {getCurrentAccuracy()}%
-                  </div>
-                </div>
-              </div>
-              <div className="stat-card highlight-card">
-                <div className="stat-icon-large">⏱️</div>
-                <div className="stat-content">
-                  <div className="stat-label">Game Time</div>
-                  <div className="stat-value-large">
-                    {formatTime(currentStats?.gameTime || 0)}
-                  </div>
-                </div>
-              </div>
+    <div className="stats-terminal">
+      {/* Corner decorations */}
+      <div className="corner-decor top-left" />
+      <div className="corner-decor bottom-right" />
+
+      {/* Header */}
+      <div className="terminal-header">
+        <h1>STATS TERMINAL</h1>
+        <div className="terminal-subtitle">// FURLS DATA ACCESS //</div>
+      </div>
+
+      {/* Featured Stat — Shot Accuracy */}
+      <div className="featured-stat">
+        <div className="featured-main">
+          <div className="t-stat-label">SHOT ACCURACY RATE</div>
+          <div className="featured-value">{getCurrentAccuracy()}%</div>
+          <div className="featured-subtext">
+            {currentStats
+              ? `${currentStats.goals || 0} goals from ${
+                  currentStats.shots || 0
+                } shots`
+              : "No session data"}
+          </div>
+        </div>
+        <div className="featured-side">
+          {currentStats && (
+            <div className="rank-badge">
+              {getCurrentAccuracy() >= 60
+                ? "ELITE"
+                : getCurrentAccuracy() >= 40
+                ? "SOLID"
+                : getCurrentAccuracy() >= 20
+                ? "WARMING UP"
+                : "ROOKIE"}
             </div>
+          )}
+        </div>
+      </div>
 
-            {/* Detailed Stats - Grid */}
-            <div className="detailed-stats-grid">
-              {/* Speed Stats */}
-              <div className="stat-group-card">
-                <h3>⚡ Speed & Movement</h3>
-                <div className="stat-item">
-                  <span>Average Speed:</span>
-                  <strong>
-                    {convertToMPH(currentStats?.averageSpeed || 0)} mph
-                  </strong>
-                </div>
-                <div className="stat-item">
-                  <span>Speed Samples:</span>
-                  <strong>{currentStats?.speedSamples || 0}</strong>
-                </div>
-              </div>
-
-              {/* Boost Stats */}
-              <div className="stat-group-card">
-                <h3>💨 Boost Management</h3>
-                <div className="stat-item">
-                  <span>Boost Collected:</span>
-                  <strong>{safeToFixed(currentStats?.boostCollected)}</strong>
-                </div>
-                <div className="stat-item">
-                  <span>Boost Used:</span>
-                  <strong>{safeToFixed(currentStats?.boostUsed)}</strong>
-                </div>
-                <div className="stat-item">
-                  <span>Efficiency:</span>
-                  <strong>
-                    {currentStats?.boostCollected > 0
-                      ? safeToFixed(
-                          (currentStats.boostUsed /
-                            currentStats.boostCollected) *
-                            100
-                        )
-                      : 0}
-                    %
-                  </strong>
-                </div>
-              </div>
-
-              {/* Possession Stats */}
-              <div className="stat-group-card">
-                <h3>🏐 Possession Time</h3>
-                <div className="stat-item">
-                  <span>Your Possession:</span>
-                  <strong>{safeToFixed(currentStats?.possessionTime)}s</strong>
-                </div>
-                <div className="stat-item">
-                  <span>Team Possession:</span>
-                  <strong>
-                    {safeToFixed(currentStats?.teamPossessionTime)}s
-                  </strong>
-                </div>
-                <div className="stat-item">
-                  <span>Opponent Possession:</span>
-                  <strong>
-                    {safeToFixed(currentStats?.opponentPossessionTime)}s
-                  </strong>
-                </div>
+      {/* Current Session Stats Grid */}
+      <h2 className="section-title">Current Session</h2>
+      {currentStats ? (
+        <div className="stats-container">
+          {/* Goals — large */}
+          <div className="stat-block large">
+            <span className="stat-float">SESSION</span>
+            <div className="t-stat-label">Total Goals</div>
+            <div className="t-stat-value">{currentStats.goals || 0}</div>
+            <div className="progress-section">
+              <div className="progress-bar">
+                <div
+                  className="progress-fill"
+                  style={{
+                    width: `${Math.min(
+                      ((currentStats.goals || 0) /
+                        Math.max(currentStats.shots || 1, 1)) *
+                        100,
+                      100
+                    )}%`,
+                  }}
+                />
               </div>
             </div>
           </div>
-        ) : (
-          <div className="no-data">
-            <p>No current session data available</p>
+
+          {/* Shots — large */}
+          <div className="stat-block large">
+            <span className="stat-float">SESSION</span>
+            <div className="t-stat-label">Total Shots</div>
+            <div className="t-stat-value">{currentStats.shots || 0}</div>
+            <div className="progress-section">
+              <div className="progress-bar">
+                <div
+                  className="progress-fill"
+                  style={{ width: `${Math.min((currentStats.shots || 0) * 2, 100)}%` }}
+                />
+              </div>
+            </div>
           </div>
-        )}
-      </section>{" "}
+
+          {/* Accuracy — medium */}
+          <div className="stat-block medium">
+            <div className="t-stat-label">Accuracy</div>
+            <div className="t-stat-value">{getCurrentAccuracy()}%</div>
+          </div>
+
+          {/* Game Time — medium */}
+          <div className="stat-block medium">
+            <div className="t-stat-label">Game Time</div>
+            <div className="t-stat-value">
+              {formatTime(currentStats?.gameTime || 0)}
+            </div>
+          </div>
+
+          {/* Avg Speed — medium */}
+          <div className="stat-block medium">
+            <span className="stat-float">AVG</span>
+            <div className="t-stat-label">Average Speed</div>
+            <div className="t-stat-value">
+              {convertToMPH(currentStats?.averageSpeed || 0)}
+              <span className="stat-unit">mph</span>
+            </div>
+          </div>
+
+          {/* Boost Used — small */}
+          <div className="stat-block small">
+            <div className="t-stat-label">Boost Used</div>
+            <div className="t-stat-value">
+              {safeToFixed(currentStats?.boostUsed, 0)}
+            </div>
+          </div>
+
+          {/* Boost Collected — small */}
+          <div className="stat-block small">
+            <div className="t-stat-label">Boost Collected</div>
+            <div className="t-stat-value">
+              {safeToFixed(currentStats?.boostCollected, 0)}
+            </div>
+          </div>
+
+          {/* Boost Efficiency — small */}
+          <div className="stat-block small">
+            <div className="t-stat-label">Boost Efficiency</div>
+            <div className="t-stat-value">{getBoostEfficiency()}%</div>
+          </div>
+
+          {/* Speed Samples — small */}
+          <div className="stat-block small">
+            <div className="t-stat-label">Speed Samples</div>
+            <div className="t-stat-value">
+              {currentStats?.speedSamples || 0}
+            </div>
+          </div>
+
+          {/* Possession — medium */}
+          <div className="stat-block medium">
+            <div className="t-stat-label">Your Possession</div>
+            <div className="t-stat-value">
+              {safeToFixed(currentStats?.possessionTime)}
+              <span className="stat-unit">s</span>
+            </div>
+          </div>
+
+          {/* Team Possession — small */}
+          <div className="stat-block small">
+            <div className="t-stat-label">Team Possession</div>
+            <div className="t-stat-value">
+              {safeToFixed(currentStats?.teamPossessionTime)}
+              <span className="stat-unit">s</span>
+            </div>
+          </div>
+
+          {/* Opponent Possession — small */}
+          <div className="stat-block small">
+            <div className="t-stat-label">Opponent Possession</div>
+            <div className="t-stat-value">
+              {safeToFixed(currentStats?.opponentPossessionTime)}
+              <span className="stat-unit">s</span>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div className="no-data-terminal">
+          <p>// NO ACTIVE SESSION DATA //</p>
+          <p className="dim">Play a match to populate the terminal.</p>
+        </div>
+      )}
+
+      {/* All-Time Stats */}
       {allTimeStats && (
-        <section className="stats-section all-time-section">
-          <h2>🏆 All-Time Statistics</h2>
-          <div className="all-time-grid-reorganized">
-            {/* Primary Stats */}
-            <div className="primary-stats">
-              <div className="summary-card-large">
-                <div className="summary-icon">🎮</div>
-                <div className="summary-content">
-                  <div className="summary-label">Total Sessions</div>
-                  <div className="summary-value-xl">
-                    {allTimeStats.totalSessions ||
-                      allTimeStats.total_sessions ||
-                      0}
-                  </div>
-                </div>
-              </div>
-              <div className="summary-card-large">
-                <div className="summary-icon">⚽</div>
-                <div className="summary-content">
-                  <div className="summary-label">Total Goals</div>
-                  <div className="summary-value-xl">
-                    {allTimeStats.totalGoals || allTimeStats.total_goals || 0}
-                  </div>
-                </div>
-              </div>
-              <div className="summary-card-large">
-                <div className="summary-icon">📍</div>
-                <div className="summary-content">
-                  <div className="summary-label">Total Shots</div>
-                  <div className="summary-value-xl">
-                    {allTimeStats.totalShots || allTimeStats.total_shots || 0}
-                  </div>
-                </div>
-              </div>
-              <div className="summary-card-large">
-                <div className="summary-icon">⏱️</div>
-                <div className="summary-content">
-                  <div className="summary-label">Total Play Time</div>
-                  <div className="summary-value-xl">
-                    {formatTime(
-                      allTimeStats.totalPlayTime ||
-                        allTimeStats.total_play_time ||
-                        0
-                    )}
-                  </div>
+        <>
+          <h2 className="section-title">All-Time Statistics</h2>
+          <div className="stats-container">
+            {/* Total Sessions — large */}
+            <div className="stat-block large">
+              <span className="stat-float">LIFETIME</span>
+              <div className="t-stat-label">Total Sessions Played</div>
+              <div className="t-stat-value">{totalSessions}</div>
+            </div>
+
+            {/* Total Goals — large */}
+            <div className="stat-block large">
+              <span className="stat-float">LIFETIME</span>
+              <div className="t-stat-label">Total Goals Scored</div>
+              <div className="t-stat-value">{totalGoals}</div>
+              <div className="progress-section">
+                <div className="progress-bar">
+                  <div
+                    className="progress-fill"
+                    style={{
+                      width: `${Math.min(
+                        (totalGoals / Math.max(totalShots, 1)) * 100,
+                        100
+                      )}%`,
+                    }}
+                  />
                 </div>
               </div>
             </div>
 
-            {/* Secondary Stats */}
-            <div className="secondary-stats">
-              <div className="summary-card">
-                <div className="summary-label">Average Accuracy</div>
-                <div className="summary-value">
-                  {safeToFixed(
-                    allTimeStats?.avgAccuracy || allTimeStats?.avg_accuracy || 0
-                  )}
-                  %
-                </div>
-              </div>
-              <div className="summary-card">
-                <div className="summary-label">Average Speed</div>
-                <div className="summary-value">
-                  {convertToMPH(
-                    allTimeStats?.avgSpeed || allTimeStats?.avg_speed || 0
-                  )}{" "}
-                  mph
-                </div>
-              </div>
-              <div className="summary-card">
-                <div className="summary-label">Shots per Session</div>
-                <div className="summary-value">
-                  {(allTimeStats?.totalSessions ||
-                    allTimeStats?.total_sessions ||
-                    0) > 0
-                    ? safeToFixed(
-                        (allTimeStats?.totalShots ||
-                          allTimeStats?.total_shots ||
-                          0) /
-                          (allTimeStats?.totalSessions ||
-                            allTimeStats?.total_sessions)
-                      )
-                    : 0}
-                </div>
-              </div>
-              <div className="summary-card">
-                <div className="summary-label">Goals per Session</div>
-                <div className="summary-value">
-                  {(allTimeStats?.totalSessions ||
-                    allTimeStats?.total_sessions ||
-                    0) > 0
-                    ? safeToFixed(
-                        (allTimeStats?.totalGoals ||
-                          allTimeStats?.total_goals ||
-                          0) /
-                          (allTimeStats?.totalSessions ||
-                            allTimeStats?.total_sessions)
-                      )
-                    : 0}
-                </div>
-              </div>
-              <div className="summary-card">
-                <div className="summary-label">Avg Session Duration</div>
-                <div className="summary-value">
-                  {(allTimeStats.totalSessions ||
-                    allTimeStats.total_sessions ||
-                    0) > 0
-                    ? formatTime(
-                        (allTimeStats.totalPlayTime ||
-                          allTimeStats.total_play_time ||
-                          0) /
-                          (allTimeStats.totalSessions ||
-                            allTimeStats.total_sessions)
-                      )
-                    : "0:00"}
+            {/* Total Shots — medium */}
+            <div className="stat-block medium">
+              <div className="t-stat-label">Total Shots</div>
+              <div className="t-stat-value">{totalShots}</div>
+            </div>
+
+            {/* Total Play Time — medium */}
+            <div className="stat-block medium">
+              <div className="t-stat-label">Total Play Time</div>
+              <div className="t-stat-value">{formatTime(totalPlayTime)}</div>
+            </div>
+
+            {/* Avg Accuracy — medium */}
+            <div className="stat-block medium">
+              <span className="stat-float">AVG</span>
+              <div className="t-stat-label">Average Accuracy</div>
+              <div className="t-stat-value">{safeToFixed(avgAccuracy)}%</div>
+              <div className="progress-section">
+                <div className="progress-bar">
+                  <div
+                    className="progress-fill"
+                    style={{ width: `${avgAccuracy}%` }}
+                  />
                 </div>
               </div>
             </div>
+
+            {/* Avg Speed — small */}
+            <div className="stat-block small">
+              <div className="t-stat-label">Average Speed</div>
+              <div className="t-stat-value">
+                {convertToMPH(avgSpeed)}
+                <span className="stat-unit">mph</span>
+              </div>
+            </div>
+
+            {/* Shots per Session — small */}
+            <div className="stat-block small">
+              <div className="t-stat-label">Shots / Session</div>
+              <div className="t-stat-value">
+                {totalSessions > 0
+                  ? safeToFixed(totalShots / totalSessions)
+                  : 0}
+              </div>
+            </div>
+
+            {/* Goals per Session — small */}
+            <div className="stat-block small">
+              <div className="t-stat-label">Goals / Session</div>
+              <div className="t-stat-value">
+                {totalSessions > 0
+                  ? safeToFixed(totalGoals / totalSessions)
+                  : 0}
+              </div>
+            </div>
+
+            {/* Avg Session Duration — small */}
+            <div className="stat-block small">
+              <div className="t-stat-label">Avg Session Length</div>
+              <div className="t-stat-value">
+                {totalSessions > 0
+                  ? formatTime(totalPlayTime / totalSessions)
+                  : "0:00"}
+              </div>
+            </div>
           </div>
-        </section>
+        </>
       )}
     </div>
   );
